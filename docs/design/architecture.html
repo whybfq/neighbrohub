@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社区购物平台 - 系统架构图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #0d1117; color: #c9d1d9; padding: 20px; }
+  .container { max-width: 1400px; margin: 0 auto; }
+
+  header { text-align: center; padding: 30px; margin-bottom: 20px; }
+  header h1 { font-size: 2em; color: #58a6ff; margin-bottom: 6px; }
+  header p { color: #8b949e; font-size: 15px; }
+
+  .tab-nav { display: flex; gap: 6px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+  .tab-btn { padding: 10px 22px; background: #161b22; border: 1px solid #30363d; color: #8b949e; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all .2s; }
+  .tab-btn:hover { border-color: #58a6ff; color: #c9d1d9; }
+  .tab-btn.active { background: #1f6feb22; border-color: #58a6ff; color: #58a6ff; }
+
+  .diagram { display: none; }
+  .diagram.active { display: block; }
+
+  /* SVG diagram styles */
+  .svg-container { background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 30px; overflow-x: auto; margin-bottom: 20px; }
+  .svg-container svg { width: 100%; min-width: 1000px; }
+
+  .legend { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin: 20px 0; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .legend-color { width: 14px; height: 14px; border-radius: 3px; }
+
+  .desc-panel { background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 30px; margin-top: 20px; }
+  .desc-panel h3 { color: #58a6ff; font-size: 18px; margin-bottom: 16px; }
+  .desc-panel p, .desc-panel li { font-size: 14px; line-height: 1.8; color: #8b949e; }
+  .desc-panel ul { padding-left: 20px; }
+  .desc-panel strong { color: #c9d1d9; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
+  @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .info-card { background: #0d1117; border: 1px solid #21262d; border-radius: 10px; padding: 20px; }
+  .info-card h4 { color: #58a6ff; font-size: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .info-card .tag { display: inline-block; padding: 2px 8px; background: #1f6feb22; color: #58a6ff; border-radius: 4px; font-size: 11px; margin: 2px 3px; }
+
+  .flow-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; font-size: 13px; flex-wrap: wrap; }
+  .flow-step { padding: 6px 14px; background: #1f6feb22; border: 1px solid #1f6feb44; border-radius: 20px; color: #58a6ff; white-space: nowrap; }
+  .flow-arrow { color: #30363d; font-size: 18px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>🏗️ 社区私域购物平台 - 系统架构设计</h1>
+    <p>邻选社区 · 技术架构全景图 | v1.0</p>
+  </header>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('overview')">📐 架构总览</button>
+    <button class="tab-btn" onclick="switchTab('deploy')">☁️ 部署架构</button>
+    <button class="tab-btn" onclick="switchTab('data')">🗄️ 数据架构</button>
+    <button class="tab-btn" onclick="switchTab('flow')">🔄 业务流程</button>
+    <button class="tab-btn" onclick="switchTab('security')">🔒 安全架构</button>
+  </div>
+
+  <!-- ====== TAB 1: ARCHITECTURE OVERVIEW ====== -->
+  <div id="tab-overview" class="diagram active">
+    <div class="svg-container">
+      <svg viewBox="0 0 1200 850" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#238636;stop-opacity:0.2"/><stop offset="100%" style="stop-color:#1f6feb;stop-opacity:0.1"/></linearGradient>
+          <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#1f6feb;stop-opacity:0.15"/><stop offset="100%" style="stop-color:#1f6feb;stop-opacity:0.02"/></linearGradient>
+          <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.3"/></filter>
+        </defs>
+
+        <!-- Background -->
+        <rect width="1200" height="850" fill="url(#grad1)" rx="16"/>
+
+        <!-- Layer labels -->
+        <text x="30" y="55" fill="#8b949e" font-size="12" font-weight="600">客户端层</text>
+        <line x1="120" y1="50" x2="1170" y2="50" stroke="#21262d" stroke-width="1"/>
+
+        <text x="30" y="195" fill="#8b949e" font-size="12" font-weight="600">接入层</text>
+        <line x1="120" y1="190" x2="1170" y2="190" stroke="#21262d" stroke-width="1"/>
+
+        <text x="30" y="340" fill="#8b949e" font-size="12" font-weight="600">业务服务层</text>
+        <line x1="120" y1="335" x2="1170" y2="335" stroke="#21262d" stroke-width="1"/>
+
+        <text x="30" y="590" fill="#8b949e" font-size="12" font-weight="600">基础设施层</text>
+        <line x1="120" y1="585" x2="1170" y2="585" stroke="#21262d" stroke-width="1"/>
+
+        <text x="30" y="780" fill="#8b949e" font-size="12" font-weight="600">基础设施 & DevOps</text>
+        <line x1="180" y1="775" x2="1170" y2="775" stroke="#21262d" stroke-width="1"/>
+
+        <!-- ===== CLIENT LAYER ===== -->
+        <!-- Mini Program -->
+        <rect x="60" y="70" width="220" height="100" rx="10" fill="#161b22" stroke="#238636" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="170" y="100" fill="#3fb950" font-size="15" font-weight="700" text-anchor="middle">📱 微信小程序</text>
+        <text x="170" y="122" fill="#8b949e" font-size="11" text-anchor="middle">Taro 3.x + React</text>
+        <text x="170" y="142" fill="#8b949e" font-size="11" text-anchor="middle">TypeScript + Zustand</text>
+        <text x="170" y="162" fill="#484f58" font-size="10" text-anchor="middle">C端用户购物</text>
+
+        <!-- Admin Web -->
+        <rect x="340" y="70" width="220" height="100" rx="10" fill="#161b22" stroke="#d29922" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="450" y="100" fill="#d29922" font-size="15" font-weight="700" text-anchor="middle">🖥️ 管理后台</text>
+        <text x="450" y="122" fill="#8b949e" font-size="11" text-anchor="middle">React 18 + Ant Design Pro</text>
+        <text x="450" y="142" fill="#8b949e" font-size="11" text-anchor="middle">UmiJS + Dva</text>
+        <text x="450" y="162" fill="#484f58" font-size="10" text-anchor="middle">B端运营管理</text>
+
+        <!-- H5 Fallback -->
+        <rect x="620" y="70" width="180" height="100" rx="10" fill="#161b22" stroke="#a371f7" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="710" y="100" fill="#a371f7" font-size="15" font-weight="700" text-anchor="middle">🌐 H5备用站</text>
+        <text x="710" y="122" fill="#8b949e" font-size="11" text-anchor="middle">Vue 3 + Vant</text>
+        <text x="710" y="142" fill="#8b949e" font-size="11" text-anchor="middle">响应式设计</text>
+        <text x="710" y="162" fill="#484f58" font-size="10" text-anchor="middle">微信外访问</text>
+
+        <!-- Third Party -->
+        <rect x="860" y="70" width="220" height="100" rx="10" fill="#161b22" stroke="#f78166" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="970" y="100" fill="#f78166" font-size="15" font-weight="700" text-anchor="middle">🔌 第三方集成</text>
+        <text x="970" y="122" fill="#8b949e" font-size="11" text-anchor="middle">微信支付 | 微信登录</text>
+        <text x="970" y="142" fill="#8b949e" font-size="11" text-anchor="middle">短信服务 | 地图定位</text>
+        <text x="970" y="162" fill="#484f58" font-size="10" text-anchor="middle">模板消息推送</text>
+
+        <!-- ===== CONNECTIONS CLIENT -> GATEWAY ===== -->
+        <line x1="170" y1="170" x2="170" y2="215" stroke="#238636" stroke-width="1" stroke-dasharray="6,3" opacity="0.6"/>
+        <line x1="450" y1="170" x2="450" y2="215" stroke="#d29922" stroke-width="1" stroke-dasharray="6,3" opacity="0.6"/>
+        <line x1="710" y1="170" x2="710" y2="215" stroke="#a371f7" stroke-width="1" stroke-dasharray="6,3" opacity="0.6"/>
+
+        <!-- ===== GATEWAY LAYER ===== -->
+        <rect x="60" y="215" width="240" height="100" rx="10" fill="#161b22" stroke="#58a6ff" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="180" y="245" fill="#58a6ff" font-size="15" font-weight="700" text-anchor="middle">🚪 API Gateway</text>
+        <text x="180" y="268" fill="#8b949e" font-size="11" text-anchor="middle">Spring Cloud Gateway</text>
+        <text x="180" y="288" fill="#8b949e" font-size="11" text-anchor="middle">限流 | 鉴权 | 路由</text>
+        <text x="180" y="305" fill="#484f58" font-size="10" text-anchor="middle">负载均衡 · 日志</text>
+
+        <rect x="360" y="215" width="220" height="100" rx="10" fill="#161b22" stroke="#58a6ff" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="470" y="245" fill="#58a6ff" font-size="15" font-weight="700" text-anchor="middle">🔐 认证中心</text>
+        <text x="470" y="268" fill="#8b949e" font-size="11" text-anchor="middle">OAuth2.0 + JWT</text>
+        <text x="470" y="288" fill="#8b949e" font-size="11" text-anchor="middle">微信静默授权</text>
+        <text x="470" y="305" fill="#484f58" font-size="10" text-anchor="middle">Session · Token刷新</text>
+
+        <rect x="640" y="215" width="220" height="100" rx="10" fill="#161b22" stroke="#58a6ff" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="750" y="245" fill="#58a6ff" font-size="15" font-weight="700" text-anchor="middle">⚙️ Nacos</text>
+        <text x="750" y="268" fill="#8b949e" font-size="11" text-anchor="middle">服务注册与发现</text>
+        <text x="750" y="288" fill="#8b949e" font-size="11" text-anchor="middle">配置中心</text>
+        <text x="750" y="305" fill="#484f58" font-size="10" text-anchor="middle">Sentinel 熔断降级</text>
+
+        <rect x="920" y="215" width="220" height="100" rx="10" fill="#161b22" stroke="#58a6ff" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="1030" y="245" fill="#58a6ff" font-size="15" font-weight="700" text-anchor="middle">📊 SkyWalking</text>
+        <text x="1030" y="268" fill="#8b949e" font-size="11" text-anchor="middle">链路追踪</text>
+        <text x="1030" y="288" fill="#8b949e" font-size="11" text-anchor="middle">性能监控</text>
+        <text x="1030" y="305" fill="#484f58" font-size="10" text-anchor="middle">告警通知</text>
+
+        <!-- ===== SERVICE LAYER ===== -->
+        <!-- User Service -->
+        <rect x="60" y="355" width="180" height="110" rx="10" fill="#161b22" stroke="#79c0ff" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="150" y="385" fill="#79c0ff" font-size="14" font-weight="700" text-anchor="middle">👤 用户服务</text>
+        <text x="150" y="407" fill="#8b949e" font-size="10" text-anchor="middle">用户CRUD</text>
+        <text x="150" y="423" fill="#8b949e" font-size="10" text-anchor="middle">地址管理</text>
+        <text x="150" y="439" fill="#8b949e" font-size="10" text-anchor="middle">小区绑定</text>
+        <text x="150" y="455" fill="#8b949e" font-size="10" text-anchor="middle">团长审核</text>
+
+        <!-- Product Service -->
+        <rect x="270" y="355" width="180" height="110" rx="10" fill="#161b22" stroke="#79c0ff" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="360" y="385" fill="#79c0ff" font-size="14" font-weight="700" text-anchor="middle">📦 商品服务</text>
+        <text x="360" y="407" fill="#8b949e" font-size="10" text-anchor="middle">商品管理</text>
+        <text x="360" y="423" fill="#8b949e" font-size="10" text-anchor="middle">分类/SKU</text>
+        <text x="360" y="439" fill="#8b949e" font-size="10" text-anchor="middle">库存管理</text>
+        <text x="360" y="455" fill="#8b949e" font-size="10" text-anchor="middle">搜索推荐</text>
+
+        <!-- Order Service -->
+        <rect x="480" y="355" width="180" height="110" rx="10" fill="#161b22" stroke="#79c0ff" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="570" y="385" fill="#79c0ff" font-size="14" font-weight="700" text-anchor="middle">📋 订单服务</text>
+        <text x="570" y="407" fill="#8b949e" font-size="10" text-anchor="middle">购物车</text>
+        <text x="570" y="423" fill="#8b949e" font-size="10" text-anchor="middle">订单管理</text>
+        <text x="570" y="439" fill="#8b949e" font-size="10" text-anchor="middle">物流追踪</text>
+        <text x="570" y="455" fill="#8b949e" font-size="10" text-anchor="middle">售后处理</text>
+
+        <!-- Marketing Service -->
+        <rect x="690" y="355" width="180" height="110" rx="10" fill="#161b22" stroke="#79c0ff" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="780" y="385" fill="#79c0ff" font-size="14" font-weight="700" text-anchor="middle">🎯 营销服务</text>
+        <text x="780" y="407" fill="#8b949e" font-size="10" text-anchor="middle">优惠券</text>
+        <text x="780" y="423" fill="#8b949e" font-size="10" text-anchor="middle">秒杀/拼团</text>
+        <text x="780" y="439" fill="#8b949e" font-size="10" text-anchor="middle">分销佣金</text>
+        <text x="780" y="455" fill="#8b949e" font-size="10" text-anchor="middle">积分系统</text>
+
+        <!-- Payment Service -->
+        <rect x="900" y="355" width="180" height="110" rx="10" fill="#161b22" stroke="#79c0ff" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="990" y="385" fill="#79c0ff" font-size="14" font-weight="700" text-anchor="middle">💳 支付服务</text>
+        <text x="990" y="407" fill="#8b949e" font-size="10" text-anchor="middle">微信支付</text>
+        <text x="990" y="423" fill="#8b949e" font-size="10" text-anchor="middle">退款处理</text>
+        <text x="990" y="439" fill="#8b949e" font-size="10" text-anchor="middle">对账管理</text>
+        <text x="990" y="455" fill="#8b949e" font-size="10" text-anchor="middle">资金流水</text>
+
+        <!-- Message Service (row 2) -->
+        <rect x="165" y="480" width="180" height="90" rx="10" fill="#161b22" stroke="#79c0ff" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="255" y="505" fill="#79c0ff" font-size="14" font-weight="700" text-anchor="middle">🔔 消息服务</text>
+        <text x="255" y="527" fill="#8b949e" font-size="10" text-anchor="middle">模板消息推送</text>
+        <text x="255" y="543" fill="#8b949e" font-size="10" text-anchor="middle">系统通知</text>
+        <text x="255" y="559" fill="#8b949e" font-size="10" text-anchor="middle">物流提醒</text>
+
+        <!-- Community Service -->
+        <rect x="375" y="480" width="180" height="90" rx="10" fill="#161b22" stroke="#79c0ff" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="465" y="505" fill="#79c0ff" font-size="14" font-weight="700" text-anchor="middle">🏘️ 社区服务</text>
+        <text x="465" y="527" fill="#8b949e" font-size="10" text-anchor="middle">小区管理</text>
+        <text x="465" y="543" fill="#8b949e" font-size="10" text-anchor="middle">团长管理</text>
+        <text x="465" y="559" fill="#8b949e" font-size="10" text-anchor="middle">邻里评价</text>
+
+        <!-- File Service -->
+        <rect x="585" y="480" width="180" height="90" rx="10" fill="#161b22" stroke="#79c0ff" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="675" y="505" fill="#79c0ff" font-size="14" font-weight="700" text-anchor="middle">🖼️ 文件服务</text>
+        <text x="675" y="527" fill="#8b949e" font-size="10" text-anchor="middle">图片上传</text>
+        <text x="675" y="543" fill="#8b949e" font-size="10" text-anchor="middle">CDN加速</text>
+        <text x="675" y="559" fill="#8b949e" font-size="10" text-anchor="middle">缩略图生成</text>
+
+        <!-- Analytics Service -->
+        <rect x="795" y="480" width="180" height="90" rx="10" fill="#161b22" stroke="#79c0ff" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="885" y="505" fill="#79c0ff" font-size="14" font-weight="700" text-anchor="middle">📊 数据服务</text>
+        <text x="885" y="527" fill="#8b949e" font-size="10" text-anchor="middle">销售统计</text>
+        <text x="885" y="543" fill="#8b949e" font-size="10" text-anchor="middle">用户分析</text>
+        <text x="885" y="559" fill="#8b949e" font-size="10" text-anchor="middle">团长业绩</text>
+
+        <!-- ===== DATA LAYER ===== -->
+        <!-- MySQL -->
+        <rect x="60" y="605" width="200" height="95" rx="10" fill="#161b22" stroke="#f0883e" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="160" y="635" fill="#f0883e" font-size="15" font-weight="700" text-anchor="middle">🗄️ MySQL 8.0</text>
+        <text x="160" y="658" fill="#8b949e" font-size="11" text-anchor="middle">主从复制 + 读写分离</text>
+        <text x="160" y="676" fill="#8b949e" font-size="11" text-anchor="middle">用户/商品/订单数据</text>
+        <text x="160" y="694" fill="#484f58" font-size="10" text-anchor="middle">ShardingSphere 分库分表</text>
+
+        <!-- Redis -->
+        <rect x="290" y="605" width="180" height="95" rx="10" fill="#161b22" stroke="#dc3545" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="380" y="635" fill="#dc3545" font-size="15" font-weight="700" text-anchor="middle">⚡ Redis 7.0</text>
+        <text x="380" y="658" fill="#8b949e" font-size="11" text-anchor="middle">Session 缓存</text>
+        <text x="380" y="676" fill="#8b949e" font-size="11" text-anchor="middle">分布式锁 · 秒杀</text>
+        <text x="380" y="694" fill="#484f58" font-size="10" text-anchor="middle">哨兵模式 · Cluster</text>
+
+        <!-- Elasticsearch -->
+        <rect x="500" y="605" width="200" height="95" rx="10" fill="#161b22" stroke="#3fb950" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="600" y="635" fill="#3fb950" font-size="15" font-weight="700" text-anchor="middle">🔍 Elasticsearch 8</text>
+        <text x="600" y="658" fill="#8b949e" font-size="11" text-anchor="middle">商品全文搜索</text>
+        <text x="600" y="676" fill="#8b949e" font-size="11" text-anchor="middle">搜索建议 · 聚合分析</text>
+        <text x="600" y="694" fill="#484f58" font-size="10" text-anchor="middle">Canal 数据同步</text>
+
+        <!-- RabbitMQ -->
+        <rect x="730" y="605" width="190" height="95" rx="10" fill="#161b22" stroke="#f778ba" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="825" y="635" fill="#f778ba" font-size="15" font-weight="700" text-anchor="middle">📨 RabbitMQ</text>
+        <text x="825" y="658" fill="#8b949e" font-size="11" text-anchor="middle">订单异步处理</text>
+        <text x="825" y="676" fill="#8b949e" font-size="11" text-anchor="middle">消息通知队列</text>
+        <text x="825" y="694" fill="#484f58" font-size="10" text-anchor="middle">死信队列 · 重试</text>
+
+        <!-- MinIO -->
+        <rect x="950" y="605" width="190" height="95" rx="10" fill="#161b22" stroke="#a371f7" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="1045" y="635" fill="#a371f7" font-size="15" font-weight="700" text-anchor="middle">📁 MinIO</text>
+        <text x="1045" y="658" fill="#8b949e" font-size="11" text-anchor="middle">商品图片存储</text>
+        <text x="1045" y="676" fill="#8b949e" font-size="11" text-anchor="middle">评价图片/视频</text>
+        <text x="1045" y="694" fill="#484f58" font-size="10" text-anchor="middle">S3兼容 · 高可用</text>
+
+        <!-- ===== DEVOPS LAYER ===== -->
+        <rect x="60" y="725" width="200" height="50" rx="8" fill="#161b22" stroke="#8b949e" stroke-width="1"/>
+        <text x="160" y="755" fill="#8b949e" font-size="13" font-weight="600" text-anchor="middle">🐳 Docker + K8s</text>
+
+        <rect x="290" y="725" width="180" height="50" rx="8" fill="#161b22" stroke="#8b949e" stroke-width="1"/>
+        <text x="380" y="755" fill="#8b949e" font-size="13" font-weight="600" text-anchor="middle">🔄 CI/CD (GitHub Actions)</text>
+
+        <rect x="500" y="725" width="200" height="50" rx="8" fill="#161b22" stroke="#8b949e" stroke-width="1"/>
+        <text x="600" y="755" fill="#8b949e" font-size="13" font-weight="600" text-anchor="middle">📈 Prometheus + Grafana</text>
+
+        <rect x="730" y="725" width="190" height="50" rx="8" fill="#161b22" stroke="#8b949e" stroke-width="1"/>
+        <text x="825" y="755" fill="#8b949e" font-size="13" font-weight="600" text-anchor="middle">📝 ELK 日志收集</text>
+
+        <rect x="950" y="725" width="190" height="50" rx="8" fill="#161b22" stroke="#8b949e" stroke-width="1"/>
+        <text x="1045" y="755" fill="#8b949e" font-size="13" font-weight="600" text-anchor="middle">☁️ 阿里云 / 腾讯云</text>
+      </svg>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><span class="legend-color" style="background:#238636;"></span> 微信小程序</div>
+      <div class="legend-item"><span class="legend-color" style="background:#d29922;"></span> 管理后台</div>
+      <div class="legend-item"><span class="legend-color" style="background:#58a6ff;"></span> 网关/基础设施</div>
+      <div class="legend-item"><span class="legend-color" style="background:#79c0ff;"></span> 业务微服务</div>
+      <div class="legend-item"><span class="legend-color" style="background:#f0883e;"></span> 数据存储</div>
+      <div class="legend-item"><span class="legend-color" style="background:#dc3545;"></span> 缓存</div>
+      <div class="legend-item"><span class="legend-color" style="background:#3fb950;"></span> 搜索引擎</div>
+    </div>
+
+    <div class="desc-panel">
+      <h3>📐 架构设计理念</h3>
+      <p>采用<strong>微服务 + 前后端分离</strong>架构，遵循以下核心原则：</p>
+      <div class="grid-2">
+        <div class="info-card">
+          <h4>🏛️ 领域驱动设计 (DDD)</h4>
+          <p>按业务领域划分微服务边界：用户、商品、订单、营销、支付等，每个服务独立部署、独立扩展。</p>
+        </div>
+        <div class="info-card">
+          <h4>⚡ 高性能设计</h4>
+          <p>Redis缓存热点数据、CDN加速静态资源、ES搜索引擎、RabbitMQ异步削峰，保障秒杀等高并发场景。</p>
+        </div>
+        <div class="info-card">
+          <h4>🔒 安全第一</h4>
+          <p>API网关统一鉴权、JWT令牌管理、SQL防注入、XSS防护、敏感数据脱敏加密、HTTPS全链路加密。</p>
+        </div>
+        <div class="info-card">
+          <h4>📈 可观测性</h4>
+          <p>SkyWalking链路追踪、Prometheus指标采集、Grafana可视化监控、ELK日志聚合，全链路可观测。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== TAB 2: DEPLOYMENT ARCHITECTURE ====== -->
+  <div id="tab-deploy" class="diagram">
+    <div class="svg-container">
+      <svg viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="shadow2"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.25"/></filter>
+        </defs>
+        <rect width="1200" height="700" fill="#161b22" rx="12"/>
+
+        <!-- Users -->
+        <rect x="40" y="260" width="130" height="50" rx="25" fill="#1f6feb22" stroke="#58a6ff" stroke-width="1.5"/>
+        <text x="105" y="292" fill="#58a6ff" font-size="13" font-weight="600" text-anchor="middle">👥 C端用户</text>
+
+        <rect x="40" y="340" width="130" height="50" rx="25" fill="#d2992222" stroke="#d29922" stroke-width="1.5"/>
+        <text x="105" y="372" fill="#d29922" font-size="13" font-weight="600" text-anchor="middle">👨‍💼 B端管理员</text>
+
+        <!-- CDN -->
+        <rect x="230" y="100" width="160" height="55" rx="8" fill="#21262d" stroke="#8b949e" stroke-width="1"/>
+        <text x="310" y="122" fill="#c9d1d9" font-size="13" font-weight="600" text-anchor="middle">🌍 CDN</text>
+        <text x="310" y="142" fill="#8b949e" font-size="10" text-anchor="middle">阿里云CDN / 腾讯云CDN</text>
+
+        <!-- DNS -->
+        <rect x="230" y="180" width="160" height="55" rx="8" fill="#21262d" stroke="#8b949e" stroke-width="1"/>
+        <text x="310" y="202" fill="#c9d1d9" font-size="13" font-weight="600" text-anchor="middle">🔗 DNS</text>
+        <text x="310" y="222" fill="#8b949e" font-size="10" text-anchor="middle">智能DNS解析</text>
+
+        <!-- WAF -->
+        <rect x="230" y="260" width="160" height="55" rx="8" fill="#21262d" stroke="#f78166" stroke-width="1"/>
+        <text x="310" y="282" fill="#f78166" font-size="13" font-weight="600" text-anchor="middle">🛡️ WAF</text>
+        <text x="310" y="302" fill="#8b949e" font-size="10" text-anchor="middle">Web应用防火墙</text>
+
+        <!-- Nginx LB -->
+        <rect x="230" y="340" width="160" height="55" rx="8" fill="#21262d" stroke="#3fb950" stroke-width="1"/>
+        <text x="310" y="362" fill="#3fb950" font-size="13" font-weight="600" text-anchor="middle">⚖️ Nginx LB</text>
+        <text x="310" y="382" fill="#8b949e" font-size="10" text-anchor="middle">负载均衡 · SSL终结</text>
+
+        <!-- Connections left -->
+        <line x1="170" y1="285" x2="230" y2="285" stroke="#58a6ff" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="170" y1="365" x2="230" y2="365" stroke="#d29922" stroke-width="1.5" stroke-dasharray="5,3"/>
+
+        <!-- Gateway Cluster -->
+        <rect x="460" y="80" width="280" height="180" rx="10" fill="#1f6feb0d" stroke="#58a6ff" stroke-width="1" stroke-dasharray="6,3"/>
+        <text x="600" y="100" fill="#58a6ff" font-size="12" font-weight="600" text-anchor="middle">API Gateway Cluster</text>
+
+        <rect x="480" y="120" width="110" height="55" rx="6" fill="#21262d" stroke="#58a6ff" stroke-width="1"/>
+        <text x="535" y="142" fill="#c9d1d9" font-size="11" text-anchor="middle">Gateway-1</text>
+        <text x="535" y="160" fill="#8b949e" font-size="9" text-anchor="middle">Spring Gateway</text>
+
+        <rect x="610" y="120" width="110" height="55" rx="6" fill="#21262d" stroke="#58a6ff" stroke-width="1"/>
+        <text x="665" y="142" fill="#c9d1d9" font-size="11" text-anchor="middle">Gateway-2</text>
+        <text x="665" y="160" fill="#8b949e" font-size="9" text-anchor="middle">Spring Gateway</text>
+
+        <rect x="480" y="190" width="110" height="50" rx="6" fill="#21262d" stroke="#58a6ff" stroke-width="1"/>
+        <text x="535" y="210" fill="#c9d1d9" font-size="11" text-anchor="middle">Auth Service</text>
+        <text x="535" y="228" fill="#8b949e" font-size="9" text-anchor="middle">认证鉴权</text>
+
+        <rect x="610" y="190" width="110" height="50" rx="6" fill="#21262d" stroke="#58a6ff" stroke-width="1"/>
+        <text x="665" y="210" fill="#c9d1d9" font-size="11" text-anchor="middle">Nacos-1</text>
+        <text x="665" y="228" fill="#8b949e" font-size="9" text-anchor="middle">注册配置</text>
+
+        <!-- Connections -->
+        <line x1="390" y1="367" x2="460" y2="367" stroke="#3fb950" stroke-width="1.5"/>
+        <line x1="460" y1="367" x2="535" y2="367" stroke="#58a6ff" stroke-width="1" opacity="0.5"/>
+
+        <!-- Service Cluster -->
+        <rect x="460" y="300" width="280" height="190" rx="10" fill="#79c0ff08" stroke="#79c0ff" stroke-width="1" stroke-dasharray="6,3"/>
+        <text x="600" y="318" fill="#79c0ff" font-size="12" font-weight="600" text-anchor="middle">MicroService Cluster (K8s Pod)</text>
+
+        <rect x="480" y="335" width="115" height="50" rx="6" fill="#21262d" stroke="#79c0ff" stroke-width="1"/>
+        <text x="537" y="356" fill="#c9d1d9" font-size="10" text-anchor="middle">User ×2</text>
+        <text x="537" y="374" fill="#8b949e" font-size="9" text-anchor="middle">用户服务</text>
+
+        <rect x="610" y="335" width="115" height="50" rx="6" fill="#21262d" stroke="#79c0ff" stroke-width="1"/>
+        <text x="667" y="356" fill="#c9d1d9" font-size="10" text-anchor="middle">Product ×2</text>
+        <text x="667" y="374" fill="#8b949e" font-size="9" text-anchor="middle">商品服务</text>
+
+        <rect x="480" y="400" width="115" height="50" rx="6" fill="#21262d" stroke="#79c0ff" stroke-width="1"/>
+        <text x="537" y="421" fill="#c9d1d9" font-size="10" text-anchor="middle">Order ×2</text>
+        <text x="537" y="439" fill="#8b949e" font-size="9" text-anchor="middle">订单服务</text>
+
+        <rect x="610" y="400" width="115" height="50" rx="6" fill="#21262d" stroke="#79c0ff" stroke-width="1"/>
+        <text x="667" y="421" fill="#c9d1d9" font-size="10" text-anchor="middle">Marketing</text>
+        <text x="667" y="439" fill="#8b949e" font-size="9" text-anchor="middle">营销服务</text>
+
+        <!-- Data Layer -->
+        <rect x="820" y="80" width="170" height="70" rx="8" fill="#21262d" stroke="#f0883e" stroke-width="1.5"/>
+        <text x="905" y="105" fill="#f0883e" font-size="13" font-weight="600" text-anchor="middle">🗄️ MySQL Master</text>
+        <text x="905" y="125" fill="#8b949e" font-size="10" text-anchor="middle">8.0 · 读写分离</text>
+
+        <rect x="820" y="170" width="170" height="55" rx="8" fill="#21262d" stroke="#f0883e" stroke-width="1" opacity="0.7"/>
+        <text x="905" y="195" fill="#f0883e" font-size="11" text-anchor="middle">MySQL Slave ×2</text>
+        <text x="905" y="212" fill="#8b949e" font-size="9" text-anchor="middle">只读副本</text>
+
+        <rect x="820" y="250" width="170" height="60" rx="8" fill="#21262d" stroke="#dc3545" stroke-width="1.5"/>
+        <text x="905" y="275" fill="#dc3545" font-size="13" font-weight="600" text-anchor="middle">⚡ Redis Cluster</text>
+        <text x="905" y="295" fill="#8b949e" font-size="10" text-anchor="middle">3主3从 · 哨兵模式</text>
+
+        <rect x="820" y="335" width="170" height="60" rx="8" fill="#21262d" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="905" y="360" fill="#3fb950" font-size="13" font-weight="600" text-anchor="middle">🔍 ES Cluster</text>
+        <text x="905" y="380" fill="#8b949e" font-size="10" text-anchor="middle">3节点集群</text>
+
+        <rect x="820" y="420" width="170" height="60" rx="8" fill="#21262d" stroke="#a371f7" stroke-width="1.5"/>
+        <text x="905" y="445" fill="#a371f7" font-size="13" font-weight="600" text-anchor="middle">📁 MinIO</text>
+        <text x="905" y="465" fill="#8b949e" font-size="10" text-anchor="middle">对象存储 · 4节点</text>
+
+        <!-- Monitoring -->
+        <rect x="820" y="505" width="170" height="80" rx="8" fill="#21262d" stroke="#8b949e" stroke-width="1"/>
+        <text x="905" y="528" fill="#c9d1d9" font-size="12" font-weight="600" text-anchor="middle">📊 监控运维</text>
+        <text x="905" y="546" fill="#8b949e" font-size="10" text-anchor="middle">Prometheus + Grafana</text>
+        <text x="905" y="564" fill="#8b949e" font-size="10" text-anchor="middle">ELK + SkyWalking</text>
+
+        <!-- K8s -->
+        <rect x="460" y="530" width="280" height="55" rx="8" fill="#21262d" stroke="#58a6ff" stroke-width="1"/>
+        <text x="600" y="552" fill="#c9d1d9" font-size="13" font-weight="600" text-anchor="middle">☸️ Kubernetes Cluster</text>
+        <text x="600" y="572" fill="#8b949e" font-size="10" text-anchor="middle">自动扩缩容 · 滚动更新 · 健康检查</text>
+      </svg>
+    </div>
+
+    <div class="desc-panel">
+      <h3>☁️ 部署方案说明</h3>
+      <div class="grid-2">
+        <div class="info-card">
+          <h4>🏢 推荐云平台</h4>
+          <p>
+            <strong>方案A：阿里云</strong> — ECS + RDS + Redis + OSS，成熟的电商云基础设施<br>
+            <strong>方案B：腾讯云</strong> — 与微信生态集成更紧密，小程序云开发<br>
+            <strong>方案C：混合部署</strong> — 核心服务自建 + CDN/OSS上云
+          </p>
+        </div>
+        <div class="info-card">
+          <h4>📦 容器化部署</h4>
+          <p>所有服务Docker容器化，K8s编排管理。支持：<br>
+          • HPA自动扩缩容（应对秒杀峰值）<br>
+          • 滚动更新（零停机发布）<br>
+          • 健康检查与自动重启<br>
+          • 资源限制与隔离</p>
+        </div>
+        <div class="info-card">
+          <h4>🔄 CI/CD 流程</h4>
+          <p>
+            代码提交 → GitHub Actions 自动构建 → 单元测试 → SonarQube扫描 → Docker镜像构建 → 推送镜像仓库 → K8s滚动更新
+          </p>
+        </div>
+        <div class="info-card">
+          <h4>📈 容量规划 (MVP)</h4>
+          <p>
+            • 应用服务器: 2C4G × 3台<br>
+            • MySQL: 4C8G RDS<br>
+            • Redis: 4G 集群版<br>
+            • ES: 2C4G × 3节点<br>
+            • 带宽: 5Mbps (可弹性扩展)
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== TAB 3: DATA ARCHITECTURE ====== -->
+  <div id="tab-data" class="diagram">
+    <div class="svg-container">
+      <svg viewBox="0 0 1200 750" xmlns="http://www.w3.org/2000/svg">
+        <rect width="1200" height="750" fill="#161b22" rx="12"/>
+
+        <!-- Title -->
+        <text x="600" y="35" fill="#c9d1d9" font-size="18" font-weight="700" text-anchor="middle">🗄️ 数据架构与ER关系图</text>
+
+        <!-- User Domain -->
+        <rect x="30" y="55" width="270" height="220" rx="10" fill="#79c0ff08" stroke="#79c0ff" stroke-width="1"/>
+        <text x="165" y="80" fill="#79c0ff" font-size="14" font-weight="700" text-anchor="middle">👤 用户域</text>
+
+        <rect x="45" y="95" width="240" height="35" rx="5" fill="#21262d" stroke="#79c0ff44" stroke-width="1"/>
+        <text x="165" y="118" fill="#c9d1d9" font-size="12" text-anchor="middle">users (用户表)</text>
+
+        <rect x="45" y="138" width="240" height="35" rx="5" fill="#21262d" stroke="#79c0ff44" stroke-width="1"/>
+        <text x="165" y="161" fill="#c9d1d9" font-size="12" text-anchor="middle">user_addresses (收货地址)</text>
+
+        <rect x="45" y="181" width="240" height="35" rx="5" fill="#21262d" stroke="#79c0ff44" stroke-width="1"/>
+        <text x="165" y="204" fill="#c9d1d9" font-size="12" text-anchor="middle">communities (小区表)</text>
+
+        <rect x="45" y="224" width="240" height="35" rx="5" fill="#21262d" stroke="#79c0ff44" stroke-width="1"/>
+        <text x="165" y="247" fill="#c9d1d9" font-size="12" text-anchor="middle">distributors (团长/分销员)</text>
+
+        <!-- Product Domain -->
+        <rect x="330" y="55" width="270" height="260" rx="10" fill="#3fb95008" stroke="#3fb950" stroke-width="1"/>
+        <text x="465" y="80" fill="#3fb950" font-size="14" font-weight="700" text-anchor="middle">📦 商品域</text>
+
+        <rect x="345" y="95" width="240" height="35" rx="5" fill="#21262d" stroke="#3fb95044" stroke-width="1"/>
+        <text x="465" y="118" fill="#c9d1d9" font-size="12" text-anchor="middle">categories (商品分类)</text>
+
+        <rect x="345" y="138" width="240" height="35" rx="5" fill="#21262d" stroke="#3fb95044" stroke-width="1"/>
+        <text x="465" y="161" fill="#c9d1d9" font-size="12" text-anchor="middle">products (商品表)</text>
+
+        <rect x="345" y="181" width="240" height="35" rx="5" fill="#21262d" stroke="#3fb95044" stroke-width="1"/>
+        <text x="465" y="204" fill="#c9d1d9" font-size="12" text-anchor="middle">product_skus (规格表)</text>
+
+        <rect x="345" y="224" width="240" height="35" rx="5" fill="#21262d" stroke="#3fb95044" stroke-width="1"/>
+        <text x="465" y="247" fill="#c9d1d9" font-size="12" text-anchor="middle">product_reviews (评价表)</text>
+
+        <rect x="345" y="267" width="240" height="35" rx="5" fill="#21262d" stroke="#3fb95044" stroke-width="1"/>
+        <text x="465" y="290" fill="#c9d1d9" font-size="12" text-anchor="middle">inventory_logs (库存日志)</text>
+
+        <!-- Order Domain -->
+        <rect x="630" y="55" width="270" height="260" rx="10" fill="#f0883e08" stroke="#f0883e" stroke-width="1"/>
+        <text x="765" y="80" fill="#f0883e" font-size="14" font-weight="700" text-anchor="middle">📋 订单域</text>
+
+        <rect x="645" y="95" width="240" height="35" rx="5" fill="#21262d" stroke="#f0883e44" stroke-width="1"/>
+        <text x="765" y="118" fill="#c9d1d9" font-size="12" text-anchor="middle">cart_items (购物车)</text>
+
+        <rect x="645" y="138" width="240" height="35" rx="5" fill="#21262d" stroke="#f0883e44" stroke-width="1"/>
+        <text x="765" y="161" fill="#c9d1d9" font-size="12" text-anchor="middle">orders (订单表)</text>
+
+        <rect x="645" y="181" width="240" height="35" rx="5" fill="#21262d" stroke="#f0883e44" stroke-width="1"/>
+        <text x="765" y="204" fill="#c9d1d9" font-size="12" text-anchor="middle">order_items (订单商品)</text>
+
+        <rect x="645" y="224" width="240" height="35" rx="5" fill="#21262d" stroke="#f0883e44" stroke-width="1"/>
+        <text x="765" y="247" fill="#c9d1d9" font-size="12" text-anchor="middle">payments (支付记录)</text>
+
+        <rect x="645" y="267" width="240" height="35" rx="5" fill="#21262d" stroke="#f0883e44" stroke-width="1"/>
+        <text x="765" y="290" fill="#c9d1d9" font-size="12" text-anchor="middle">refunds (退款/售后)</text>
+
+        <!-- Marketing Domain -->
+        <rect x="930" y="55" width="240" height="260" rx="10" fill="#d2992208" stroke="#d29922" stroke-width="1"/>
+        <text x="1050" y="80" fill="#d29922" font-size="14" font-weight="700" text-anchor="middle">🎯 营销域</text>
+
+        <rect x="945" y="95" width="210" height="35" rx="5" fill="#21262d" stroke="#d2992244" stroke-width="1"/>
+        <text x="1050" y="118" fill="#c9d1d9" font-size="12" text-anchor="middle">coupons (优惠券)</text>
+
+        <rect x="945" y="138" width="210" height="35" rx="5" fill="#21262d" stroke="#d2992244" stroke-width="1"/>
+        <text x="1050" y="161" fill="#c9d1d9" font-size="12" text-anchor="middle">user_coupons (用户优惠券)</text>
+
+        <rect x="945" y="181" width="210" height="35" rx="5" fill="#21262d" stroke="#d2992244" stroke-width="1"/>
+        <text x="1050" y="204" fill="#c9d1d9" font-size="12" text-anchor="middle">seckill_events (秒杀活动)</text>
+
+        <rect x="945" y="224" width="210" height="35" rx="5" fill="#21262d" stroke="#d2992244" stroke-width="1"/>
+        <text x="1050" y="247" fill="#c9d1d9" font-size="12" text-anchor="middle">group_buys (拼团活动)</text>
+
+        <rect x="945" y="267" width="210" height="35" rx="5" fill="#21262d" stroke="#d2992244" stroke-width="1"/>
+        <text x="1050" y="290" fill="#c9d1d9" font-size="12" text-anchor="middle">commissions (佣金记录)</text>
+
+        <!-- Data Flow -->
+        <rect x="30" y="330" width="1140" height="130" rx="10" fill="#1f6feb08" stroke="#58a6ff" stroke-width="1"/>
+        <text x="600" y="355" fill="#58a6ff" font-size="14" font-weight="700" text-anchor="middle">🔄 数据同步与缓存策略</text>
+
+        <!-- Row 1 -->
+        <rect x="50" y="375" width="220" height="60" rx="8" fill="#21262d" stroke="#58a6ff44" stroke-width="1"/>
+        <text x="160" y="398" fill="#c9d1d9" font-size="12" font-weight="600" text-anchor="middle">MySQL → Redis</text>
+        <text x="160" y="418" fill="#8b949e" font-size="10" text-anchor="middle">Cache Aside · 热点数据预加载</text>
+        <text x="160" y="432" fill="#8b949e" font-size="9" text-anchor="middle">TTL: 商品30min · 用户1h</text>
+
+        <rect x="300" y="375" width="250" height="60" rx="8" fill="#21262d" stroke="#58a6ff44" stroke-width="1"/>
+        <text x="425" y="398" fill="#c9d1d9" font-size="12" font-weight="600" text-anchor="middle">MySQL → Elasticsearch</text>
+        <text x="425" y="418" fill="#8b949e" font-size="10" text-anchor="middle">Canal 监听Binlog → MQ → ES</text>
+        <text x="425" y="432" fill="#8b949e" font-size="9" text-anchor="middle">商品搜索 · 近实时同步</text>
+
+        <rect x="580" y="375" width="260" height="60" rx="8" fill="#21262d" stroke="#58a6ff44" stroke-width="1"/>
+        <text x="710" y="398" fill="#c9d1d9" font-size="12" font-weight="600" text-anchor="middle">订单异步处理</text>
+        <text x="710" y="418" fill="#8b949e" font-size="10" text-anchor="middle">下单 → MQ → 库存扣减 → 消息推送</text>
+        <text x="710" y="432" fill="#8b949e" font-size="9" text-anchor="middle">最终一致性 · 补偿机制</text>
+
+        <rect x="870" y="375" width="280" height="60" rx="8" fill="#21262d" stroke="#58a6ff44" stroke-width="1"/>
+        <text x="1010" y="398" fill="#c9d1d9" font-size="12" font-weight="600" text-anchor="middle">冷热数据分离</text>
+        <text x="1010" y="418" fill="#8b949e" font-size="10" text-anchor="middle">热数据: Redis · 温数据: MySQL</text>
+        <text x="1010" y="432" fill="#8b949e" font-size="9" text-anchor="middle">冷数据: 归档至OSS (3个月以上)</text>
+
+        <!-- Data Security -->
+        <rect x="30" y="490" width="1140" height="110" rx="10" fill="#f7816608" stroke="#f78166" stroke-width="1"/>
+        <text x="600" y="515" fill="#f78166" font-size="14" font-weight="700" text-anchor="middle">🔒 数据安全策略</text>
+
+        <rect x="50" y="535" width="170" height="50" rx="8" fill="#21262d" stroke="#f7816644" stroke-width="1"/>
+        <text x="135" y="558" fill="#c9d1d9" font-size="12" font-weight="600" text-anchor="middle">传输加密</text>
+        <text x="135" y="576" fill="#8b949e" font-size="10" text-anchor="middle">HTTPS/TLS 1.3</text>
+
+        <rect x="240" y="535" width="170" height="50" rx="8" fill="#21262d" stroke="#f7816644" stroke-width="1"/>
+        <text x="325" y="558" fill="#c9d1d9" font-size="12" font-weight="600" text-anchor="middle">存储加密</text>
+        <text x="325" y="576" fill="#8b949e" font-size="10" text-anchor="middle">AES-256 敏感字段</text>
+
+        <rect x="430" y="535" width="170" height="50" rx="8" fill="#21262d" stroke="#f7816644" stroke-width="1"/>
+        <text x="515" y="558" fill="#c9d1d9" font-size="12" font-weight="600" text-anchor="middle">数据脱敏</text>
+        <text x="515" y="576" fill="#8b949e" font-size="10" text-anchor="middle">手机号/地址脱敏</text>
+
+        <rect x="620" y="535" width="170" height="50" rx="8" fill="#21262d" stroke="#f7816644" stroke-width="1"/>
+        <text x="705" y="558" fill="#c9d1d9" font-size="12" font-weight="600" text-anchor="middle">备份策略</text>
+        <text x="705" y="576" fill="#8b949e" font-size="10" text-anchor="middle">每日全量+增量备份</text>
+
+        <rect x="810" y="535" width="170" height="50" rx="8" fill="#21262d" stroke="#f7816644" stroke-width="1"/>
+        <text x="895" y="558" fill="#c9d1d9" font-size="12" font-weight="600" text-anchor="middle">访问控制</text>
+        <text x="895" y="576" fill="#8b949e" font-size="10" text-anchor="middle">RBAC + 最小权限</text>
+
+        <rect x="1000" y="535" width="150" height="50" rx="8" fill="#21262d" stroke="#f7816644" stroke-width="1"/>
+        <text x="1075" y="558" fill="#c9d1d9" font-size="12" font-weight="600" text-anchor="middle">审计日志</text>
+        <text x="1075" y="576" fill="#8b949e" font-size="10" text-anchor="middle">操作全记录</text>
+
+        <!-- Sharding -->
+        <rect x="30" y="630" width="1140" height="55" rx="10" fill="#a371f708" stroke="#a371f7" stroke-width="1"/>
+        <text x="600" y="655" fill="#a371f7" font-size="13" font-weight="600" text-anchor="middle">📊 分库分表策略 (未来扩展): orders按user_id取模分16库 · order_items按order_id分表 · 使用ShardingSphere实现</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ====== TAB 4: BUSINESS FLOW ====== -->
+  <div id="tab-flow" class="diagram">
+    <div class="svg-container">
+      <svg viewBox="0 0 1200 650" xmlns="http://www.w3.org/2000/svg">
+        <rect width="1200" height="650" fill="#161b22" rx="12"/>
+
+        <!-- Main Flow -->
+        <text x="600" y="30" fill="#c9d1d9" font-size="16" font-weight="700" text-anchor="middle">🔄 核心业务流程 — 用户下单</text>
+
+        <!-- Step 1 -->
+        <rect x="30" y="60" width="140" height="55" rx="10" fill="#1f6feb22" stroke="#58a6ff" stroke-width="1.5"/>
+        <text x="100" y="83" fill="#58a6ff" font-size="12" font-weight="700" text-anchor="middle">Step 1</text>
+        <text x="100" y="102" fill="#c9d1d9" font-size="11" text-anchor="middle">浏览商品</text>
+        <text x="100" y="116" fill="#8b949e" font-size="9" text-anchor="middle">首页/分类/搜索</text>
+
+        <text x="180" y="90" fill="#30363d" font-size="18">→</text>
+
+        <!-- Step 2 -->
+        <rect x="200" y="60" width="140" height="55" rx="10" fill="#1f6feb22" stroke="#58a6ff" stroke-width="1.5"/>
+        <text x="270" y="83" fill="#58a6ff" font-size="12" font-weight="700" text-anchor="middle">Step 2</text>
+        <text x="270" y="102" fill="#c9d1d9" font-size="11" text-anchor="middle">加入购物车</text>
+        <text x="270" y="116" fill="#8b949e" font-size="9" text-anchor="middle">选规格/数量</text>
+
+        <text x="350" y="90" fill="#30363d" font-size="18">→</text>
+
+        <!-- Step 3 -->
+        <rect x="370" y="60" width="140" height="55" rx="10" fill="#1f6feb22" stroke="#58a6ff" stroke-width="1.5"/>
+        <text x="440" y="83" fill="#58a6ff" font-size="12" font-weight="700" text-anchor="middle">Step 3</text>
+        <text x="440" y="102" fill="#c9d1d9" font-size="11" text-anchor="middle">确认订单</text>
+        <text x="440" y="116" fill="#8b949e" font-size="9" text-anchor="middle">地址/优惠券</text>
+
+        <text x="520" y="90" fill="#30363d" font-size="18">→</text>
+
+        <!-- Step 4 -->
+        <rect x="540" y="60" width="140" height="55" rx="10" fill="#d2992222" stroke="#d29922" stroke-width="1.5"/>
+        <text x="610" y="83" fill="#d29922" font-size="12" font-weight="700" text-anchor="middle">Step 4</text>
+        <text x="610" y="102" fill="#c9d1d9" font-size="11" text-anchor="middle">提交支付</text>
+        <text x="610" y="116" fill="#8b949e" font-size="9" text-anchor="middle">微信支付</text>
+
+        <text x="690" y="90" fill="#30363d" font-size="18">→</text>
+
+        <!-- Step 5 -->
+        <rect x="710" y="60" width="140" height="55" rx="10" fill="#3fb95022" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="780" y="83" fill="#3fb950" font-size="12" font-weight="700" text-anchor="middle">Step 5</text>
+        <text x="780" y="102" fill="#c9d1d9" font-size="11" text-anchor="middle">等待配送</text>
+        <text x="780" y="116" fill="#8b949e" font-size="9" text-anchor="middle">团长配货</text>
+
+        <text x="860" y="90" fill="#30363d" font-size="18">→</text>
+
+        <!-- Step 6 -->
+        <rect x="880" y="60" width="140" height="55" rx="10" fill="#3fb95022" stroke="#3fb950" stroke-width="1.5"/>
+        <text x="950" y="83" fill="#3fb950" font-size="12" font-weight="700" text-anchor="middle">Step 6</text>
+        <text x="950" y="102" fill="#c9d1d9" font-size="11" text-anchor="middle">确认收货</text>
+        <text x="950" y="116" fill="#8b949e" font-size="9" text-anchor="middle">评价商品</text>
+
+        <!-- Service Interaction Detail -->
+        <text x="600" y="155" fill="#8b949e" font-size="14" font-weight="600" text-anchor="middle">▼ 微服务调用时序 ▼</text>
+
+        <!-- Sequence diagram style -->
+        <rect x="30" y="175" width="150" height="35" rx="6" fill="#79c0ff22" stroke="#79c0ff" stroke-width="1"/>
+        <text x="105" y="198" fill="#79c0ff" font-size="11" font-weight="600" text-anchor="middle">小程序客户端</text>
+
+        <rect x="230" y="175" width="150" height="35" rx="6" fill="#58a6ff22" stroke="#58a6ff" stroke-width="1"/>
+        <text x="305" y="198" fill="#58a6ff" font-size="11" font-weight="600" text-anchor="middle">API Gateway</text>
+
+        <rect x="430" y="175" width="150" height="35" rx="6" fill="#f0883e22" stroke="#f0883e" stroke-width="1"/>
+        <text x="505" y="198" fill="#f0883e" font-size="11" font-weight="600" text-anchor="middle">订单服务</text>
+
+        <rect x="630" y="175" width="150" height="35" rx="6" fill="#3fb95022" stroke="#3fb950" stroke-width="1"/>
+        <text x="705" y="198" fill="#3fb950" font-size="11" font-weight="600" text-anchor="middle">商品服务</text>
+
+        <rect x="830" y="175" width="150" height="35" rx="6" fill="#dc354522" stroke="#dc3545" stroke-width="1"/>
+        <text x="905" y="198" fill="#dc3545" font-size="11" font-weight="600" text-anchor="middle">支付服务</text>
+
+        <rect x="1030" y="175" width="140" height="35" rx="6" fill="#a371f722" stroke="#a371f7" stroke-width="1"/>
+        <text x="1100" y="198" fill="#a371f7" font-size="11" font-weight="600" text-anchor="middle">消息服务</text>
+
+        <!-- Vertical lines -->
+        <line x1="105" y1="210" x2="105" y2="500" stroke="#79c0ff44" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="305" y1="210" x2="305" y2="500" stroke="#58a6ff44" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="505" y1="210" x2="505" y2="500" stroke="#f0883e44" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="705" y1="210" x2="705" y2="500" stroke="#3fb95044" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="905" y1="210" x2="905" y2="500" stroke="#dc354544" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="1100" y1="210" x2="1100" y2="500" stroke="#a371f744" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- Arrows -->
+        <!-- 1. Create Order Request -->
+        <line x1="105" y1="230" x2="290" y2="230" stroke="#79c0ff" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+        <text x="200" y="224" fill="#79c0ff" font-size="9" text-anchor="middle">1. POST /api/v1/orders</text>
+
+        <line x1="320" y1="250" x2="490" y2="250" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+        <text x="405" y="244" fill="#58a6ff" font-size="9" text-anchor="middle">2. 路由到订单服务</text>
+
+        <!-- 3. Verify Stock -->
+        <line x1="505" y1="275" x2="690" y2="275" stroke="#f0883e" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+        <text x="600" y="269" fill="#f0883e" font-size="9" text-anchor="middle">3. 校验库存 → 锁定库存</text>
+
+        <line x1="705" y1="290" x2="520" y2="290" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arrowGreen)" stroke-dasharray="4,2"/>
+        <text x="610" y="284" fill="#3fb950" font-size="9" text-anchor="middle">4. 库存锁定成功</text>
+
+        <!-- 5. Create Payment -->
+        <line x1="505" y1="315" x2="890" y2="315" stroke="#f0883e" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+        <text x="700" y="309" fill="#f0883e" font-size="9" text-anchor="middle">5. 创建支付单 → 调用微信支付</text>
+
+        <line x1="905" y1="335" x2="520" y2="335" stroke="#dc3545" stroke-width="1.5" marker-end="url(#arrowRed)" stroke-dasharray="4,2"/>
+        <text x="710" y="329" fill="#dc3545" font-size="9" text-anchor="middle">6. 返回预付单ID</text>
+
+        <!-- 7. Return to Client -->
+        <line x1="505" y1="360" x2="120" y2="360" stroke="#f0883e" stroke-width="1.5" marker-end="url(#arrowOrange)" stroke-dasharray="4,2"/>
+        <text x="310" y="354" fill="#f0883e" font-size="9" text-anchor="middle">7. 返回支付参数</text>
+
+        <!-- 8. Wechat Pay Callback -->
+        <line x1="905" y1="390" x2="520" y2="390" stroke="#dc3545" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+        <text x="710" y="384" fill="#dc3545" font-size="9" text-anchor="middle">8. 微信支付回调通知</text>
+
+        <!-- 9. Update Order Status -->
+        <line x1="505" y1="415" x2="505" y2="435" stroke="#f0883e" stroke-width="1"/>
+        <text x="515" y="430" fill="#f0883e" font-size="9">9. 更新订单状态→已支付</text>
+
+        <!-- 10. Send MQ -->
+        <line x1="505" y1="445" x2="1085" y2="445" stroke="#f0883e" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+        <text x="795" y="439" fill="#f0883e" font-size="9" text-anchor="middle">10. 发送MQ消息 (库存扣减+通知)</text>
+
+        <!-- 11. Push Notification -->
+        <line x1="1100" y1="465" x2="1100" y2="480" stroke="#a371f7" stroke-width="1"/>
+        <text x="1110" y="478" fill="#a371f7" font-size="9">11. 推送模板消息</text>
+
+        <!-- Key Points -->
+        <rect x="30" y="510" width="1140" height="100" rx="10" fill="#1f6feb05" stroke="#30363d" stroke-width="1"/>
+        <text x="600" y="535" fill="#8b949e" font-size="13" font-weight="600" text-anchor="middle">⚡ 关键技术点</text>
+        <text x="50" y="558" fill="#8b949e" font-size="11">• 库存扣减使用Redis Lua脚本保证原子性</text>
+        <text x="50" y="576" fill="#8b949e" font-size="11">• 订单创建采用分布式事务(Saga模式)保证最终一致性</text>
+        <text x="50" y="594" fill="#8b949e" font-size="11">• 支付回调使用幂等性设计防止重复处理 · 超时订单自动取消(30分钟) · 消息队列保证异步任务可靠性</text>
+      </svg>
+    </div>
+
+    <div class="desc-panel">
+      <h3>🔄 核心业务流程补充</h3>
+      <div class="grid-2">
+        <div class="info-card">
+          <h4>⚡ 秒杀流程优化</h4>
+          <p>Redis预扣库存 → Lua脚本原子操作 → 异步下单 → MQ削峰 → 最终一致性。避免直接操作MySQL造成瓶颈。</p>
+        </div>
+        <div class="info-card">
+          <h4>👥 团长分销流程</h4>
+          <p>用户通过团长分享链接进入 → 绑定上下级关系 → 下单后自动计算佣金 → 订单完成结算 → 可提现到微信零钱。</p>
+        </div>
+        <div class="info-card">
+          <h4>🔄 退款流程</h4>
+          <p>用户申请退款 → 团长/平台审核 → 调用微信退款接口 → 恢复库存 → 退回优惠券 → 更新订单状态。</p>
+        </div>
+        <div class="info-card">
+          <h4>📦 拼团流程</h4>
+          <p>团长开团 → 分享链接 → 团员参团 → 人数达标自动成团 → 批量生成订单 → 统一发货。超时未成团自动退款。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== TAB 5: SECURITY ====== -->
+  <div id="tab-security" class="diagram">
+    <div class="svg-container">
+      <svg viewBox="0 0 1200 650" xmlns="http://www.w3.org/2000/svg">
+        <rect width="1200" height="650" fill="#161b22" rx="12"/>
+        <text x="600" y="35" fill="#c9d1d9" font-size="18" font-weight="700" text-anchor="middle">🔒 安全架构设计</text>
+
+        <!-- Security Layers -->
+        <!-- Layer 1: Network -->
+        <rect x="30" y="60" width="1140" height="100" rx="10" fill="#f7816608" stroke="#f78166" stroke-width="1"/>
+        <text x="600" y="85" fill="#f78166" font-size="14" font-weight="700" text-anchor="middle">🛡️ Layer 1: 网络安全</text>
+        <rect x="50" y="100" width="170" height="45" rx="6" fill="#21262d" stroke="#f7816644" stroke-width="1"/>
+        <text x="135" y="118" fill="#c9d1d9" font-size="12" text-anchor="middle">HTTPS/TLS 1.3</text>
+        <text x="135" y="136" fill="#8b949e" font-size="10" text-anchor="middle">全链路加密</text>
+        <rect x="240" y="100" width="170" height="45" rx="6" fill="#21262d" stroke="#f7816644" stroke-width="1"/>
+        <text x="325" y="118" fill="#c9d1d9" font-size="12" text-anchor="middle">WAF防火墙</text>
+        <text x="325" y="136" fill="#8b949e" font-size="10" text-anchor="middle">SQL注入/XSS/CSRF</text>
+        <rect x="430" y="100" width="170" height="45" rx="6" fill="#21262d" stroke="#f7816644" stroke-width="1"/>
+        <text x="515" y="118" fill="#c9d1d9" font-size="12" text-anchor="middle">DDoS防护</text>
+        <text x="515" y="136" fill="#8b949e" font-size="10" text-anchor="middle">流量清洗</text>
+        <rect x="620" y="100" width="170" height="45" rx="6" fill="#21262d" stroke="#f7816644" stroke-width="1"/>
+        <text x="705" y="118" fill="#c9d1d9" font-size="12" text-anchor="middle">IP白名单</text>
+        <text x="705" y="136" fill="#8b949e" font-size="10" text-anchor="middle">管理后台访问</text>
+        <rect x="810" y="100" width="170" height="45" rx="6" fill="#21262d" stroke="#f7816644" stroke-width="1"/>
+        <text x="895" y="118" fill="#c9d1d9" font-size="12" text-anchor="middle">限流降级</text>
+        <text x="895" y="136" fill="#8b949e" font-size="10" text-anchor="middle">Sentinel 流控</text>
+
+        <!-- Layer 2: Auth -->
+        <rect x="30" y="175" width="1140" height="100" rx="10" fill="#58a6ff08" stroke="#58a6ff" stroke-width="1"/>
+        <text x="600" y="200" fill="#58a6ff" font-size="14" font-weight="700" text-anchor="middle">🔐 Layer 2: 认证鉴权</text>
+        <rect x="50" y="215" width="200" height="45" rx="6" fill="#21262d" stroke="#58a6ff44" stroke-width="1"/>
+        <text x="150" y="233" fill="#c9d1d9" font-size="12" text-anchor="middle">微信OAuth2.0登录</text>
+        <text x="150" y="251" fill="#8b949e" font-size="10" text-anchor="middle">静默授权+手机号绑定</text>
+        <rect x="275" y="215" width="200" height="45" rx="6" fill="#21262d" stroke="#58a6ff44" stroke-width="1"/>
+        <text x="375" y="233" fill="#c9d1d9" font-size="12" text-anchor="middle">JWT Token管理</text>
+        <text x="375" y="251" fill="#8b949e" font-size="10" text-anchor="middle">Access(2h)+Refresh(7d)</text>
+        <rect x="500" y="215" width="200" height="45" rx="6" fill="#21262d" stroke="#58a6ff44" stroke-width="1"/>
+        <text x="600" y="233" fill="#c9d1d9" font-size="12" text-anchor="middle">RBAC权限模型</text>
+        <text x="600" y="251" fill="#8b949e" font-size="10" text-anchor="middle">用户/团长/管理员</text>
+        <rect x="725" y="215" width="200" height="45" rx="6" fill="#21262d" stroke="#58a6ff44" stroke-width="1"/>
+        <text x="825" y="233" fill="#c9d1d9" font-size="12" text-anchor="middle">接口级鉴权</text>
+        <text x="825" y="251" fill="#8b949e" font-size="10" text-anchor="middle">@PreAuthorize注解</text>
+
+        <!-- Layer 3: Data -->
+        <rect x="30" y="290" width="1140" height="100" rx="10" fill="#3fb95008" stroke="#3fb950" stroke-width="1"/>
+        <text x="600" y="315" fill="#3fb950" font-size="14" font-weight="700" text-anchor="middle">🔏 Layer 3: 数据安全</text>
+        <rect x="50" y="330" width="200" height="45" rx="6" fill="#21262d" stroke="#3fb95044" stroke-width="1"/>
+        <text x="150" y="348" fill="#c9d1d9" font-size="12" text-anchor="middle">敏感数据加密</text>
+        <text x="150" y="366" fill="#8b949e" font-size="10" text-anchor="middle">AES-256手机号/身份证</text>
+        <rect x="275" y="330" width="200" height="45" rx="6" fill="#21262d" stroke="#3fb95044" stroke-width="1"/>
+        <text x="375" y="348" fill="#c9d1d9" font-size="12" text-anchor="middle">数据脱敏</text>
+        <text x="375" y="366" fill="#8b949e" font-size="10" text-anchor="middle">138****1234</text>
+        <rect x="500" y="330" width="200" height="45" rx="6" fill="#21262d" stroke="#3fb95044" stroke-width="1"/>
+        <text x="600" y="348" fill="#c9d1d9" font-size="12" text-anchor="middle">SQL注入防护</text>
+        <text x="600" y="366" fill="#8b949e" font-size="10" text-anchor="middle">参数化查询+MyBatis</text>
+        <rect x="725" y="330" width="200" height="45" rx="6" fill="#21262d" stroke="#3fb95044" stroke-width="1"/>
+        <text x="825" y="348" fill="#c9d1d9" font-size="12" text-anchor="middle">审计日志</text>
+        <text x="825" y="366" fill="#8b949e" font-size="10" text-anchor="middle">敏感操作全记录</text>
+
+        <!-- Layer 4: Business -->
+        <rect x="30" y="405" width="1140" height="100" rx="10" fill="#d2992208" stroke="#d29922" stroke-width="1"/>
+        <text x="600" y="430" fill="#d29922" font-size="14" font-weight="700" text-anchor="middle">🛒 Layer 4: 业务安全</text>
+        <rect x="50" y="445" width="250" height="45" rx="6" fill="#21262d" stroke="#d2992244" stroke-width="1"/>
+        <text x="175" y="463" fill="#c9d1d9" font-size="12" text-anchor="middle">防刷单/薅羊毛</text>
+        <text x="175" y="481" fill="#8b949e" font-size="10" text-anchor="middle">设备指纹+频次限制+风控</text>
+        <rect x="325" y="445" width="250" height="45" rx="6" fill="#21262d" stroke="#d2992244" stroke-width="1"/>
+        <text x="450" y="463" fill="#c9d1d9" font-size="12" text-anchor="middle">秒杀防超卖</text>
+        <text x="450" y="481" fill="#8b949e" font-size="10" text-anchor="middle">Redis Lua原子+MQ异步</text>
+        <rect x="600" y="445" width="250" height="45" rx="6" fill="#21262d" stroke="#d2992244" stroke-width="1"/>
+        <text x="725" y="463" fill="#c9d1d9" font-size="12" text-anchor="middle">支付安全</text>
+        <text x="725" y="481" fill="#8b949e" font-size="10" text-anchor="middle">签名验证+回调幂等+对账</text>
+        <rect x="875" y="445" width="275" height="45" rx="6" fill="#21262d" stroke="#d2992244" stroke-width="1"/>
+        <text x="1012" y="463" fill="#c9d1d9" font-size="12" text-anchor="middle">内容安全</text>
+        <text x="1012" y="481" fill="#8b949e" font-size="10" text-anchor="middle">评价审核+敏感词过滤+图片审核</text>
+
+        <!-- Compliance -->
+        <rect x="30" y="525" width="1140" height="70" rx="10" fill="#a371f708" stroke="#a371f7" stroke-width="1"/>
+        <text x="600" y="548" fill="#a371f7" font-size="14" font-weight="700" text-anchor="middle">📜 合规要求</text>
+        <text x="50" y="572" fill="#8b949e" font-size="12">• 《个人信息保护法》合规：明确隐私政策、用户数据可删除</text>
+        <text x="550" y="572" fill="#8b949e" font-size="12">• 《电子商务法》合规：营业执照公示、交易记录保存3年</text>
+        <text x="50" y="590" fill="#8b949e" font-size="12">• 微信小程序审核规范：不得强制收集无关信息、不得诱导分享</text>
+        <text x="550" y="590" fill="#8b949e" font-size="12">• ICP备案 + EDI许可证(在线数据处理与交易处理业务)</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchTab(tab) {
+    document.querySelectorAll('.diagram').forEach(d => d.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

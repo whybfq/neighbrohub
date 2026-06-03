@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社区私域购物平台 - 产品原型设计</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f0f2f5; color: #333; }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+  header { text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 16px; margin-bottom: 30px; }
+  header h1 { font-size: 2.4em; margin-bottom: 8px; }
+  header p { font-size: 1.1em; opacity: 0.9; }
+
+  .page-selector { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+  .page-btn { padding: 10px 24px; border: 2px solid #667eea; background: white; color: #667eea; border-radius: 25px; cursor: pointer; font-size: 15px; font-weight: 600; transition: all .3s; }
+  .page-btn:hover, .page-btn.active { background: #667eea; color: white; }
+
+  .phone-frame { width: 375px; height: 720px; background: white; border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 8px #1a1a2e, 0 0 0 10px #333; margin: 0 auto; overflow: hidden; position: relative; }
+  .status-bar { height: 36px; background: #f8f8f8; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; font-size: 12px; font-weight: 600; }
+  .notch { width: 120px; height: 5px; background: #1a1a2e; border-radius: 0 0 15px 15px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 10; }
+
+  .page-content { height: 684px; overflow-y: auto; overflow-x: hidden; }
+  .page-content::-webkit-scrollbar { width: 0; }
+
+  /* Common styles */
+  .nav-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: white; position: sticky; top: 0; z-index: 5; border-bottom: 1px solid #f0f0f0; }
+  .nav-title { font-size: 18px; font-weight: 700; }
+  .nav-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #333; }
+
+  .page { display: none; height: 100%; }
+  .page.active { display: flex; flex-direction: column; }
+
+  /* Home page */
+  .search-bar { margin: 10px 16px; display: flex; align-items: center; background: #f5f5f5; border-radius: 20px; padding: 8px 16px; }
+  .search-bar .icon { margin-right: 8px; opacity: 0.4; }
+  .search-bar input { border: none; background: transparent; outline: none; flex: 1; font-size: 14px; color: #999; }
+
+  .banner { margin: 0 16px 12px; height: 140px; background: linear-gradient(135deg, #ff6b6b, #ff8e53); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; font-weight: 700; position: relative; overflow: hidden; }
+  .banner::after { content: ''; position: absolute; right: -30px; bottom: -20px; width: 120px; height: 120px; background: rgba(255,255,255,0.15); border-radius: 50%; }
+  .banner::before { content: ''; position: absolute; right: 40px; bottom: 30px; width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+  .banner .dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+  .banner .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); }
+  .banner .dot.active { background: white; width: 16px; border-radius: 3px; }
+
+  .category-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 0 16px; margin-bottom: 12px; }
+  .category-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+  .category-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .category-name { font-size: 11px; color: #666; }
+
+  .section { padding: 0 16px; margin-bottom: 16px; }
+  .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .section-title { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+  .section-more { font-size: 12px; color: #999; }
+  .title-bar { width: 3px; height: 16px; background: #ff6b6b; border-radius: 2px; }
+
+  .flash-sale { background: white; border-radius: 12px; padding: 12px 16px; margin: 0 16px 12px; }
+  .flash-sale .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .flash-timer { display: flex; align-items: center; gap: 4px; font-size: 12px; }
+  .timer-block { background: #333; color: white; padding: 2px 5px; border-radius: 3px; font-weight: 700; font-size: 12px; }
+  .flash-products { display: flex; gap: 10px; overflow-x: auto; }
+  .flash-products::-webkit-scrollbar { height: 0; }
+  .flash-item { min-width: 90px; text-align: center; }
+  .flash-item .img { width: 80px; height: 80px; background: #f5f5f5; border-radius: 8px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+  .flash-price { color: #ff6b6b; font-weight: 700; font-size: 14px; }
+  .flash-original { color: #bbb; font-size: 11px; text-decoration: line-through; }
+
+  .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 16px; }
+  .product-card { background: white; border-radius: 10px; overflow: hidden; }
+  .product-card .img { width: 100%; height: 150px; background: #f8f8f8; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+  .product-card .info { padding: 8px 10px; }
+  .product-card .name { font-size: 13px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 6px; }
+  .product-card .price { color: #ff6b6b; font-weight: 700; font-size: 16px; }
+  .product-card .price .yen { font-size: 12px; }
+  .product-card .sold { font-size: 11px; color: #999; margin-left: 6px; }
+  .product-card .tag { display: inline-block; background: #fff0f0; color: #ff6b6b; font-size: 10px; padding: 1px 5px; border-radius: 3px; margin-bottom: 4px; }
+
+  .bottom-nav { display: flex; justify-content: space-around; padding: 8px 0 20px; background: white; border-top: 1px solid #f0f0f0; position: absolute; bottom: 0; width: 100%; }
+  .bottom-nav .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; font-size: 10px; color: #999; }
+  .bottom-nav .tab.active { color: #667eea; }
+  .bottom-nav .tab .tab-icon { font-size: 20px; }
+
+  /* Product Detail */
+  .prod-images { width: 100%; height: 300px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); display: flex; align-items: center; justify-content: center; font-size: 60px; position: relative; }
+  .prod-images .back { position: absolute; top: 40px; left: 16px; width: 32px; height: 32px; background: rgba(0,0,0,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; cursor: pointer; }
+  .prod-info { padding: 16px; }
+  .prod-price-row { display: flex; align-items: baseline; gap: 8px; margin: 8px 0; }
+  .prod-price { color: #ff6b6b; font-size: 28px; font-weight: 700; }
+  .prod-mprice { color: #bbb; font-size: 14px; text-decoration: line-through; }
+  .prod-sales { font-size: 12px; color: #999; margin-bottom: 10px; }
+  .prod-specs { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+  .spec-tag { padding: 6px 14px; border: 1px solid #ddd; border-radius: 20px; font-size: 13px; cursor: pointer; }
+  .spec-tag.active { border-color: #ff6b6b; color: #ff6b6b; background: #fff5f5; }
+  .prod-desc { font-size: 14px; color: #666; line-height: 1.8; padding: 12px 0; border-top: 1px solid #f0f0f0; }
+  .prod-bottom { position: absolute; bottom: 0; width: 100%; display: flex; align-items: center; padding: 10px 16px 20px; background: white; border-top: 1px solid #f0f0f0; gap: 10px; }
+  .btn-cart { flex: 1; padding: 12px; border: 1px solid #ff6b6b; color: #ff6b6b; border-radius: 24px; font-size: 15px; font-weight: 600; text-align: center; cursor: pointer; }
+  .btn-buy { flex: 1.5; padding: 12px; background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; border-radius: 24px; font-size: 15px; font-weight: 600; text-align: center; cursor: pointer; }
+
+  /* Cart */
+  .cart-item { display: flex; padding: 12px 16px; border-bottom: 1px solid #f5f5f5; align-items: center; gap: 10px; }
+  .cart-check { width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .cart-check.checked { background: #ff6b6b; border-color: #ff6b6b; color: white; font-size: 12px; }
+  .cart-img { width: 80px; height: 80px; background: #f5f5f5; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
+  .cart-info { flex: 1; min-width: 0; }
+  .cart-name { font-size: 14px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cart-spec { font-size: 12px; color: #999; margin-bottom: 8px; }
+  .cart-price-row { display: flex; justify-content: space-between; align-items: center; }
+  .cart-price { color: #ff6b6b; font-weight: 700; }
+  .qty-ctrl { display: flex; align-items: center; gap: 8px; }
+  .qty-btn { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
+  .qty-num { font-size: 14px; min-width: 20px; text-align: center; }
+  .cart-footer { position: absolute; bottom: 0; width: 100%; padding: 12px 16px 20px; background: white; border-top: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; }
+  .cart-total { font-size: 14px; }
+  .cart-total .amount { color: #ff6b6b; font-weight: 700; font-size: 18px; }
+  .cart-submit { padding: 10px 30px; background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; border-radius: 24px; font-size: 15px; font-weight: 600; cursor: pointer; }
+
+  /* Orders */
+  .order-tabs { display: flex; border-bottom: 1px solid #f0f0f0; background: white; }
+  .order-tab { flex: 1; text-align: center; padding: 12px 0; font-size: 13px; cursor: pointer; color: #666; }
+  .order-tab.active { color: #667eea; font-weight: 600; border-bottom: 2px solid #667eea; }
+  .order-card { background: white; margin: 10px 16px; border-radius: 10px; overflow: hidden; }
+  .order-header { padding: 10px 12px; font-size: 12px; color: #999; border-bottom: 1px solid #f5f5f5; }
+  .order-body { padding: 12px; display: flex; gap: 10px; }
+  .order-img { width: 70px; height: 70px; background: #f5f5f5; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+  .order-info { flex: 1; }
+  .order-name { font-size: 14px; margin-bottom: 4px; }
+  .order-spec { font-size: 12px; color: #999; margin-bottom: 6px; }
+  .order-price { color: #333; font-weight: 600; }
+  .order-footer { padding: 10px 12px; border-top: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; }
+  .order-total { font-size: 13px; }
+  .order-total .price { color: #ff6b6b; font-weight: 700; font-size: 15px; }
+  .order-actions { display: flex; gap: 8px; }
+  .order-btn { padding: 6px 14px; border-radius: 16px; font-size: 12px; cursor: pointer; }
+  .order-btn.primary { background: #667eea; color: white; border: none; }
+  .order-btn.secondary { border: 1px solid #ddd; background: white; color: #666; }
+
+  /* Profile */
+  .profile-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px 20px; color: white; display: flex; align-items: center; gap: 14px; }
+  .avatar { width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+  .profile-name { font-size: 18px; font-weight: 600; }
+  .profile-id { font-size: 12px; opacity: 0.8; }
+  .profile-stats { display: flex; background: white; margin: 0 16px; border-radius: 10px; padding: 14px 0; margin-top: -15px; position: relative; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+  .stat-item { flex: 1; text-align: center; cursor: pointer; }
+  .stat-num { font-size: 18px; font-weight: 700; color: #333; }
+  .stat-label { font-size: 11px; color: #999; margin-top: 2px; }
+  .menu-list { margin: 16px; background: white; border-radius: 10px; overflow: hidden; }
+  .menu-item { display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid #f8f8f8; cursor: pointer; }
+  .menu-item:last-child { border-bottom: none; }
+  .menu-icon { width: 22px; height: 22px; margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .menu-text { flex: 1; font-size: 14px; }
+  .menu-arrow { color: #ccc; font-size: 14px; }
+
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; color: #ccc; }
+  .empty-icon { font-size: 60px; margin-bottom: 12px; }
+  .empty-text { font-size: 14px; }
+
+  /* Description panel */
+  .desc-panel { margin-top: 30px; background: white; border-radius: 16px; padding: 30px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .desc-panel h3 { font-size: 20px; margin-bottom: 16px; color: #333; display: flex; align-items: center; gap: 8px; }
+  .desc-panel p { font-size: 14px; color: #666; line-height: 2; }
+
+  .feature-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 12px; }
+  .feature-tag { padding: 8px 14px; background: #f0f4ff; color: #667eea; border-radius: 8px; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+
+  @media (max-width: 768px) {
+    .phone-frame { width: 100%; max-width: 375px; border-radius: 0; box-shadow: 0 0 0 2px #1a1a2e; }
+    header { padding: 24px 16px; }
+    header h1 { font-size: 1.6em; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>🏘️ 邻选社区</h1>
+    <p>社区私域购物平台 - 产品原型设计 v1.0</p>
+  </header>
+
+  <div class="page-selector">
+    <button class="page-btn active" onclick="switchPage('home')">📱 首页</button>
+    <button class="page-btn" onclick="switchPage('detail')">📦 商品详情</button>
+    <button class="page-btn" onclick="switchPage('cart')">🛒 购物车</button>
+    <button class="page-btn" onclick="switchPage('orders')">📋 订单</button>
+    <button class="page-btn" onclick="switchPage('profile')">👤 我的</button>
+  </div>
+
+  <div class="phone-frame">
+    <div class="notch"></div>
+
+    <!-- HOME PAGE -->
+    <div id="page-home" class="page active">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span>📶 🔋</span>
+      </div>
+      <div class="nav-bar">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:18px;">📍</span>
+          <span style="font-weight:600;font-size:14px;">阳光花园小区</span>
+          <span style="font-size:10px;color:#999;">▼</span>
+        </div>
+        <div style="display:flex;gap:16px;">
+          <span style="font-size:18px;">🔔</span>
+        </div>
+      </div>
+      <div class="page-content">
+        <div class="search-bar">
+          <span class="icon">🔍</span>
+          <input type="text" placeholder="搜索小区好物...">
+        </div>
+
+        <div class="banner">
+          社区618年中大促
+          <div class="dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+
+        <div class="category-grid">
+          <div class="category-item"><div class="category-icon" style="background:#fff0e6;">🥬</div><span class="category-name">生鲜果蔬</span></div>
+          <div class="category-item"><div class="category-icon" style="background:#e6f7ff;">🥩</div><span class="category-name">肉禽蛋奶</span></div>
+          <div class="category-item"><div class="category-icon" style="background:#f0ffe6;">🍞</div><span class="category-name">粮油调味</span></div>
+          <div class="category-item"><div class="category-icon" style="background:#ffe6f0;">🍪</div><span class="category-name">零食饮料</span></div>
+          <div class="category-item"><div class="category-icon" style="background:#f5e6ff;">🧹</div><span class="category-name">日用百货</span></div>
+        </div>
+
+        <div class="flash-sale">
+          <div class="header">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="color:#ff6b6b;font-weight:700;">⚡ 限时秒杀</span>
+              <div class="flash-timer">
+                <span class="timer-block">02</span><span>:</span>
+                <span class="timer-block">35</span><span>:</span>
+                <span class="timer-block">18</span>
+              </div>
+            </div>
+            <span class="section-more">更多 ›</span>
+          </div>
+          <div class="flash-products">
+            <div class="flash-item"><div class="img">🍎</div><div class="flash-price">¥9.9</div><div class="flash-original">¥19.9</div></div>
+            <div class="flash-item"><div class="img">🥛</div><div class="flash-price">¥29.9</div><div class="flash-original">¥49.9</div></div>
+            <div class="flash-item"><div class="img">🧻</div><div class="flash-price">¥15.9</div><div class="flash-original">¥32.9</div></div>
+            <div class="flash-item"><div class="img">🍗</div><div class="flash-price">¥39.9</div><div class="flash-original">¥69.9</div></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title"><span class="title-bar"></span>社区推荐</div>
+            <span class="section-more">查看更多 ›</span>
+          </div>
+        </div>
+
+        <div class="product-grid" style="padding-bottom:20px;">
+          <div class="product-card">
+            <div class="img">🥬</div>
+            <div class="info">
+              <span class="tag">社区自营</span>
+              <div class="name">有机新鲜蔬菜组合 当日采摘 5斤装</div>
+              <div><span class="price"><span class="yen">¥</span>29.9</span><span class="sold">已售326</span></div>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="img">🍓</div>
+            <div class="info">
+              <span class="tag">爆品推荐</span>
+              <div class="name">丹东99草莓 大果 3斤装 新鲜直达</div>
+              <div><span class="price"><span class="yen">¥</span>49.9</span><span class="sold">已售1203</span></div>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="img">🥚</div>
+            <div class="info">
+              <div class="name">土鸡蛋 农家散养 30枚装</div>
+              <div><span class="price"><span class="yen">¥</span>35.8</span><span class="sold">已售568</span></div>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="img">🧻</div>
+            <div class="info">
+              <div class="name">维达抽纸 3层 整箱24包</div>
+              <div><span class="price"><span class="yen">¥</span>45.9</span><span class="sold">已售892</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="tab active"><span class="tab-icon">🏠</span>首页</div>
+        <div class="tab"><span class="tab-icon">📂</span>分类</div>
+        <div class="tab"><span class="tab-icon">👥</span>社区</div>
+        <div class="tab"><span class="tab-icon">🛒</span>购物车</div>
+        <div class="tab"><span class="tab-icon">👤</span>我的</div>
+      </div>
+    </div>
+
+    <!-- PRODUCT DETAIL -->
+    <div id="page-detail" class="page">
+      <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+      <div class="prod-images">
+        <div class="back">‹</div>
+        🥬
+      </div>
+      <div class="page-content">
+        <div class="prod-info">
+          <div style="font-size:17px;font-weight:600;line-height:1.4;">有机新鲜蔬菜组合 当日采摘 5斤装 小区团长直供</div>
+          <div class="prod-price-row">
+            <span class="prod-price">¥29.90</span>
+            <span class="prod-mprice">¥45.00</span>
+            <span style="background:#fff0f0;color:#ff6b6b;font-size:12px;padding:2px 6px;border-radius:3px;">6.6折</span>
+          </div>
+          <div class="prod-sales">已售 326 | 团长推荐 ★4.9</div>
+
+          <div style="font-size:14px;color:#333;margin:8px 0;font-weight:600;">选择规格</div>
+          <div class="prod-specs">
+            <span class="spec-tag active">5斤装 ¥29.90</span>
+            <span class="spec-tag">10斤装 ¥55.00</span>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;padding:12px 0;border-top:1px solid #f0f0f0;margin-top:8px;">
+            <span style="color:#666;">配送方式</span>
+            <span style="color:#333;">🏪 小区团长自提 / 🚀 送货上门</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:12px 0;border-top:1px solid #f0f0f0;">
+            <span style="color:#666;">团长</span>
+            <span style="color:#333;">👤 王阿姨 (阳光花园2栋) ›</span>
+          </div>
+
+          <div class="prod-desc">
+            <strong>商品详情</strong><br>
+            精选当季有机蔬菜，由本地农场直供，当日清晨采摘，保证新鲜。包含：青菜、番茄、黄瓜、土豆、青椒等时令蔬菜。团长亲自质检，不满意包退换。
+          </div>
+
+          <div style="margin-top:12px;padding:12px;background:#fffaf0;border-radius:8px;">
+            <div style="font-weight:600;margin-bottom:6px;">💬 邻里评价 (128条)</div>
+            <div style="font-size:13px;color:#666;">"菜很新鲜，王阿姨推荐的果然不错！" - 3栋李女士 ★★★★★</div>
+            <div style="font-size:13px;color:#666;margin-top:4px;">"送货上门很快，半小时就到了" - 5栋张先生 ★★★★★</div>
+          </div>
+        </div>
+      </div>
+      <div class="prod-bottom">
+        <div style="display:flex;flex-direction:column;align-items:center;font-size:11px;color:#666;cursor:pointer;">
+          <span>💬</span>客服
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;font-size:11px;color:#666;cursor:pointer;">
+          <span>⭐</span>收藏
+        </div>
+        <div class="btn-cart">加入购物车</div>
+        <div class="btn-buy">立即购买</div>
+      </div>
+    </div>
+
+    <!-- CART PAGE -->
+    <div id="page-cart" class="page">
+      <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+      <div class="nav-bar"><span class="nav-title">购物车</span><span style="font-size:13px;color:#999;">管理</span></div>
+      <div class="page-content">
+        <div class="cart-item">
+          <div class="cart-check checked">✓</div>
+          <div class="cart-img">🥬</div>
+          <div class="cart-info">
+            <div class="cart-name">有机新鲜蔬菜组合 5斤装</div>
+            <div class="cart-spec">规格：5斤装</div>
+            <div class="cart-price-row">
+              <span class="cart-price">¥29.90</span>
+              <div class="qty-ctrl">
+                <span class="qty-btn">−</span>
+                <span class="qty-num">2</span>
+                <span class="qty-btn">+</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cart-item">
+          <div class="cart-check checked">✓</div>
+          <div class="cart-img">🍓</div>
+          <div class="cart-info">
+            <div class="cart-name">丹东99草莓 大果 3斤装</div>
+            <div class="cart-spec">规格：3斤装</div>
+            <div class="cart-price-row">
+              <span class="cart-price">¥49.90</span>
+              <div class="qty-ctrl">
+                <span class="qty-btn">−</span>
+                <span class="qty-num">1</span>
+                <span class="qty-btn">+</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cart-item">
+          <div class="cart-check">○</div>
+          <div class="cart-img">🧻</div>
+          <div class="cart-info">
+            <div class="cart-name">维达抽纸 3层 整箱24包</div>
+            <div class="cart-spec">规格：整箱24包</div>
+            <div class="cart-price-row">
+              <span class="cart-price">¥45.90</span>
+              <div class="qty-ctrl">
+                <span class="qty-btn">−</span>
+                <span class="qty-num">1</span>
+                <span class="qty-btn">+</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cart-footer">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="cart-check checked" style="width:20px;height:20px;">✓</div>
+          <span style="font-size:13px;">全选</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="cart-total">合计：<span class="amount">¥79.80</span></div>
+          <div class="cart-submit">结算(3)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDERS PAGE -->
+    <div id="page-orders" class="page">
+      <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+      <div class="nav-bar"><span class="nav-title">我的订单</span></div>
+      <div class="order-tabs">
+        <span class="order-tab active">全部</span>
+        <span class="order-tab">待付款</span>
+        <span class="order-tab">待发货</span>
+        <span class="order-tab">待收货</span>
+        <span class="order-tab">待评价</span>
+      </div>
+      <div class="page-content">
+        <div class="order-card">
+          <div class="order-header">订单号：LX20260604001 <span style="float:right;color:#667eea;">待收货</span></div>
+          <div class="order-body">
+            <div class="order-img">🥬</div>
+            <div class="order-info">
+              <div class="order-name">有机新鲜蔬菜组合 5斤装</div>
+              <div class="order-spec">规格：5斤装 x2</div>
+              <div class="order-price">¥59.80</div>
+            </div>
+          </div>
+          <div class="order-footer">
+            <div class="order-total">共2件 实付 <span class="price">¥59.80</span></div>
+            <div class="order-actions">
+              <button class="order-btn secondary">查看物流</button>
+              <button class="order-btn primary">确认收货</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-card">
+          <div class="order-header">订单号：LX20260603012 <span style="float:right;color:#999;">已完成</span></div>
+          <div class="order-body">
+            <div class="order-img">🍓</div>
+            <div class="order-info">
+              <div class="order-name">丹东99草莓 大果 3斤装</div>
+              <div class="order-spec">规格：3斤装 x1</div>
+              <div class="order-price">¥49.90</div>
+            </div>
+          </div>
+          <div class="order-footer">
+            <div class="order-total">共1件 实付 <span class="price">¥49.90</span></div>
+            <div class="order-actions">
+              <button class="order-btn secondary">再次购买</button>
+              <button class="order-btn secondary">去评价</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="tab"><span class="tab-icon">🏠</span>首页</div>
+        <div class="tab"><span class="tab-icon">📂</span>分类</div>
+        <div class="tab"><span class="tab-icon">👥</span>社区</div>
+        <div class="tab"><span class="tab-icon">🛒</span>购物车</div>
+        <div class="tab active"><span class="tab-icon">👤</span>我的</div>
+      </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div id="page-profile" class="page">
+      <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+      <div class="profile-header">
+        <div class="avatar">😊</div>
+        <div>
+          <div class="profile-name">阳光花园-李明</div>
+          <div class="profile-id">团长ID: LX8888</div>
+        </div>
+      </div>
+      <div class="page-content">
+        <div class="profile-stats">
+          <div class="stat-item"><div class="stat-num">12</div><div class="stat-label">待付款</div></div>
+          <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">待发货</div></div>
+          <div class="stat-item"><div class="stat-num">5</div><div class="stat-label">待收货</div></div>
+          <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">待评价</div></div>
+          <div class="stat-item"><div class="stat-num">2</div><div class="stat-label">售后</div></div>
+        </div>
+
+        <div class="menu-list" style="margin-top:20px;">
+          <div class="menu-item"><span class="menu-icon">📦</span><span class="menu-text">全部订单</span><span class="menu-arrow">›</span></div>
+          <div class="menu-item"><span class="menu-icon">🎫</span><span class="menu-text">优惠券</span><span style="font-size:12px;color:#ff6b6b;">3张可用</span><span class="menu-arrow">›</span></div>
+          <div class="menu-item"><span class="menu-icon">⭐</span><span class="menu-text">我的收藏</span><span class="menu-arrow">›</span></div>
+          <div class="menu-item"><span class="menu-icon">📍</span><span class="menu-text">收货地址</span><span class="menu-arrow">›</span></div>
+        </div>
+
+        <div class="menu-list">
+          <div class="menu-item"><span class="menu-icon">💰</span><span class="menu-text">我的佣金</span><span style="font-size:14px;color:#ff6b6b;font-weight:700;">¥1,280.50</span><span class="menu-arrow">›</span></div>
+          <div class="menu-item"><span class="menu-icon">👥</span><span class="menu-text">我的团员</span><span style="font-size:12px;color:#999;">38人</span><span class="menu-arrow">›</span></div>
+          <div class="menu-item"><span class="menu-icon">📊</span><span class="menu-text">推广数据</span><span class="menu-arrow">›</span></div>
+        </div>
+
+        <div class="menu-list">
+          <div class="menu-item"><span class="menu-icon">🔔</span><span class="menu-text">消息通知</span><span style="background:#ff6b6b;color:white;font-size:10px;padding:2px 7px;border-radius:10px;">5</span><span class="menu-arrow">›</span></div>
+          <div class="menu-item"><span class="menu-icon">⚙️</span><span class="menu-text">设置</span><span class="menu-arrow">›</span></div>
+          <div class="menu-item"><span class="menu-icon">❓</span><span class="menu-text">帮助与反馈</span><span class="menu-arrow">›</span></div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="tab"><span class="tab-icon">🏠</span>首页</div>
+        <div class="tab"><span class="tab-icon">📂</span>分类</div>
+        <div class="tab"><span class="tab-icon">👥</span>社区</div>
+        <div class="tab"><span class="tab-icon">🛒</span>购物车</div>
+        <div class="tab active"><span class="tab-icon">👤</span>我的</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Description Panel -->
+  <div class="desc-panel">
+    <h3>🎨 设计说明</h3>
+    <p>
+      <strong>产品名称：</strong>邻选社区 — 定位为社区私域购物平台<br>
+      <strong>设计理念：</strong>以温暖、信任、便捷为核心，打造「邻里之间的线上菜市场」<br>
+      <strong>核心特色：</strong>
+    </p>
+    <div class="feature-list">
+      <span class="feature-tag">🏘️ 小区绑定</span>
+      <span class="feature-tag">👥 团长分销</span>
+      <span class="feature-tag">🚀 社区配送</span>
+      <span class="feature-tag">💬 邻里评价</span>
+      <span class="feature-tag">⚡ 限时秒杀</span>
+      <span class="feature-tag">🎫 优惠券</span>
+      <span class="feature-tag">👥 社区拼团</span>
+      <span class="feature-tag">💰 佣金分润</span>
+      <span class="feature-tag">📊 数据看板</span>
+      <span class="feature-tag">🔔 消息推送</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchPage(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
