@@ -164,6 +164,112 @@
   .feature-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 12px; }
   .feature-tag { padding: 8px 14px; background: #f0f4ff; color: #667eea; border-radius: 8px; font-size: 13px; display: flex; align-items: center; gap: 6px; }
 
+  /* 仓储 + 赏味期新样式 */
+  .warehouse-entry { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); margin: 12px 16px; border-radius: 12px; padding: 14px; color: white; }
+  .warehouse-entry .wh-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+  .warehouse-entry .wh-subtitle { font-size: 11px; opacity: 0.7; margin-bottom: 10px; }
+  .wh-stats { display: flex; gap: 8px; }
+  .wh-stat { flex: 1; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; text-align: center; }
+  .wh-stat .wh-num { font-size: 16px; font-weight: 700; }
+  .wh-stat .wh-label { font-size: 10px; opacity: 0.7; margin-top: 2px; }
+  .wh-stat.cold { border-left: 3px solid #00d4ff; }
+  .wh-stat.normal { border-left: 3px solid #ffd700; }
+  .wh-stat.dry { border-left: 3px solid #ff8c00; }
+  .wh-guarantee { font-size: 10px; opacity: 0.6; text-align: center; margin-top: 8px; }
+
+  .storage-badge { position: absolute; top: 8px; right: 8px; background: rgba(26,26,46,0.85); color: #ffd700; font-size: 9px; padding: 2px 6px; border-radius: 3px; font-weight: 600; z-index: 2; }
+  .shelf-life-mini-tag { display: inline-block; font-size: 9px; padding: 1px 5px; border-radius: 3px; margin-left: 6px; font-weight: 600; }
+  .shelf-life-mini-tag.long { background: #e6ffe6; color: #2d8a2d; }
+  .shelf-life-mini-tag.medium { background: #fff8e6; color: #b8860b; }
+  .shelf-life-mini-tag.short { background: #ffe6e6; color: #c0392b; }
+  .taste-mini-tip { font-size: 10px; color: #2d8a2d; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .storage-section { margin: 12px 0; padding: 12px; background: linear-gradient(135deg, #f0f8ff 0%, #f5f0ff 100%); border-radius: 10px; }
+  .storage-section .storage-title { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .storage-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 12px; }
+  .storage-row .label { color: #666; }
+  .storage-row .value { color: #333; font-weight: 500; }
+  .storage-type-tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .storage-type-tag.cold { background: #e6f7ff; color: #0077b6; }
+  .storage-type-tag.normal { background: #fffde6; color: #b8860b; }
+  .storage-type-tag.dry { background: #fff3e6; color: #cc6600; }
+  .taste-tip-card { background: linear-gradient(135deg, #e6ffe6 0%, #f0fff0 100%); border: 1px solid #b8e6b8; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 12px; color: #2d5a2d; line-height: 1.6; }
+  .taste-tip-card .tt-title { font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+  .taste-status-tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; margin-left: 4px; }
+  .taste-status-tag.prime { background: #d4edda; color: #155724; }
+  .taste-status-tag.normal { background: #fff3cd; color: #856404; }
+  .taste-status-tag.approaching { background: #f8d7da; color: #721c24; }
+  .storage-explain { font-size: 11px; color: #999; margin-top: 8px; line-height: 1.5; }
+  .category-item.shelf-beverage .category-icon { background: #e6f7ff; }
+  .category-item.shelf-snack .category-icon { background: #fffde6; }
+  .category-item.shelf-dairy .category-icon { background: #f0ffe6; }
+  .category-item.shelf-grain .category-icon { background: #ffe6f0; }
+  .category-item.shelf-daily .category-icon { background: #f5e6ff; }
+
+  .product-card .img-wrap { width: 100%; height: 150px; background: #f8f8f8; display: flex; align-items: center; justify-content: center; font-size: 40px; position: relative; }
+
+  /* 积分系统样式 */
+  .points-header { background: linear-gradient(135deg, #ff6b6b, #feca57, #ff9ff3); padding: 30px 20px 20px; color: white; text-align: center; position: relative; overflow: hidden; }
+  .points-header::after { content: ''; position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+  .points-header .ph-title { font-size: 13px; opacity: 0.85; position: relative; z-index: 1; }
+  .points-balance { display: flex; align-items: baseline; justify-content: center; gap: 6px; margin: 8px 0; position: relative; z-index: 1; }
+  .points-balance .balance-num { font-size: 42px; font-weight: 800; text-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  .points-balance .balance-unit { font-size: 16px; opacity: 0.9; }
+  .points-rule { font-size: 11px; opacity: 0.75; position: relative; z-index: 1; }
+  .points-stats { display: flex; justify-content: center; gap: 30px; margin-top: 12px; position: relative; z-index: 1; }
+  .points-stats .ps-item { text-align: center; }
+  .points-stats .ps-value { font-size: 18px; font-weight: 700; }
+  .points-stats .ps-label { font-size: 10px; opacity: 0.75; }
+
+  .points-tabs { display: flex; background: white; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 10; }
+  .points-tab { flex: 1; text-align: center; padding: 12px 0; font-size: 13px; color: #999; cursor: pointer; }
+  .points-tab.active { color: #667eea; font-weight: 600; border-bottom: 2px solid #667eea; }
+
+  .points-service-card { display: flex; background: white; margin: 10px 16px; border-radius: 12px; overflow: hidden; }
+  .points-service-card .psc-img { width: 120px; height: 120px; background: linear-gradient(135deg, #f5f7ff, #eef0ff); display: flex; align-items: center; justify-content: center; font-size: 48px; flex-shrink: 0; }
+  .points-service-card .psc-info { flex: 1; padding: 12px; display: flex; flex-direction: column; }
+  .points-service-card .psc-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .points-service-card .psc-desc { font-size: 11px; color: #999; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .points-service-card .psc-meta { display: flex; gap: 12px; font-size: 10px; color: #bbb; margin-bottom: 6px; }
+  .points-service-card .psc-bottom { display: flex; align-items: center; justify-content: space-between; }
+  .psc-price { color: #ff6b6b; font-weight: 700; font-size: 16px; }
+  .psc-market { font-size: 11px; color: #ccc; text-decoration: line-through; margin-left: 6px; }
+  .psc-btn { padding: 5px 16px; background: linear-gradient(135deg, #ff6b6b, #feca57); color: white; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .psc-btn.disabled { background: #e0e0e0; color: #999; cursor: not-allowed; }
+
+  .points-record { display: flex; align-items: center; justify-content: space-between; background: white; margin: 6px 16px; padding: 12px 16px; border-radius: 10px; }
+  .points-record .pr-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+  .points-record .pr-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .points-record .pr-icon.earn { background: #f0fff0; }
+  .points-record .pr-icon.spend { background: #fff0f0; }
+  .points-record .pr-desc { font-size: 13px; }
+  .points-record .pr-time { font-size: 10px; color: #999; }
+  .points-record .pr-amount { font-size: 16px; font-weight: 700; }
+  .points-record .pr-amount.earn { color: #52c41a; }
+  .points-record .pr-amount.spend { color: #ff4d4f; }
+
+  .exchange-record { display: flex; align-items: center; background: white; margin: 6px 16px; padding: 12px 16px; border-radius: 10px; gap: 10px; }
+  .exchange-record .er-icon { width: 36px; height: 36px; background: #f5f7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .exchange-record .er-info { flex: 1; }
+  .exchange-record .er-name { font-size: 13px; font-weight: 600; }
+  .exchange-record .er-time { font-size: 10px; color: #999; }
+  .exchange-record .er-status { font-size: 10px; background: #f0fff0; color: #52c41a; padding: 2px 8px; border-radius: 4px; }
+  .exchange-record .er-points { font-size: 14px; color: #ff4d4f; font-weight: 600; }
+
+  .points-entry { display: flex; align-items: center; background: linear-gradient(135deg, #fff7e6, #fff0f0); margin: 10px 16px; padding: 10px 14px; border-radius: 10px; cursor: pointer; }
+  .points-entry .pe-icon { font-size: 22px; margin-right: 10px; }
+  .points-entry .pe-info { flex: 1; }
+  .points-entry .pe-title { font-size: 13px; font-weight: 600; }
+  .points-entry .pe-desc { font-size: 10px; color: #999; }
+  .points-entry .pe-balance { color: #ff6b6b; font-weight: 700; font-size: 16px; }
+  .points-entry .pe-arrow { color: #ccc; margin-left: 8px; }
+
+  .success-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.45); z-index: 999; display: flex; align-items: center; justify-content: center; }
+  .success-card-popup { background: white; border-radius: 20px; padding: 40px; text-align: center; }
+  .success-card-popup .sc-icon { font-size: 60px; display: block; margin-bottom: 10px; }
+  .success-card-popup .sc-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .success-card-popup .sc-desc { font-size: 13px; color: #999; }
+
   @media (max-width: 768px) {
     .phone-frame { width: 100%; max-width: 375px; border-radius: 0; box-shadow: 0 0 0 2px #1a1a2e; }
     header { padding: 24px 16px; }
@@ -184,6 +290,7 @@
     <button class="page-btn" onclick="switchPage('detail')">📦 商品详情</button>
     <button class="page-btn" onclick="switchPage('cart')">🛒 购物车</button>
     <button class="page-btn" onclick="switchPage('orders')">📋 订单</button>
+    <button class="page-btn" onclick="switchPage('points')">⭐ 积分商城</button>
     <button class="page-btn" onclick="switchPage('profile')">👤 我的</button>
   </div>
 
@@ -222,11 +329,31 @@
         </div>
 
         <div class="category-grid">
-          <div class="category-item"><div class="category-icon" style="background:#fff0e6;">🥬</div><span class="category-name">生鲜果蔬</span></div>
-          <div class="category-item"><div class="category-icon" style="background:#e6f7ff;">🥩</div><span class="category-name">肉禽蛋奶</span></div>
-          <div class="category-item"><div class="category-icon" style="background:#f0ffe6;">🍞</div><span class="category-name">粮油调味</span></div>
-          <div class="category-item"><div class="category-icon" style="background:#ffe6f0;">🍪</div><span class="category-name">零食饮料</span></div>
-          <div class="category-item"><div class="category-icon" style="background:#f5e6ff;">🧹</div><span class="category-name">日用百货</span></div>
+          <div class="category-item shelf-beverage"><div class="category-icon">💧</div><span class="category-name">水饮冲调</span></div>
+          <div class="category-item shelf-beverage"><div class="category-icon">🍺</div><span class="category-name">啤酒饮料</span></div>
+          <div class="category-item shelf-snack"><div class="category-icon">🍜</div><span class="category-name">方便速食</span></div>
+          <div class="category-item shelf-dairy"><div class="category-icon">🥛</div><span class="category-name">乳品烘焙</span></div>
+          <div class="category-item shelf-snack"><div class="category-icon">🥜</div><span class="category-name">坚果零食</span></div>
+        </div>
+
+        <div class="warehouse-entry">
+          <div class="wh-title">🏭 地下仓储直供</div>
+          <div class="wh-subtitle">1000+恒温仓库 · 新鲜直达 · 品质保障</div>
+          <div class="wh-stats">
+            <div class="wh-stat cold">
+              <div class="wh-num">128</div>
+              <div class="wh-label">❄️ 冷链仓</div>
+            </div>
+            <div class="wh-stat normal">
+              <div class="wh-num">652</div>
+              <div class="wh-label">🏭 常温仓</div>
+            </div>
+            <div class="wh-stat dry">
+              <div class="wh-num">320</div>
+              <div class="wh-label">🏜️ 干燥仓</div>
+            </div>
+          </div>
+          <div class="wh-guarantee">✅ 恒温恒湿 · 地下存储更保鲜 · 每件商品专属赏味提示</div>
         </div>
 
         <div class="flash-sale">
@@ -242,51 +369,95 @@
             <span class="section-more">更多 ›</span>
           </div>
           <div class="flash-products">
-            <div class="flash-item"><div class="img">🍎</div><div class="flash-price">¥9.9</div><div class="flash-original">¥19.9</div></div>
-            <div class="flash-item"><div class="img">🥛</div><div class="flash-price">¥29.9</div><div class="flash-original">¥49.9</div></div>
-            <div class="flash-item"><div class="img">🧻</div><div class="flash-price">¥15.9</div><div class="flash-original">¥32.9</div></div>
-            <div class="flash-item"><div class="img">🍗</div><div class="flash-price">¥39.9</div><div class="flash-original">¥69.9</div></div>
+            <div class="flash-item"><div class="img">💧</div><div class="flash-price">¥9.9</div><div class="flash-original">¥15.0</div></div>
+            <div class="flash-item"><div class="img">🍺</div><div class="flash-price">¥39.9</div><div class="flash-original">¥59.9</div></div>
+            <div class="flash-item"><div class="img">🍜</div><div class="flash-price">¥29.9</div><div class="flash-original">¥45.0</div></div>
+            <div class="flash-item"><div class="img">🥛</div><div class="flash-price">¥49.9</div><div class="flash-original">¥68.0</div></div>
           </div>
         </div>
 
         <div class="section">
           <div class="section-header">
-            <div class="section-title"><span class="title-bar"></span>社区推荐</div>
+            <div class="section-title"><span class="title-bar"></span>社区推荐 · 地下仓储直发</div>
             <span class="section-more">查看更多 ›</span>
           </div>
         </div>
 
         <div class="product-grid" style="padding-bottom:20px;">
           <div class="product-card">
-            <div class="img">🥬</div>
+            <div class="img-wrap">
+              <span class="storage-badge">🏭 常温仓</span>
+              💧
+            </div>
             <div class="info">
               <span class="tag">社区自营</span>
-              <div class="name">有机新鲜蔬菜组合 当日采摘 5斤装</div>
-              <div><span class="price"><span class="yen">¥</span>29.9</span><span class="sold">已售326</span></div>
+              <div class="name">农夫山泉 饮用天然水 550ml×24瓶</div>
+              <div style="display:flex;align-items:center;">
+                <span class="price"><span class="yen">¥</span>29.9</span>
+                <span class="shelf-life-mini-tag long">长保质期</span>
+                <span class="sold">已售2.3万</span>
+              </div>
+              <div class="taste-mini-tip">💧 最佳赏味：阴凉存放，开封后3天内饮用</div>
             </div>
           </div>
           <div class="product-card">
-            <div class="img">🍓</div>
+            <div class="img-wrap">
+              <span class="storage-badge">🏭 常温仓</span>
+              🍺
+            </div>
             <div class="info">
               <span class="tag">爆品推荐</span>
-              <div class="name">丹东99草莓 大果 3斤装 新鲜直达</div>
-              <div><span class="price"><span class="yen">¥</span>49.9</span><span class="sold">已售1203</span></div>
+              <div class="name">青岛啤酒 经典 500ml×12罐装</div>
+              <div style="display:flex;align-items:center;">
+                <span class="price"><span class="yen">¥</span>59.9</span>
+                <span class="shelf-life-mini-tag medium">中保质期</span>
+                <span class="sold">已售1.8万</span>
+              </div>
+              <div class="taste-mini-tip">🍺 最佳赏味：冰镇8-10°C口感最佳</div>
             </div>
           </div>
           <div class="product-card">
-            <div class="img">🥚</div>
+            <div class="img-wrap">
+              <span class="storage-badge">🏜️ 干燥仓</span>
+              🍜
+            </div>
             <div class="info">
-              <div class="name">土鸡蛋 农家散养 30枚装</div>
-              <div><span class="price"><span class="yen">¥</span>35.8</span><span class="sold">已售568</span></div>
+              <span class="tag">必买清单</span>
+              <div class="name">康师傅 红烧牛肉面 整箱24袋</div>
+              <div style="display:flex;align-items:center;">
+                <span class="price"><span class="yen">¥</span>45.9</span>
+                <span class="shelf-life-mini-tag long">长保质期</span>
+                <span class="sold">已售3.2万</span>
+              </div>
+              <div class="taste-mini-tip">🍜 最佳赏味：汤底煮沸更浓郁</div>
             </div>
           </div>
           <div class="product-card">
-            <div class="img">🧻</div>
+            <div class="img-wrap">
+              <span class="storage-badge">❄️ 冷链仓</span>
+              🥛
+            </div>
             <div class="info">
-              <div class="name">维达抽纸 3层 整箱24包</div>
-              <div><span class="price"><span class="yen">¥</span>45.9</span><span class="sold">已售892</span></div>
+              <span class="tag">品质推荐</span>
+              <div class="name">蒙牛特仑苏 纯牛奶 250ml×16盒</div>
+              <div style="display:flex;align-items:center;">
+                <span class="price"><span class="yen">¥</span>68.0</span>
+                <span class="shelf-life-mini-tag medium">中保质期</span>
+                <span class="sold">已售1.2万</span>
+              </div>
+              <div class="taste-mini-tip">🥛 最佳赏味：冷藏后口感更佳</div>
             </div>
           </div>
+        </div>
+
+        <div class="points-entry" style="margin: 0 16px 12px;">
+          <span class="pe-icon">⭐</span>
+          <div class="pe-info">
+            <div class="pe-title">积分商城</div>
+            <div class="pe-desc">消费1元=1积分，永不过期，兑换社区服务</div>
+          </div>
+          <span class="pe-balance">5,680</span>
+          <span class="pe-arrow">›</span>
         </div>
       </div>
 
@@ -304,22 +475,55 @@
       <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
       <div class="prod-images">
         <div class="back">‹</div>
-        🥬
+        💧
       </div>
       <div class="page-content">
         <div class="prod-info">
-          <div style="font-size:17px;font-weight:600;line-height:1.4;">有机新鲜蔬菜组合 当日采摘 5斤装 小区团长直供</div>
+          <div style="font-size:17px;font-weight:600;line-height:1.4;">农夫山泉 饮用天然水 550ml×24瓶 地下仓库直发</div>
           <div class="prod-price-row">
             <span class="prod-price">¥29.90</span>
-            <span class="prod-mprice">¥45.00</span>
-            <span style="background:#fff0f0;color:#ff6b6b;font-size:12px;padding:2px 6px;border-radius:3px;">6.6折</span>
+            <span class="prod-mprice">¥36.00</span>
+            <span style="background:#fff0f0;color:#ff6b6b;font-size:12px;padding:2px 6px;border-radius:3px;">8.3折</span>
           </div>
-          <div class="prod-sales">已售 326 | 团长推荐 ★4.9</div>
+          <div class="prod-sales">已售 2.3万 | 好评率 99% ★4.9</div>
 
           <div style="font-size:14px;color:#333;margin:8px 0;font-weight:600;">选择规格</div>
           <div class="prod-specs">
-            <span class="spec-tag active">5斤装 ¥29.90</span>
-            <span class="spec-tag">10斤装 ¥55.00</span>
+            <span class="spec-tag active">550ml×24瓶 ¥29.90</span>
+            <span class="spec-tag">1.5L×12瓶 ¥38.00</span>
+            <span class="spec-tag">4L×4桶 ¥42.00</span>
+          </div>
+
+          <!-- 地下仓储 & 赏味提示区块 -->
+          <div class="storage-section">
+            <div class="storage-title">🏭 地下仓储 · 品质溯源</div>
+            <div class="storage-row">
+              <span class="label">仓储类型</span>
+              <span><span class="storage-type-tag normal">🏭 常温仓</span></span>
+            </div>
+            <div class="storage-row">
+              <span class="label">仓库编号</span>
+              <span class="value">A-032</span>
+            </div>
+            <div class="storage-row">
+              <span class="label">保质期分类</span>
+              <span><span class="shelf-life-mini-tag long" style="font-size:11px;">长保质期 (24个月)</span></span>
+            </div>
+            <div class="storage-row">
+              <span class="label">生产日期</span>
+              <span class="value">2026-03-15</span>
+            </div>
+            <div class="storage-row">
+              <span class="label">赏味状态</span>
+              <span class="taste-status-tag prime">🌟 最佳赏味期</span>
+            </div>
+            <div class="taste-tip-card">
+              <div class="tt-title">🍽️ 最佳赏味提示</div>
+              阴凉干燥处存放，建议开封后3天内饮用完毕，口感最佳。天然弱碱性水源，直接饮用或泡茶均可。
+            </div>
+            <div class="storage-explain">
+              💡 本品储存于恒温常温仓，温度10-25°C，湿度40-60%，地下仓储环境更稳定，有效延长保鲜周期。
+            </div>
           </div>
 
           <div style="display:flex;justify-content:space-between;padding:12px 0;border-top:1px solid #f0f0f0;margin-top:8px;">
@@ -333,13 +537,13 @@
 
           <div class="prod-desc">
             <strong>商品详情</strong><br>
-            精选当季有机蔬菜，由本地农场直供，当日清晨采摘，保证新鲜。包含：青菜、番茄、黄瓜、土豆、青椒等时令蔬菜。团长亲自质检，不满意包退换。
+            农夫山泉 饮用天然水，源自天然水源，含多种矿物元素。适合日常饮用、泡茶、烹饪。地下仓库恒温储存，确保水质稳定，每一口都是新鲜自然的味道。
           </div>
 
           <div style="margin-top:12px;padding:12px;background:#fffaf0;border-radius:8px;">
-            <div style="font-weight:600;margin-bottom:6px;">💬 邻里评价 (128条)</div>
-            <div style="font-size:13px;color:#666;">"菜很新鲜，王阿姨推荐的果然不错！" - 3栋李女士 ★★★★★</div>
-            <div style="font-size:13px;color:#666;margin-top:4px;">"送货上门很快，半小时就到了" - 5栋张先生 ★★★★★</div>
+            <div style="font-weight:600;margin-bottom:6px;">💬 邻里评价 (2.1万条)</div>
+            <div style="font-size:13px;color:#666;">"地下仓库发的货，水很新鲜，送货也快！" - 3栋李女士 ★★★★★</div>
+            <div style="font-size:13px;color:#666;margin-top:4px;">"比超市便宜，一直回购，赏味提示很贴心" - 5栋张先生 ★★★★★</div>
           </div>
         </div>
       </div>
@@ -362,10 +566,10 @@
       <div class="page-content">
         <div class="cart-item">
           <div class="cart-check checked">✓</div>
-          <div class="cart-img">🥬</div>
+          <div class="cart-img">💧</div>
           <div class="cart-info">
-            <div class="cart-name">有机新鲜蔬菜组合 5斤装</div>
-            <div class="cart-spec">规格：5斤装</div>
+            <div class="cart-name">农夫山泉 饮用天然水 550ml×24瓶</div>
+            <div class="cart-spec">规格：550ml×24瓶 | 🏭 常温仓 | 最佳赏味期</div>
             <div class="cart-price-row">
               <span class="cart-price">¥29.90</span>
               <div class="qty-ctrl">
@@ -378,12 +582,12 @@
         </div>
         <div class="cart-item">
           <div class="cart-check checked">✓</div>
-          <div class="cart-img">🍓</div>
+          <div class="cart-img">🍺</div>
           <div class="cart-info">
-            <div class="cart-name">丹东99草莓 大果 3斤装</div>
-            <div class="cart-spec">规格：3斤装</div>
+            <div class="cart-name">青岛啤酒 经典 500ml×12罐装</div>
+            <div class="cart-spec">规格：500ml×12罐 | 🏭 常温仓 | 中保质期</div>
             <div class="cart-price-row">
-              <span class="cart-price">¥49.90</span>
+              <span class="cart-price">¥59.90</span>
               <div class="qty-ctrl">
                 <span class="qty-btn">−</span>
                 <span class="qty-num">1</span>
@@ -394,10 +598,10 @@
         </div>
         <div class="cart-item">
           <div class="cart-check">○</div>
-          <div class="cart-img">🧻</div>
+          <div class="cart-img">🍜</div>
           <div class="cart-info">
-            <div class="cart-name">维达抽纸 3层 整箱24包</div>
-            <div class="cart-spec">规格：整箱24包</div>
+            <div class="cart-name">康师傅 红烧牛肉面 整箱24袋</div>
+            <div class="cart-spec">规格：整箱24袋 | 🏜️ 干燥仓 | 长保质期</div>
             <div class="cart-price-row">
               <span class="cart-price">¥45.90</span>
               <div class="qty-ctrl">
@@ -415,7 +619,7 @@
           <span style="font-size:13px;">全选</span>
         </div>
         <div style="display:flex;align-items:center;gap:12px;">
-          <div class="cart-total">合计：<span class="amount">¥79.80</span></div>
+          <div class="cart-total">合计：<span class="amount">¥89.80</span></div>
           <div class="cart-submit">结算(3)</div>
         </div>
       </div>
@@ -436,10 +640,10 @@
         <div class="order-card">
           <div class="order-header">订单号：LX20260604001 <span style="float:right;color:#667eea;">待收货</span></div>
           <div class="order-body">
-            <div class="order-img">🥬</div>
+            <div class="order-img">💧</div>
             <div class="order-info">
-              <div class="order-name">有机新鲜蔬菜组合 5斤装</div>
-              <div class="order-spec">规格：5斤装 x2</div>
+              <div class="order-name">农夫山泉 饮用天然水 550ml×24瓶</div>
+              <div class="order-spec">规格：550ml×24瓶 x2 | 🏭 常温仓</div>
               <div class="order-price">¥59.80</div>
             </div>
           </div>
@@ -455,15 +659,15 @@
         <div class="order-card">
           <div class="order-header">订单号：LX20260603012 <span style="float:right;color:#999;">已完成</span></div>
           <div class="order-body">
-            <div class="order-img">🍓</div>
+            <div class="order-img">🍺</div>
             <div class="order-info">
-              <div class="order-name">丹东99草莓 大果 3斤装</div>
-              <div class="order-spec">规格：3斤装 x1</div>
-              <div class="order-price">¥49.90</div>
+              <div class="order-name">青岛啤酒 经典 500ml×12罐装</div>
+              <div class="order-spec">规格：500ml×12罐 x1 | 🏭 常温仓</div>
+              <div class="order-price">¥59.90</div>
             </div>
           </div>
           <div class="order-footer">
-            <div class="order-total">共1件 实付 <span class="price">¥49.90</span></div>
+            <div class="order-total">共1件 实付 <span class="price">¥59.90</span></div>
             <div class="order-actions">
               <button class="order-btn secondary">再次购买</button>
               <button class="order-btn secondary">去评价</button>
@@ -502,7 +706,13 @@
         <div class="menu-list" style="margin-top:20px;">
           <div class="menu-item"><span class="menu-icon">📦</span><span class="menu-text">全部订单</span><span class="menu-arrow">›</span></div>
           <div class="menu-item"><span class="menu-icon">🎫</span><span class="menu-text">优惠券</span><span style="font-size:12px;color:#ff6b6b;">3张可用</span><span class="menu-arrow">›</span></div>
-          <div class="menu-item"><span class="menu-icon">⭐</span><span class="menu-text">我的收藏</span><span class="menu-arrow">›</span></div>
+          <div class="menu-item" style="background:linear-gradient(135deg,#fff7e6,#fff0f0);">
+            <span class="menu-icon">⭐</span>
+            <span class="menu-text" style="font-weight:600;">积分商城</span>
+            <span style="font-size:14px;color:#ff6b6b;font-weight:700;">5,680</span>
+            <span class="menu-arrow">›</span>
+          </div>
+          <div class="menu-item"><span class="menu-icon">💖</span><span class="menu-text">我的收藏</span><span class="menu-arrow">›</span></div>
           <div class="menu-item"><span class="menu-icon">📍</span><span class="menu-text">收货地址</span><span class="menu-arrow">›</span></div>
         </div>
 
@@ -526,17 +736,157 @@
         <div class="tab active"><span class="tab-icon">👤</span>我的</div>
       </div>
     </div>
+
+    <!-- POINTS PAGE -->
+    <div id="page-points" class="page">
+      <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+      <div class="points-header">
+        <div class="ph-title">🥇 黄金会员</div>
+        <div class="points-balance">
+          <span class="balance-num">5,680</span>
+          <span class="balance-unit">积分</span>
+        </div>
+        <div class="points-rule">💡 消费1元 = 1积分，永不过期</div>
+        <div class="points-stats">
+          <div class="ps-item">
+            <div class="ps-value">12,800</div>
+            <div class="ps-label">累计获得</div>
+          </div>
+          <div class="ps-item">
+            <div class="ps-value">7,120</div>
+            <div class="ps-label">已使用</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="points-tabs">
+        <span class="points-tab active">🎁 兑换服务</span>
+        <span class="points-tab">📊 积分明细</span>
+        <span class="points-tab">📋 兑换记录</span>
+      </div>
+
+      <div class="page-content">
+        <!-- 兑换服务列表 -->
+        <div class="points-service-card">
+          <div class="psc-img">🧹</div>
+          <div class="psc-info">
+            <div class="psc-name">家庭保洁服务</div>
+            <div class="psc-desc">专业保洁人员上门服务，含客厅、卧室、厨房、卫生间全方位清洁，时长约2小时。</div>
+            <div class="psc-meta">
+              <span>已兑 328次</span>
+              <span>剩余 50份</span>
+            </div>
+            <div class="psc-bottom">
+              <div>
+                <span class="psc-price">1,000</span><span style="font-size:11px;color:#ff6b6b;">积分</span>
+                <span class="psc-market">¥128</span>
+              </div>
+              <span class="psc-btn">立即兑换</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="points-service-card">
+          <div class="psc-img">🚗</div>
+          <div class="psc-info">
+            <div class="psc-name">精致洗车服务</div>
+            <div class="psc-desc">小区内上门精洗，含车身清洗、内饰吸尘、轮胎护理、玻璃清洁。</div>
+            <div class="psc-meta">
+              <span>已兑 156次</span>
+              <span>剩余 100份</span>
+            </div>
+            <div class="psc-bottom">
+              <div>
+                <span class="psc-price">800</span><span style="font-size:11px;color:#ff6b6b;">积分</span>
+                <span class="psc-market">¥68</span>
+              </div>
+              <span class="psc-btn">立即兑换</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="points-service-card">
+          <div class="psc-img">🏠</div>
+          <div class="psc-info">
+            <div class="psc-name">物业费抵扣（1个月）</div>
+            <div class="psc-desc">使用积分抵扣一个月物业费，直接抵扣至物业账单。</div>
+            <div class="psc-meta">
+              <span>已兑 45次</span>
+              <span>剩余 20份</span>
+            </div>
+            <div class="psc-bottom">
+              <div>
+                <span class="psc-price">30,000</span><span style="font-size:11px;color:#ff6b6b;">积分</span>
+                <span class="psc-market">¥300</span>
+              </div>
+              <span class="psc-btn disabled">积分不足</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="points-service-card">
+          <div class="psc-img">🧼</div>
+          <div class="psc-info">
+            <div class="psc-name">深度保洁服务（含厨房）</div>
+            <div class="psc-desc">深度保洁，含厨房油烟机清洗、卫生间除垢、全屋地板打蜡，时长约4小时。</div>
+            <div class="psc-meta">
+              <span>已兑 89次</span>
+              <span>剩余 30份</span>
+            </div>
+            <div class="psc-bottom">
+              <div>
+                <span class="psc-price">2,000</span><span style="font-size:11px;color:#ff6b6b;">积分</span>
+                <span class="psc-market">¥258</span>
+              </div>
+              <span class="psc-btn">立即兑换</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="points-service-card">
+          <div class="psc-img">🏢</div>
+          <div class="psc-info">
+            <div class="psc-name">物业费抵扣（一季度）</div>
+            <div class="psc-desc">使用积分抵扣一季度（3个月）物业费，超值兑换。</div>
+            <div class="psc-meta">
+              <span>已兑 12次</span>
+              <span>剩余 5份</span>
+            </div>
+            <div class="psc-bottom">
+              <div>
+                <span class="psc-price">80,000</span><span style="font-size:11px;color:#ff6b6b;">积分</span>
+                <span class="psc-market">¥900</span>
+              </div>
+              <span class="psc-btn disabled">积分不足</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:20px;"></div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="tab"><span class="tab-icon">🏠</span>首页</div>
+        <div class="tab"><span class="tab-icon">📂</span>分类</div>
+        <div class="tab"><span class="tab-icon">👥</span>社区</div>
+        <div class="tab"><span class="tab-icon">🛒</span>购物车</div>
+        <div class="tab active"><span class="tab-icon">👤</span>我的</div>
+      </div>
+    </div>
   </div>
 
   <!-- Description Panel -->
   <div class="desc-panel">
     <h3>🎨 设计说明</h3>
     <p>
-      <strong>产品名称：</strong>邻选社区 — 定位为社区私域购物平台<br>
-      <strong>设计理念：</strong>以温暖、信任、便捷为核心，打造「邻里之间的线上菜市场」<br>
+      <strong>产品名称：</strong>邻选社区 — 定位为社区私域快消品购物平台<br>
+      <strong>商业模式：</strong>地下仓储直供 + 社区团购 + 快消品零售<br>
       <strong>核心特色：</strong>
     </p>
     <div class="feature-list">
+      <span class="feature-tag">🏭 地下仓储</span>
+      <span class="feature-tag">🍽️ 赏味提示</span>
+      <span class="feature-tag">⭐ 积分商城</span>
       <span class="feature-tag">🏘️ 小区绑定</span>
       <span class="feature-tag">👥 团长分销</span>
       <span class="feature-tag">🚀 社区配送</span>
@@ -548,6 +898,14 @@
       <span class="feature-tag">📊 数据看板</span>
       <span class="feature-tag">🔔 消息推送</span>
     </div>
+    <p style="margin-top:16px;">
+      <strong>仓储体系：</strong>1000+地下恒温仓库，分为冷链仓（128座）、常温仓（652座）、干燥仓（320座），
+      确保水饮、啤酒、方便面、牛奶、坚果等快消品在最佳条件下储存。<br>
+      <strong>赏味系统：</strong>每件商品标注保质期分类（长保质期/中保质期/短期）、生产日期、赏味期状态（最佳赏味期/正常食用期/临近保质期），
+      并提供个性化最佳赏味提示，让用户喝得更安心、吃得更放心。<br>
+      <strong>积分商城：</strong>消费1元=1积分，永不过期。积分可兑换保洁服务、洗车服务、物业费抵扣等社区实用服务，
+      形成"消费→积分→服务"的完整闭环，增强用户粘性。
+    </p>
   </div>
 </div>
 
