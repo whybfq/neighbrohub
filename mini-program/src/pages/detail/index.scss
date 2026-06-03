@@ -178,6 +178,16 @@
       color: #333;
     }
 
+    .leader-link {
+      color: #667eea !important;
+      cursor: pointer;
+      transition: opacity 0.2s;
+
+      &:active {
+        opacity: 0.6;
+      }
+    }
+
     .value-wrap {
       flex: 1;
 
@@ -188,6 +198,89 @@
         margin-top: 4px;
       }
     }
+  }
+}
+
+// 仓储与赏味信息
+.storage-section {
+  background: #fff;
+  padding: 24px;
+  margin-bottom: 16px;
+
+  .storage-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+
+    .storage-icon {
+      font-size: 32px;
+    }
+
+    .storage-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: #333;
+    }
+  }
+
+  .storage-info-grid {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 16px;
+
+    .storage-info-item {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .storage-label {
+        font-size: 24px;
+        color: #999;
+        flex-shrink: 0;
+      }
+
+      .storage-value {
+        font-size: 24px;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .shelf-life-tag {
+        font-size: 22px;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+      }
+
+      .taste-status-tag {
+        font-size: 22px;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .taste-tip-card {
+    background: linear-gradient(135deg, #f6ffed, #f0fff4);
+    border: 1px solid #b7eb8f;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+
+    .taste-tip-text {
+      font-size: 26px;
+      color: #389e0d;
+      line-height: 1.6;
+    }
+  }
+
+  .storage-desc {
+    font-size: 22px;
+    color: #999;
+    line-height: 1.5;
   }
 }
 
@@ -522,14 +615,22 @@
       flex-direction: column;
       align-items: center;
       gap: 2px;
+      cursor: pointer;
+      transition: transform 0.15s;
+
+      &:active {
+        transform: scale(1.1);
+      }
 
       .action-icon {
         font-size: 36px;
+        transition: transform 0.2s;
       }
 
       .action-text {
         font-size: 20px;
         color: #666;
+        transition: color 0.2s;
       }
     }
   }

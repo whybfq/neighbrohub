@@ -5,7 +5,12 @@ import { useUserStore, useCartStore } from '../../store';
 import { productApi, cartApi } from '../../services/api';
 import { mockProducts } from '../../services/mockData';
 import { formatPrice, showToast, navigateTo, PAGE_PATH } from '../../utils';
-import { COMMISSION_RATE, DELIVERY_TYPE, POINTS_PER_YUAN } from '../../config/constants';
+import {
+  COMMISSION_RATE, DELIVERY_TYPE, POINTS_PER_YUAN,
+  STORAGE_TYPE, STORAGE_TYPE_TEXT, STORAGE_TYPE_ICON,
+  SHELF_LIFE_CATEGORY, SHELF_LIFE_CATEGORY_TEXT, SHELF_LIFE_CATEGORY_COLOR,
+  TASTE_PERIOD_STATUS_TEXT, TASTE_PERIOD_STATUS_COLOR
+} from '../../config/constants';
 import './index.scss';
 
 interface State {
@@ -16,6 +21,7 @@ interface State {
   actionType: 'cart' | 'buy';
   currentImageIndex: number;
   loading: boolean;
+  isFavorite: boolean;
 }
 
 export default class DetailPage extends Component<{}, State> {
@@ -26,7 +32,8 @@ export default class DetailPage extends Component<{}, State> {
     showSkuPanel: false,
     actionType: 'cart',
     currentImageIndex: 0,
-    loading: true
+    loading: true,
+    isFavorite: false
   };
 
   componentDidMount() {
@@ -138,6 +145,21 @@ export default class DetailPage extends Component<{}, State> {
     this.setState({ currentImageIndex: index });
   };
 
+  // 切换收藏
+  handleToggleFavorite = () => {
+    const { isFavorite } = this.state;
+    this.setState({ isFavorite: !isFavorite });
+    showToast(isFavorite ? '已取消收藏' : '已收藏', 'success');
+  };
+
+  // 查看团长
+  handleViewLeader = () => {
+    showToast('查看团长信息');
+    setTimeout(() => {
+      Taro.showToast({ title: '团长详情开发中', icon: 'none' });
+    }, 600);
+  };
+
   // 分享
   onShareAppMessage() {
     const { product } = this.state;
@@ -151,7 +173,7 @@ export default class DetailPage extends Component<{}, State> {
   }
 
   render() {
-    const { product, selectedSku, quantity, showSkuPanel, currentImageIndex, loading } = this.state;
+    const { product, selectedSku, quantity, showSkuPanel, currentImageIndex, loading, isFavorite } = this.state;
 
     if (loading || !product) {
       return (
@@ -239,9 +261,63 @@ export default class DetailPage extends Component<{}, State> {
             </View>
             <View className='delivery-row'>
               <Text className='label'>团长</Text>
-              <Text className='value'>👤 王阿姨 (阳光花园) ›</Text>
+              <Text className='value leader-link' onClick={this.handleViewLeader}>👤 王阿姨 (阳光花园) ›</Text>
             </View>
           </View>
+
+          {/* 仓储与赏味信息 */}
+          {product.storageType && (
+            <View className='storage-section'>
+              <View className='storage-header'>
+                <Text className='storage-icon'>🏗️</Text>
+                <Text className='storage-title'>地下仓储 & 赏味提示</Text>
+              </View>
+              <View className='storage-info-grid'>
+                <View className='storage-info-item'>
+                  <Text className='storage-label'>仓储类型</Text>
+                  <Text className='storage-value'>
+                    {STORAGE_TYPE_ICON[product.storageType] || '📦'} {STORAGE_TYPE_TEXT[product.storageType] || '常温仓'}
+                  </Text>
+                </View>
+                <View className='storage-info-item'>
+                  <Text className='storage-label'>仓库编号</Text>
+                  <Text className='storage-value'>📍 {product.warehouseZone || '--'}</Text>
+                </View>
+              </View>
+              <View className='storage-info-grid'>
+                <View className='storage-info-item'>
+                  <Text className='storage-label'>保质期分类</Text>
+                  <View className='shelf-life-tag' style={{ background: SHELF_LIFE_CATEGORY_COLOR[product.shelfLifeCategory] + '20', color: SHELF_LIFE_CATEGORY_COLOR[product.shelfLifeCategory] }}>
+                    <Text>{SHELF_LIFE_CATEGORY_TEXT[product.shelfLifeCategory] || '--'}</Text>
+                  </View>
+                </View>
+                <View className='storage-info-item'>
+                  <Text className='storage-label'>保质期</Text>
+                  <Text className='storage-value'>📅 {product.shelfLifeDays}天</Text>
+                </View>
+              </View>
+              <View className='storage-info-grid'>
+                <View className='storage-info-item'>
+                  <Text className='storage-label'>生产日期</Text>
+                  <Text className='storage-value'>🏭 {product.productionDate || '--'}</Text>
+                </View>
+                <View className='storage-info-item'>
+                  <Text className='storage-label'>赏味状态</Text>
+                  <View className='taste-status-tag' style={{ background: TASTE_PERIOD_STATUS_COLOR[product.tastePeriodStatus] + '20', color: TASTE_PERIOD_STATUS_COLOR[product.tastePeriodStatus] }}>
+                    <Text>{TASTE_PERIOD_STATUS_TEXT[product.tastePeriodStatus] || '--'}</Text>
+                  </View>
+                </View>
+              </View>
+              {product.tastePeriodTip && (
+                <View className='taste-tip-card'>
+                  <Text className='taste-tip-text'>{product.tastePeriodTip}</Text>
+                </View>
+              )}
+              <Text className='storage-desc'>
+                💡 本商品存放于地下恒温仓库（共1000+仓），温度15-25°C，湿度40-60%，确保最佳储存条件。
+              </Text>
+            </View>
+          )}
 
           {/* 规格选择 */}
           <View className='sku-section'>
@@ -361,9 +437,11 @@ export default class DetailPage extends Component<{}, State> {
         {/* 底部操作栏 */}
         <View className='bottom-bar'>
           <View className='action-icons'>
-            <View className='action-item' onClick={() => showToast('已收藏', 'success')}>
-              <Text className='action-icon'>⭐</Text>
-              <Text className='action-text'>收藏</Text>
+            <View className='action-item' onClick={this.handleToggleFavorite}>
+              <Text className='action-icon'>{isFavorite ? '★' : '⭐'}</Text>
+              <Text className='action-text' style={{ color: isFavorite ? '#ff4d4f' : '#666' }}>
+                {isFavorite ? '已收藏' : '收藏'}
+              </Text>
             </View>
             <View className='action-item' onClick={() => Taro.switchTab({ url: PAGE_PATH.CART })}>
               <Text className='action-icon'>🛒</Text>

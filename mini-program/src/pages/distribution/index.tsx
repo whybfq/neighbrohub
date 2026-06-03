@@ -47,7 +47,33 @@ export default class DistributionPage extends Component<{}, State> {
   handleShare = () => {
     const store = useUserStore.getState();
     const code = store.userInfo?.distributorCode || '';
-    // 触发微信分享
+    const { data } = this.state;
+
+    // 在小程序中触发分享
+    Taro.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    });
+
+    // 同时提供复制链接功能
+    Taro.showModal({
+      title: '分享邀请',
+      content: `您的邀请码：${code}\n分享给邻居，他们下单你就能赚佣金！`,
+      confirmText: '复制邀请码',
+      success: (res) => {
+        if (res.confirm) {
+          this.handleCopyCode();
+        }
+      }
+    });
+  };
+
+  // 查看统计数据详情
+  handleViewStatDetail = (type: string) => {
+    showToast(`查看${type}详情`);
+    setTimeout(() => {
+      Taro.showToast({ title: '数据详情开发中', icon: 'none' });
+    }, 600);
   };
 
   // 申请提现
@@ -121,6 +147,11 @@ export default class DistributionPage extends Component<{}, State> {
                   💡 分享邀请码或商品链接，邻居通过你的链接下单，你就能获得 {COMMISSION_RATE.BUILDING_LEADER * 100}% 佣金
                 </Text>
               </View>
+              <View className='share-btn-wrap'>
+                <View className='share-btn' onClick={this.handleShare}>
+                  <Text>📤 分享邀请链接</Text>
+                </View>
+              </View>
             </View>
           </View>
 
@@ -128,27 +159,27 @@ export default class DistributionPage extends Component<{}, State> {
           <View className='stats-section'>
             <Text className='section-title'>📊 本月数据</Text>
             <View className='stats-grid'>
-              <View className='stat-card'>
+              <View className='stat-card' onClick={() => this.handleViewStatDetail('今日订单')}>
                 <Text className='stat-value'>{data.todayOrders}</Text>
                 <Text className='stat-label'>今日订单</Text>
               </View>
-              <View className='stat-card'>
+              <View className='stat-card' onClick={() => this.handleViewStatDetail('累计订单')}>
                 <Text className='stat-value'>{data.totalOrders}</Text>
                 <Text className='stat-label'>累计订单</Text>
               </View>
-              <View className='stat-card'>
+              <View className='stat-card' onClick={() => this.handleViewStatDetail('今日新增')}>
                 <Text className='stat-value'>{data.todayMembers}</Text>
                 <Text className='stat-label'>今日新增</Text>
               </View>
-              <View className='stat-card'>
+              <View className='stat-card' onClick={() => this.handleViewStatDetail('团队成员')}>
                 <Text className='stat-value'>{data.totalMembers}</Text>
                 <Text className='stat-label'>团队成员</Text>
               </View>
-              <View className='stat-card highlight'>
+              <View className='stat-card highlight' onClick={() => this.handleViewStatDetail('本月佣金')}>
                 <Text className='stat-value'>¥{formatPrice(data.monthlyCommission)}</Text>
                 <Text className='stat-label'>本月佣金</Text>
               </View>
-              <View className='stat-card highlight'>
+              <View className='stat-card highlight' onClick={() => this.handleViewStatDetail('小区排名')}>
                 <Text className='stat-value'>No.{data.rank}</Text>
                 <Text className='stat-label'>小区排名</Text>
               </View>

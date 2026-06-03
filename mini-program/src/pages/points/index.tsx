@@ -13,6 +13,8 @@ interface State {
   exchanges: any[];
   activeTab: 'services' | 'records' | 'exchanges';
   loading: boolean;
+  exchangingId: string | null;
+  exchangeSuccess: boolean;
 }
 
 export default class PointsPage extends Component<{}, State> {
@@ -21,7 +23,9 @@ export default class PointsPage extends Component<{}, State> {
     records: [],
     exchanges: [],
     activeTab: 'services',
-    loading: true
+    loading: true,
+    exchangingId: null,
+    exchangeSuccess: false
   };
 
   componentDidMount() {
@@ -64,12 +68,24 @@ export default class PointsPage extends Component<{}, State> {
 
     if (!confirmed) return;
 
+    this.setState({ exchangingId: service.id });
+
     try {
       await pointsApi.exchangeService(service.id);
       store.spendPoints(service.pointsPrice);
+
+      // 兑换成功动画
+      this.setState({ exchangingId: null, exchangeSuccess: true });
       showToast('兑换成功！', 'success');
-      this.loadData(); // 刷新数据
+
+      // 2秒后隐藏成功动画
+      setTimeout(() => {
+        this.setState({ exchangeSuccess: false });
+      }, 2000);
+
+      this.loadData();
     } catch (err: any) {
+      this.setState({ exchangingId: null });
       showToast(err.message || '兑换失败');
     }
   };
@@ -80,7 +96,7 @@ export default class PointsPage extends Component<{}, State> {
   };
 
   render() {
-    const { services, records, exchanges, activeTab, loading } = this.state;
+    const { services, records, exchanges, activeTab, loading, exchangingId, exchangeSuccess } = this.state;
     const store = usePointsStore.getState();
 
     if (loading) {
@@ -95,6 +111,17 @@ export default class PointsPage extends Component<{}, State> {
 
     return (
       <View className='points-page'>
+        {/* 兑换成功动画 */}
+        {exchangeSuccess && (
+          <View className='exchange-success-overlay'>
+            <View className='success-card'>
+              <Text className='success-icon'>🎉</Text>
+              <Text className='success-title'>兑换成功！</Text>
+              <Text className='success-desc'>服务将在24小时内生效</Text>
+            </View>
+          </View>
+        )}
+
         {/* 积分头部 */}
         <View className='points-header'>
           <View className='header-bg' />
@@ -177,13 +204,15 @@ export default class PointsPage extends Component<{}, State> {
                           </View>
                         </View>
                         <View
-                          className={`exchange-btn ${store.totalPoints < service.pointsPrice ? 'disabled' : ''}`}
+                          className={`exchange-btn ${store.totalPoints < service.pointsPrice ? 'disabled' : ''} ${exchangingId === service.id ? 'exchanging' : ''}`}
                           onClick={() => this.handleExchange(service)}
                         >
                           <Text>
-                            {store.totalPoints < service.pointsPrice
-                              ? `还差 ${service.pointsPrice - store.totalPoints} 积分`
-                              : '立即兑换'
+                            {exchangingId === service.id
+                              ? '兑换中...'
+                              : store.totalPoints < service.pointsPrice
+                                ? `还差 ${service.pointsPrice - store.totalPoints} 积分`
+                                : '立即兑换'
                             }
                           </Text>
                         </View>

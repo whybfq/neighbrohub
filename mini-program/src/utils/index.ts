@@ -179,3 +179,39 @@ export const formatPoints = (points: number): string => {
   }
   return points.toLocaleString();
 };
+
+/**
+ * 计算商品剩余保质期天数
+ * @param productionDate 生产日期 (ISO字符串或 YYYY-MM-DD)
+ * @param shelfLifeDays 保质期天数
+ */
+export const getRemainingShelfDays = (productionDate: string, shelfLifeDays: number): number => {
+  if (!productionDate || !shelfLifeDays) return 0;
+  const prodDate = new Date(productionDate.replace(/-/g, '/'));
+  const expireDate = new Date(prodDate.getTime() + shelfLifeDays * 24 * 3600 * 1000);
+  const now = new Date();
+  return Math.max(0, Math.ceil((expireDate.getTime() - now.getTime()) / (24 * 3600 * 1000)));
+};
+
+/**
+ * 计算最佳赏味期剩余天数
+ * 最佳赏味期 = 生产日期后的前1/3保质期时间
+ */
+export const getTastePrimeDays = (productionDate: string, shelfLifeDays: number): number => {
+  if (!productionDate || !shelfLifeDays) return 0;
+  const prodDate = new Date(productionDate.replace(/-/g, '/'));
+  const primeEnd = new Date(prodDate.getTime() + (shelfLifeDays / 3) * 24 * 3600 * 1000);
+  const now = new Date();
+  return Math.max(0, Math.ceil((primeEnd.getTime() - now.getTime()) / (24 * 3600 * 1000)));
+};
+
+/**
+ * 格式化保质期剩余天数显示
+ */
+export const formatShelfLife = (productionDate: string, shelfLifeDays: number): string => {
+  const remaining = getRemainingShelfDays(productionDate, shelfLifeDays);
+  if (remaining <= 0) return '已过期';
+  if (remaining <= 30) return `仅剩${remaining}天`;
+  if (remaining <= 90) return `剩余${Math.ceil(remaining / 30)}个月`;
+  return `剩余${Math.ceil(remaining / 30)}个月`;
+};

@@ -122,6 +122,28 @@
         line-height: 1.6;
       }
     }
+
+    .share-btn-wrap {
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+
+      .share-btn {
+        padding: 14px 40px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        border-radius: 30px;
+        font-size: 26px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:active {
+          transform: scale(0.95);
+          opacity: 0.9;
+        }
+      }
+    }
   }
 }
 
@@ -147,6 +169,13 @@
       border-radius: 12px;
       padding: 20px 10px;
       text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:active {
+        transform: scale(0.95);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
 
       &.highlight {
         background: linear-gradient(135deg, #f5f7ff, #eef0ff);

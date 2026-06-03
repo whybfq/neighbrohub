@@ -140,7 +140,7 @@ export default class OrdersPage extends Component<{}, State> {
     switch (status) {
       case ORDER_STATUS.PENDING_PAY:
         return (
-          <View className='action-btns'>
+          <View className='action-btns' onClick={(e: any) => e.stopPropagation()}>
             <View className='action-btn secondary' onClick={() => this.handleCancel(order.id)}>
               <Text>取消订单</Text>
             </View>
@@ -151,7 +151,7 @@ export default class OrdersPage extends Component<{}, State> {
         );
       case ORDER_STATUS.DELIVERING:
         return (
-          <View className='action-btns'>
+          <View className='action-btns' onClick={(e: any) => e.stopPropagation()}>
             <View className='action-btn secondary' onClick={() => this.handleViewDetail(order.id)}>
               <Text>查看物流</Text>
             </View>
@@ -162,7 +162,7 @@ export default class OrdersPage extends Component<{}, State> {
         );
       case ORDER_STATUS.COMPLETED:
         return (
-          <View className='action-btns'>
+          <View className='action-btns' onClick={(e: any) => e.stopPropagation()}>
             <View className='action-btn secondary' onClick={() => this.handleRebuy(order)}>
               <Text>再来一单</Text>
             </View>
@@ -173,7 +173,7 @@ export default class OrdersPage extends Component<{}, State> {
         );
       case ORDER_STATUS.PENDING_DELIVER:
         return (
-          <View className='action-btns'>
+          <View className='action-btns' onClick={(e: any) => e.stopPropagation()}>
             <View className='action-btn secondary' onClick={() => this.handleCancel(order.id)}>
               <Text>取消订单</Text>
             </View>
@@ -226,7 +226,7 @@ export default class OrdersPage extends Component<{}, State> {
             />
           ) : (
             filteredOrders.map(order => (
-              <View key={order.id} className='order-card'>
+              <View key={order.id} className='order-card' onClick={() => this.handleViewDetail(order.id)}>
                 {/* 订单头部 */}
                 <View className='order-card-header'>
                   <Text className='order-no'>订单号：{order.orderNo}</Text>

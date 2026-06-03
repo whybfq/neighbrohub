@@ -19,6 +19,16 @@
     display: flex;
     align-items: center;
     gap: 6px;
+    padding: 8px 16px 8px 8px;
+    border-radius: 32px;
+    background: #f5f5f5;
+    transition: background 0.2s;
+    cursor: pointer;
+
+    &:active {
+      background: #e8e8e8;
+      transform: scale(0.97);
+    }
 
     .location-icon {
       font-size: 28px;
@@ -33,12 +43,34 @@
     .location-arrow {
       font-size: 20px;
       color: #999;
+      transition: transform 0.3s;
     }
   }
 
   .header-right {
     .notify-icon {
       font-size: 36px;
+      padding: 8px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s;
+      position: relative;
+
+      &:active {
+        transform: scale(1.15);
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 10px;
+        height: 10px;
+        background: #ff4d4f;
+        border-radius: 50%;
+        border: 2px solid #fff;
+      }
     }
   }
 }
@@ -53,11 +85,19 @@
     background: #f5f5f5;
     border-radius: 32px;
     padding: 12px 20px;
+    transition: all 0.2s;
 
     .search-icon {
       font-size: 28px;
       margin-right: 10px;
       opacity: 0.4;
+      padding: 4px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+
+      &:active {
+        opacity: 0.8;
+      }
     }
 
     .search-input {
@@ -91,9 +131,16 @@
     padding: 0 40px;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
+    transition: opacity 0.3s, transform 0.3s;
 
     &.active {
       display: flex;
+    }
+
+    &:active {
+      transform: scale(0.98);
+      opacity: 0.9;
     }
   }
 
@@ -180,6 +227,17 @@
     gap: 8px;
     flex-shrink: 0;
     width: 120px;
+    cursor: pointer;
+    transition: transform 0.2s;
+
+    &:active {
+      transform: scale(0.93);
+
+      .category-icon {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+    }
 
     .category-icon {
       width: 88px;
@@ -188,6 +246,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
 
       .icon-text {
         font-size: 44px;
@@ -211,6 +270,13 @@
   background: linear-gradient(135deg, #fff7e6, #fff0d9);
   border-radius: 16px;
   border: 1px solid #ffd591;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(250, 140, 22, 0.2);
+  }
 
   .points-left {
     display: flex;
@@ -255,6 +321,90 @@
   }
 }
 
+// 地下仓储特色入口
+.warehouse-entry {
+  margin: 0 24px 16px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #e6f7ff, #f0f5ff);
+  border-radius: 16px;
+  border: 1px solid #91d5ff;
+
+  .warehouse-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .warehouse-icon {
+      font-size: 44px;
+    }
+
+    .warehouse-title-wrap {
+      .warehouse-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #333;
+        display: block;
+      }
+
+      .warehouse-subtitle {
+        font-size: 22px;
+        color: #0050b3;
+      }
+    }
+  }
+
+  .warehouse-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 14px;
+
+    .warehouse-stat-item {
+      flex: 1;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 12px;
+      padding: 12px 8px;
+
+      .stat-icon {
+        font-size: 28px;
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .stat-label {
+        font-size: 20px;
+        color: #666;
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1890ff;
+      }
+    }
+  }
+
+  .warehouse-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+
+    .tip-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .tip-text {
+      font-size: 22px;
+      color: #0050b3;
+      line-height: 1.5;
+    }
+  }
+}
+
 // 楼长推荐
 .leader-recommend {
   margin: 0 24px 16px;
@@ -262,6 +412,13 @@
   border-radius: 16px;
   padding: 20px;
   border: 1px solid #ffd591;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(250, 140, 22, 0.2);
+  }
 
   .recommend-header {
     display: flex;
@@ -348,6 +505,13 @@
     .section-more {
       font-size: 24px;
       color: #999;
+      padding: 4px 8px;
+      cursor: pointer;
+      transition: color 0.2s;
+
+      &:active {
+        color: #667eea;
+      }
     }
   }
 
@@ -368,6 +532,13 @@
     padding: 16px;
     flex-shrink: 0;
     text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:active {
+      transform: scale(0.96);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
 
     .flash-img {
       width: 120px;
@@ -467,6 +638,13 @@
     .section-more {
       font-size: 24px;
       color: #999;
+      padding: 4px 8px;
+      cursor: pointer;
+      transition: color 0.2s;
+
+      &:active {
+        color: #667eea;
+      }
     }
   }
 

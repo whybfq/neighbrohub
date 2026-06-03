@@ -54,6 +54,13 @@
   margin: 16px 24px;
   border-radius: 16px;
   overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
 
   .order-card-header {
     display: flex;
@@ -179,6 +186,13 @@
         border-radius: 20px;
         font-size: 24px;
         font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+
+        &:active {
+          transform: scale(0.95);
+          opacity: 0.85;
+        }
 
         &.primary {
           background: #667eea;

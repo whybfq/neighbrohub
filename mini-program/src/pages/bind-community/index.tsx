@@ -4,6 +4,7 @@ import Taro from '@tarojs/taro';
 import { useUserStore } from '../../store';
 import { userApi } from '../../services/api';
 import { mockCommunity } from '../../services/mockData';
+import { showToast, navigateTo, PAGE_PATH } from '../../utils';
 import './index.scss';
 
 interface State {
@@ -56,6 +57,30 @@ export default class BindCommunityPage extends Component<{}, State> {
   handleUnitChange = (e: any) => {
     const index = e.detail.value;
     this.setState({ selectedUnit: this.state.units[index] });
+  };
+
+  // 切换小区
+  handleSwitchCommunity = () => {
+    Taro.showActionSheet({
+      itemList: ['阳光花园小区', '翠竹苑小区', '碧海蓝天小区', '金色家园小区'],
+      success: (res) => {
+        const communities = ['阳光花园小区', '翠竹苑小区', '碧海蓝天小区', '金色家园小区'];
+        showToast(`已选择：${communities[res.tapIndex]}`);
+      }
+    });
+  };
+
+  // 申请成为楼长
+  handleApplyLeader = () => {
+    Taro.showModal({
+      title: '成为楼长',
+      content: '绑定小区后，您可以申请成为楼长，分享商品给邻居赚取佣金。要查看楼长申请详情吗？',
+      success: (res) => {
+        if (res.confirm) {
+          navigateTo(PAGE_PATH.DISTRIBUTION);
+        }
+      }
+    });
   };
 
   // 提交绑定
@@ -138,7 +163,7 @@ export default class BindCommunityPage extends Component<{}, State> {
             <View className='community-card'>
               <Text className='community-name'>{community.name}</Text>
               <Text className='community-addr'>{community.address}</Text>
-              <Text className='change-btn'>不是我的小区？切换</Text>
+              <Text className='change-btn' onClick={this.handleSwitchCommunity}>不是我的小区？切换</Text>
             </View>
           </View>
 
@@ -217,8 +242,9 @@ export default class BindCommunityPage extends Component<{}, State> {
           <View className='leader-tip'>
             <Text className='tip-icon'>💡</Text>
             <Text className='tip-text'>
-              绑定完成后，您也可以申请成为<Text className='highlight'>楼长</Text>，
-              分享商品给邻居赚取佣金哦！
+              绑定完成后，您也可以申请成为
+              <Text className='highlight' onClick={this.handleApplyLeader}>楼长</Text>
+              ，分享商品给邻居赚取佣金哦！
             </Text>
           </View>
         </View>

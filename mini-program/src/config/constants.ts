@@ -65,6 +65,65 @@ export const PAGE_PATH = {
   POINTS: '/pages/points/points'
 };
 
+// ==================== 仓储系统常量 ====================
+
+// 仓储类型（地下仓库）
+export const STORAGE_TYPE = {
+  COLD_CHAIN: 'cold_chain',       // 冷链仓（冷藏/冷冻，2-8°C / -18°C）
+  NORMAL: 'normal',               // 常温仓（恒温恒湿，15-25°C）
+  DRY: 'dry'                      // 干燥仓（低湿度，适合干货）
+};
+
+export const STORAGE_TYPE_TEXT: Record<string, string> = {
+  [STORAGE_TYPE.COLD_CHAIN]: '冷链仓',
+  [STORAGE_TYPE.NORMAL]: '常温仓',
+  [STORAGE_TYPE.DRY]: '干燥仓'
+};
+
+export const STORAGE_TYPE_ICON: Record<string, string> = {
+  [STORAGE_TYPE.COLD_CHAIN]: '❄️',
+  [STORAGE_TYPE.NORMAL]: '🏭',
+  [STORAGE_TYPE.DRY]: '☀️'
+};
+
+// 保质期分类
+export const SHELF_LIFE_CATEGORY = {
+  LONG_TERM: 'long_term',       // 长保质期（>12个月）：水、啤酒、方便面等
+  MEDIUM_TERM: 'medium_term',   // 中等保质期（3-12个月）：调味品、干货等
+  SHORT_TERM: 'short_term'      // 短保质期（<3个月）：生鲜、乳制品等
+};
+
+export const SHELF_LIFE_CATEGORY_TEXT: Record<string, string> = {
+  [SHELF_LIFE_CATEGORY.LONG_TERM]: '长保质期',
+  [SHELF_LIFE_CATEGORY.MEDIUM_TERM]: '中等保质期',
+  [SHELF_LIFE_CATEGORY.SHORT_TERM]: '短保质期'
+};
+
+export const SHELF_LIFE_CATEGORY_COLOR: Record<string, string> = {
+  [SHELF_LIFE_CATEGORY.LONG_TERM]: '#52c41a',
+  [SHELF_LIFE_CATEGORY.MEDIUM_TERM]: '#fa8c16',
+  [SHELF_LIFE_CATEGORY.SHORT_TERM]: '#ff4d4f'
+};
+
+// 最佳赏味期状态
+export const TASTE_PERIOD_STATUS = {
+  PRIME: 'prime',         // 最佳赏味期（生产后1/3时间内）
+  NORMAL: 'normal',       // 正常可食用
+  APPROACHING: 'approaching' // 临近保质期（最后1/4时间）
+};
+
+export const TASTE_PERIOD_STATUS_TEXT: Record<string, string> = {
+  [TASTE_PERIOD_STATUS.PRIME]: '最佳赏味期',
+  [TASTE_PERIOD_STATUS.NORMAL]: '正常食用期',
+  [TASTE_PERIOD_STATUS.APPROACHING]: '临近保质期'
+};
+
+export const TASTE_PERIOD_STATUS_COLOR: Record<string, string> = {
+  [TASTE_PERIOD_STATUS.PRIME]: '#52c41a',
+  [TASTE_PERIOD_STATUS.NORMAL]: '#1890ff',
+  [TASTE_PERIOD_STATUS.APPROACHING]: '#fa8c16'
+};
+
 // ==================== 积分系统常量 ====================
 
 // 积分获取规则：1元 = 1积分

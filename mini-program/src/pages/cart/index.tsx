@@ -6,10 +6,26 @@ import { formatPrice, navigateTo, showToast, PAGE_PATH } from '../../utils';
 import EmptyState from '../../components/empty-state/index';
 import './index.scss';
 
-export default class CartPage extends Component {
+interface State {
+  editMode: boolean;
+  deletingId: string | null;
+}
+
+export default class CartPage extends Component<{}, State> {
+  state: State = {
+    editMode: false,
+    deletingId: null
+  };
+
   componentDidMount() {
     // 实际项目加载购物车数据
   }
+
+  // 切换管理模式
+  handleToggleEditMode = () => {
+    this.setState({ editMode: !this.state.editMode });
+    showToast(this.state.editMode ? '退出管理' : '进入管理模式');
+  };
 
   // 切换选中
   handleToggleCheck = (id: string) => {
@@ -36,16 +52,42 @@ export default class CartPage extends Component {
     }
   };
 
-  // 删除商品
+  // 删除商品（带动画）
   handleDelete = (id: string) => {
+    this.setState({ deletingId: id });
     Taro.showModal({
       title: '提示',
       content: '确定要删除该商品吗？',
       success: (res) => {
         if (res.confirm) {
-          const cartStore = useCartStore.getState();
-          cartStore.removeItem(id);
-          showToast('已删除');
+          setTimeout(() => {
+            const cartStore = useCartStore.getState();
+            cartStore.removeItem(id);
+            this.setState({ deletingId: null });
+            showToast('已删除');
+          }, 200);
+        } else {
+          this.setState({ deletingId: null });
+        }
+      }
+    });
+  };
+
+  // 批量删除
+  handleBatchDelete = () => {
+    const cartStore = useCartStore.getState();
+    const checkedIds = cartStore.items.filter(i => i.checked).map(i => i.id);
+    if (checkedIds.length === 0) {
+      showToast('请选择商品');
+      return;
+    }
+    Taro.showModal({
+      title: '批量删除',
+      content: `确定要删除选中的 ${checkedIds.length} 件商品吗？`,
+      success: (res) => {
+        if (res.confirm) {
+          checkedIds.forEach(id => cartStore.removeItem(id));
+          showToast('已批量删除', 'success');
         }
       }
     });
@@ -81,6 +123,7 @@ export default class CartPage extends Component {
   render() {
     const cartStore = useCartStore.getState();
     const { items } = cartStore;
+    const { editMode, deletingId } = this.state;
     const allChecked = items.length > 0 && items.every(item => item.checked);
     const totalAmount = items.filter(i => i.checked).reduce((sum, i) => sum + i.price * i.quantity, 0);
     const checkedCount = items.filter(i => i.checked).reduce((sum, i) => sum + i.quantity, 0);
@@ -90,7 +133,12 @@ export default class CartPage extends Component {
         {/* 头部 */}
         <View className='cart-header'>
           <Text className='cart-title'>购物车</Text>
-          <Text className='cart-manage'>管理</Text>
+          <Text
+            className={`cart-manage ${editMode ? 'active' : ''}`}
+            onClick={this.handleToggleEditMode}
+          >
+            {editMode ? '完成' : '管理'}
+          </Text>
         </View>
 
         {items.length === 0 ? (
@@ -106,7 +154,10 @@ export default class CartPage extends Component {
             {/* 购物车列表 */}
             <View className='cart-list'>
               {items.map(item => (
-                <View key={item.id} className='cart-item'>
+                <View
+                  key={item.id}
+                  className={`cart-item ${deletingId === item.id ? 'deleting' : ''}`}
+                >
                   {/* 选择框 */}
                   <View
                     className={`cart-check ${item.checked ? 'checked' : ''}`}
@@ -116,12 +167,12 @@ export default class CartPage extends Component {
                   </View>
 
                   {/* 商品图 */}
-                  <View className='cart-item-img'>
+                  <View className='cart-item-img' onClick={() => navigateTo(PAGE_PATH.DETAIL, { id: item.productId })}>
                     <Text className='img-placeholder'>{item.productIcon}</Text>
                   </View>
 
                   {/* 商品信息 */}
-                  <View className='cart-item-info'>
+                  <View className='cart-item-info' onClick={() => navigateTo(PAGE_PATH.DETAIL, { id: item.productId })}>
                     <Text className='item-name'>{item.productName}</Text>
                     <Text className='item-sku'>规格：{item.skuName}</Text>
                     <View className='item-bottom'>
@@ -129,14 +180,14 @@ export default class CartPage extends Component {
                       <View className='qty-control'>
                         <View
                           className='qty-btn'
-                          onClick={() => this.handleQuantityChange(item.id, 'sub')}
+                          onClick={(e: any) => { e.stopPropagation(); this.handleQuantityChange(item.id, 'sub'); }}
                         >
                           <Text>−</Text>
                         </View>
                         <Text className='qty-num'>{item.quantity}</Text>
                         <View
                           className='qty-btn'
-                          onClick={() => this.handleQuantityChange(item.id, 'add')}
+                          onClick={(e: any) => { e.stopPropagation(); this.handleQuantityChange(item.id, 'add'); }}
                         >
                           <Text>+</Text>
                         </View>
@@ -161,13 +212,21 @@ export default class CartPage extends Component {
                 <Text className='check-all-text'>全选</Text>
               </View>
               <View className='footer-right'>
-                <View className='total-info'>
-                  <Text className='total-label'>合计：</Text>
-                  <Text className='total-price'>¥{formatPrice(totalAmount)}</Text>
-                </View>
-                <View className='checkout-btn' onClick={this.handleCheckout}>
-                  <Text>结算({checkedCount})</Text>
-                </View>
+                {editMode ? (
+                  <View className='batch-delete-btn' onClick={this.handleBatchDelete}>
+                    <Text>删除选中</Text>
+                  </View>
+                ) : (
+                  <>
+                    <View className='total-info'>
+                      <Text className='total-label'>合计：</Text>
+                      <Text className='total-price'>¥{formatPrice(totalAmount)}</Text>
+                    </View>
+                    <View className={`checkout-btn ${checkedCount === 0 ? 'disabled' : ''}`} onClick={this.handleCheckout}>
+                      <Text>结算({checkedCount})</Text>
+                    </View>
+                  </>
+                )}
               </View>
             </View>
           </View>

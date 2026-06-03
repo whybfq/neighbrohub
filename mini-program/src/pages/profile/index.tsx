@@ -1,9 +1,9 @@
 import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
-import { useUserStore } from '../../store';
-import { navigateTo, PAGE_PATH } from '../../utils';
-import { USER_ROLE, PAGE_PATH } from '../../config/constants';
+import { useUserStore, usePointsStore } from '../../store';
+import { navigateTo, PAGE_PATH, showToast } from '../../utils';
+import { USER_ROLE } from '../../config/constants';
 import './index.scss';
 
 export default class ProfilePage extends Component {
@@ -19,7 +19,10 @@ export default class ProfilePage extends Component {
 
   // 设置
   goToSettings = () => {
-    Taro.showToast({ title: '设置页面开发中', icon: 'none' });
+    showToast('加载设置中...');
+    setTimeout(() => {
+      Taro.showToast({ title: '设置页面开发中', icon: 'none' });
+    }, 800);
   };
 
   // 积分中心
@@ -29,11 +32,68 @@ export default class ProfilePage extends Component {
 
   // 地址管理
   goToAddress = () => {
-    Taro.showToast({ title: '地址管理开发中', icon: 'none' });
+    showToast('加载地址中...');
+    setTimeout(() => {
+      Taro.showToast({ title: '地址管理开发中', icon: 'none' });
+    }, 800);
+  };
+
+  // 优惠券
+  goToCoupons = () => {
+    showToast('我的优惠券');
+    setTimeout(() => {
+      Taro.showToast({ title: '优惠券页面开发中', icon: 'none' });
+    }, 800);
+  };
+
+  // 收藏
+  goToFavorites = () => {
+    showToast('我的收藏');
+    setTimeout(() => {
+      Taro.showToast({ title: '收藏页面开发中', icon: 'none' });
+    }, 800);
+  };
+
+  // 消息通知
+  goToNotifications = () => {
+    showToast('消息通知');
+    setTimeout(() => {
+      Taro.showToast({ title: '消息页面开发中', icon: 'none' });
+    }, 800);
+  };
+
+  // 帮助与反馈
+  goToHelp = () => {
+    showToast('帮助中心');
+    setTimeout(() => {
+      Taro.showToast({ title: '帮助页面开发中', icon: 'none' });
+    }, 800);
+  };
+
+  // 申请成为楼长
+  applyToBeLeader = () => {
+    Taro.showModal({
+      title: '申请成为楼长',
+      content: '申请成为楼长后，您可以分享商品给邻居并获得佣金收益。确认申请？',
+      success: (res) => {
+        if (res.confirm) {
+          showToast('申请已提交，等待审核', 'success');
+        }
+      }
+    });
+  };
+
+  // 编辑个人资料
+  goToEditProfile = () => {
+    showToast('个人资料');
+    setTimeout(() => {
+      Taro.showToast({ title: '资料编辑页面开发中', icon: 'none' });
+    }, 800);
   };
 
   render() {
     const store = useUserStore.getState();
+    const pointsStore = usePointsStore.getState();
     const { userInfo } = store;
     const isBuildingLeader = userInfo?.role === USER_ROLE.BUILDING_LEADER;
     const isCommunityLeader = userInfo?.role === USER_ROLE.COMMUNITY_LEADER;
@@ -43,7 +103,7 @@ export default class ProfilePage extends Component {
         <ScrollView className='profile-body' scrollY>
           {/* 个人信息头部 */}
           <View className='profile-header'>
-            <View className='user-info'>
+            <View className='user-info' onClick={this.goToEditProfile}>
               <View className='avatar'>
                 <Text>{userInfo?.avatar || '😊'}</Text>
               </View>
@@ -79,7 +139,7 @@ export default class ProfilePage extends Component {
               </View>
             </View>
             <View className='points-card-right'>
-              <Text className='points-card-value'>5,680</Text>
+              <Text className='points-card-value'>{pointsStore.totalPoints.toLocaleString()}</Text>
               <Text className='points-card-arrow'>›</Text>
             </View>
           </View>
@@ -135,13 +195,13 @@ export default class ProfilePage extends Component {
               <Text className='menu-text'>全部订单</Text>
               <Text className='menu-arrow'>›</Text>
             </View>
-            <View className='menu-item'>
+            <View className='menu-item' onClick={this.goToCoupons}>
               <Text className='menu-icon'>🎫</Text>
               <Text className='menu-text'>优惠券</Text>
               <Text className='menu-badge'>3张可用</Text>
               <Text className='menu-arrow'>›</Text>
             </View>
-            <View className='menu-item'>
+            <View className='menu-item' onClick={this.goToFavorites}>
               <Text className='menu-icon'>⭐</Text>
               <Text className='menu-text'>我的收藏</Text>
               <Text className='menu-arrow'>›</Text>
@@ -149,7 +209,7 @@ export default class ProfilePage extends Component {
             <View className='menu-item' onClick={this.goToPoints}>
               <Text className='menu-icon'>⭐</Text>
               <Text className='menu-text'>积分商城</Text>
-              <Text className='menu-value'>5,680</Text>
+              <Text className='menu-value'>{pointsStore.totalPoints.toLocaleString()}</Text>
               <Text className='menu-arrow'>›</Text>
             </View>
             <View className='menu-item' onClick={this.goToAddress}>
@@ -183,7 +243,7 @@ export default class ProfilePage extends Component {
 
           {/* 其他 */}
           <View className='menu-section'>
-            <View className='menu-item'>
+            <View className='menu-item' onClick={this.goToNotifications}>
               <Text className='menu-icon'>🔔</Text>
               <Text className='menu-text'>消息通知</Text>
               <Text className='menu-badge red'>5</Text>
@@ -194,7 +254,7 @@ export default class ProfilePage extends Component {
               <Text className='menu-text'>设置</Text>
               <Text className='menu-arrow'>›</Text>
             </View>
-            <View className='menu-item'>
+            <View className='menu-item' onClick={this.goToHelp}>
               <Text className='menu-icon'>❓</Text>
               <Text className='menu-text'>帮助与反馈</Text>
               <Text className='menu-arrow'>›</Text>
@@ -212,7 +272,7 @@ export default class ProfilePage extends Component {
                     分享商品给邻居，最高获得{5}%佣金
                   </Text>
                 </View>
-                <View className='apply-btn'>
+                <View className='apply-btn' onClick={this.applyToBeLeader}>
                   <Text>立即申请</Text>
                 </View>
               </View>
