@@ -1,6 +1,6 @@
-# 社区私域购物平台 - 规范驱动开发文档 (SDD)
+# NeighbroHub 社区私域购物平台 - 规范驱动开发文档 (SDD)
 
-> 版本: v1.0 | 日期: 2026-06-04 | 状态: 设计阶段
+> 版本: v2.0 | 日期: 2026-06-04 | 状态: 设计阶段（积分+服务兑换版）
 
 ---
 
@@ -67,8 +67,26 @@
 - 限时秒杀活动
 - 社区拼团
 - 团长分销（分享得佣金）
+- 楼长分销（每栋楼独立分销员，团长下级）
 - 新用户专享福利
-- 积分系统
+
+#### F-008: 积分系统 ⭐ 新增
+- **积分获取规则**：消费1元 = 1积分，订单确认收货后自动到账
+- **积分永不过期**：所有积分永久有效，无失效时间
+- **积分商城**：使用积分兑换社区服务
+  - 🧹 保洁服务（如：1000积分/次）
+  - 🚗 洗车服务（如：800积分/次）
+  - 🏠 免物业费（如：30000积分/月）
+  - 更多服务可扩展
+- **积分明细**：积分获取/消费记录，支持分页查询
+- **积分展示**：首页、个人中心显眼位置展示当前积分
+- **下单提示**：订单确认页预估可获得积分
+
+#### F-009: 配送系统
+- 团长自提点取货
+- 楼长/团长送货上门
+- 配送方式自由选择
+- 配送状态追踪
 
 #### F-006: 社区功能
 - 小区绑定与切换
@@ -210,6 +228,18 @@ coupons: id, name, type, discount_value, min_amount, total_count,
 
 -- 团长/分销员表
 distributors: id, user_id, community_id, commission_rate, status
+
+-- 积分表
+user_points: id, user_id, total_points, created_at, updated_at
+
+-- 积分流水表
+points_records: id, user_id, order_id, type(earn/spend), amount, 
+                description, service_type, created_at
+
+-- 积分服务表（可兑换服务）
+points_services: id, name, icon, points_price, market_price, 
+                 category(cleaning/car_wash/property_fee/other), 
+                 stock, status, description, created_at
 ```
 
 ### 3.4 API接口规范
@@ -226,6 +256,13 @@ PUT    /api/v1/orders/:id/status     # 更新订单状态
 POST   /api/v1/cart/items            # 添加购物车
 DELETE /api/v1/cart/items/:id        # 删除购物车商品
 POST   /api/v1/payment/unified-order # 微信支付统一下单
+
+# 积分相关
+GET    /api/v1/points/info           # 积分总览
+GET    /api/v1/points/records        # 积分流水
+GET    /api/v1/points/services       # 可兑换服务列表
+POST   /api/v1/points/exchange       # 积分兑换服务
+GET    /api/v1/points/exchanges      # 兑换记录
 ```
 
 ### 3.5 非功能性需求
@@ -358,3 +395,4 @@ community-mall/
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|----------|------|
 | v1.0 | 2026-06-04 | 初始版本 | AI Assistant |
+| v2.0 | 2026-06-04 | 新增积分系统、服务兑换、配送方式增强 | AI Assistant |

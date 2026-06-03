@@ -1,7 +1,7 @@
 {
-  "name": "linshe-community-mall",
-  "version": "1.0.0",
-  "description": "邻选社区 - 社区私域购物平台 (团长+楼长双级分销)",
+  "name": "neighbrohub",
+  "version": "2.0.0",
+  "description": "NeighbroHub - 社区私域购物平台 (积分系统+团长+楼长双级分销)",
   "templateInfo": {
     "name": "default",
     "typescript": true,

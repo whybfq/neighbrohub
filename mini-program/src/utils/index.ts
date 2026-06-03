@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro';
-import { ORDER_STATUS_TEXT, PAGE_PATH } from '../config/constants';
+import { ORDER_STATUS_TEXT, PAGE_PATH, POINTS_PER_YUAN } from '../config/constants';
 
 /**
  * 格式化价格
@@ -161,4 +161,21 @@ export const checkLogin = (): boolean => {
     return false;
   }
   return true;
+};
+
+/**
+ * 计算可获得积分（消费1元=1积分）
+ */
+export const calculatePoints = (amount: number): number => {
+  return Math.floor(amount) * POINTS_PER_YUAN;
+};
+
+/**
+ * 格式化积分数字
+ */
+export const formatPoints = (points: number): string => {
+  if (points >= 10000) {
+    return (points / 10000).toFixed(1) + '万';
+  }
+  return points.toLocaleString();
 };

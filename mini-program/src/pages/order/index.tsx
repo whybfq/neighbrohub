@@ -5,7 +5,7 @@ import { useUserStore } from '../../store';
 import { orderApi } from '../../services/api';
 import { mockAddresses, mockCoupons } from '../../services/mockData';
 import { formatPrice, showToast, showConfirm, generateOrderNo, PAGE_PATH } from '../../utils';
-import { DELIVERY_TYPE, COMMISSION_RATE } from '../../config/constants';
+import { DELIVERY_TYPE, COMMISSION_RATE, POINTS_PER_YUAN } from '../../config/constants';
 import './index.scss';
 
 interface State {
@@ -253,6 +253,20 @@ export default class OrderPage extends Component<{}, State> {
             <View className='commission-row'>
               <Text>团长佣金 (3%)</Text>
               <Text className='commission-amount'>¥{formatPrice(commission.communityLeader)}</Text>
+            </View>
+          </View>
+
+          {/* 积分预估 */}
+          <View className='points-preview'>
+            <View className='points-preview-header'>
+              <Text className='points-preview-icon'>⭐</Text>
+              <Text className='points-preview-title'>积分预估</Text>
+            </View>
+            <View className='points-preview-content'>
+              <Text className='points-preview-desc'>
+                确认收货后可获得 <Text className='points-highlight'>{Math.floor(payAmount) * POINTS_PER_YUAN}</Text> 积分
+              </Text>
+              <Text className='points-preview-rule'>消费1元=1积分，永不过期</Text>
             </View>
           </View>
 

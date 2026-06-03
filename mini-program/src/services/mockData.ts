@@ -346,3 +346,112 @@ export const mockAddresses = [
   { id: 'A001', name: '李明', phone: '138****5678', address: '阳光花园小区3栋2单元1501室', isDefault: true },
   { id: 'A002', name: '李明', phone: '138****5678', address: '阳光花园小区3栋2单元 团长自提点', isDefault: false }
 ];
+
+// ==================== 积分系统 ====================
+export const mockPointsInfo = {
+  totalPoints: 5680,
+  totalEarned: 12800,
+  totalSpent: 7120,
+  level: '黄金会员',
+  levelIcon: '🥇'
+};
+
+// 积分流水记录
+export const mockPointsRecords = [
+  { id: 'PR001', type: 'earn', amount: 98, description: '购物获得 - 订单 LX20260604001', orderNo: 'LX20260604001', createdAt: '2026-06-04 09:31' },
+  { id: 'PR002', type: 'spend', amount: 1000, description: '兑换保洁服务（1次）', serviceType: 'cleaning', createdAt: '2026-06-03 15:20' },
+  { id: 'PR003', type: 'earn', amount: 39, description: '购物获得 - 订单 LX20260603012', orderNo: 'LX20260603012', createdAt: '2026-06-03 14:21' },
+  { id: 'PR004', type: 'spend', amount: 800, description: '兑换洗车服务（1次）', serviceType: 'car_wash', createdAt: '2026-06-02 10:00' },
+  { id: 'PR005', type: 'earn', amount: 113, description: '购物获得 - 订单 LX20260602005', orderNo: 'LX20260602005', createdAt: '2026-06-02 18:46' },
+  { id: 'PR006', type: 'earn', amount: 55, description: '购物获得 - 订单 LX20260528003', orderNo: 'LX20260528003', createdAt: '2026-05-28 12:30' },
+  { id: 'PR007', type: 'spend', amount: 5000, description: '兑换免物业费（1个月）', serviceType: 'property_fee', createdAt: '2026-05-20 09:00' },
+  { id: 'PR008', type: 'earn', amount: 128, description: '购物获得 - 订单 LX20260515007', orderNo: 'LX20260515007', createdAt: '2026-05-15 16:45' },
+  { id: 'PR009', type: 'earn', amount: 75, description: '购物获得 - 订单 LX20260510002', orderNo: 'LX20260510002', createdAt: '2026-05-10 11:20' },
+  { id: 'PR010', type: 'spend', amount: 2000, description: '兑换保洁服务（2次）', serviceType: 'cleaning', createdAt: '2026-05-05 14:30' }
+];
+
+// 可兑换的积分服务
+export const mockPointsServices = [
+  {
+    id: 'PS001',
+    name: '家庭保洁服务',
+    icon: '🧹',
+    category: 'cleaning',
+    categoryName: '保洁服务',
+    pointsPrice: 1000,
+    marketPrice: 128,
+    stock: 50,
+    sales: 328,
+    description: '专业保洁人员上门服务，含客厅、卧室、厨房、卫生间全方位清洁，时长约2小时。',
+    images: ['🧹', '🏠', '✨'],
+    tags: ['热门', '品质保证'],
+    deliveryType: 'door_delivery'
+  },
+  {
+    id: 'PS002',
+    name: '精致洗车服务',
+    icon: '🚗',
+    category: 'car_wash',
+    categoryName: '洗车服务',
+    pointsPrice: 800,
+    marketPrice: 68,
+    stock: 100,
+    sales: 156,
+    description: '小区内上门精洗，含车身清洗、内饰吸尘、轮胎护理、玻璃清洁。',
+    images: ['🚗', '💦', '✨'],
+    tags: ['便捷', '上门服务'],
+    deliveryType: 'self_pickup'
+  },
+  {
+    id: 'PS003',
+    name: '物业费抵扣（1个月）',
+    icon: '🏠',
+    category: 'property_fee',
+    categoryName: '免物业费',
+    pointsPrice: 30000,
+    marketPrice: 300,
+    stock: 20,
+    sales: 45,
+    description: '使用积分抵扣一个月物业费，直接抵扣至物业账单。需累计满30000积分方可兑换。',
+    images: ['🏠', '📋', '✅'],
+    tags: ['超值', '限量'],
+    deliveryType: 'self_pickup'
+  },
+  {
+    id: 'PS004',
+    name: '深度保洁服务（含厨房）',
+    icon: '🧼',
+    category: 'cleaning',
+    categoryName: '保洁服务',
+    pointsPrice: 2000,
+    marketPrice: 258,
+    stock: 30,
+    sales: 89,
+    description: '深度保洁，含厨房油烟机清洗、卫生间除垢、全屋地板打蜡，时长约4小时。',
+    images: ['🧼', '🏠', '✨'],
+    tags: ['深度清洁'],
+    deliveryType: 'door_delivery'
+  },
+  {
+    id: 'PS005',
+    name: '物业费抵扣（一季度）',
+    icon: '🏢',
+    category: 'property_fee',
+    categoryName: '免物业费',
+    pointsPrice: 80000,
+    marketPrice: 900,
+    stock: 5,
+    sales: 12,
+    description: '使用积分抵扣一季度（3个月）物业费，超值兑换。',
+    images: ['🏢', '📋', '✅'],
+    tags: ['超值', '限量'],
+    deliveryType: 'self_pickup'
+  }
+];
+
+// 积分兑换记录
+export const mockExchangeRecords = [
+  { id: 'EX001', serviceName: '家庭保洁服务', points: 1000, status: 'completed', serviceDate: '2026-06-03', createdAt: '2026-06-03 15:20' },
+  { id: 'EX002', serviceName: '精致洗车服务', points: 800, status: 'completed', serviceDate: '2026-06-02', createdAt: '2026-06-02 10:00' },
+  { id: 'EX003', serviceName: '免物业费（1个月）', points: 30000, status: 'completed', serviceDate: '2026-05-20', createdAt: '2026-05-20 09:00' }
+];

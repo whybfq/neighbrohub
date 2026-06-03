@@ -339,6 +339,51 @@
   }
 }
 
+// 积分预览
+.points-preview-section {
+  background: linear-gradient(135deg, #e6f7ff, #f0f5ff);
+  padding: 24px;
+  margin: 0 24px 16px;
+  border-radius: 16px;
+  border: 1px solid #91d5ff;
+
+  .points-preview-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+
+    .points-icon {
+      font-size: 28px;
+    }
+
+    .points-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: #333;
+    }
+  }
+
+  .points-preview-content {
+    .points-amount {
+      font-size: 26px;
+      color: #333;
+      margin-bottom: 4px;
+
+      .highlight {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1890ff;
+      }
+    }
+
+    .points-rule {
+      font-size: 22px;
+      color: #0050b3;
+    }
+  }
+}
+
 // 详情描述
 .desc-section {
   background: #fff;

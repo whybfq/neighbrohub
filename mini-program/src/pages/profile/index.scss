@@ -72,6 +72,63 @@
   }
 }
 
+// 积分卡片
+.points-card {
+  background: linear-gradient(135deg, #fff7e6, #fff0d9);
+  margin: 0 24px;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -20px;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(250, 140, 22, 0.15);
+  border: 1px solid #ffd591;
+
+  .points-card-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    .points-card-icon {
+      font-size: 44px;
+    }
+
+    .points-card-info {
+      .points-card-title {
+        font-size: 30px;
+        font-weight: 700;
+        color: #333;
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .points-card-desc {
+        font-size: 22px;
+        color: #ad6800;
+      }
+    }
+  }
+
+  .points-card-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .points-card-value {
+      font-size: 40px;
+      font-weight: 800;
+      color: #fa8c16;
+    }
+
+    .points-card-arrow {
+      font-size: 32px;
+      color: #ccc;
+    }
+  }
+}
+
 // 分销入口
 .distributor-entry {
   background: linear-gradient(135deg, #fff7e6, #fff0d9);

@@ -8,7 +8,8 @@ export default defineAppConfig({
     'pages/profile/profile',
     'pages/login/login',
     'pages/bind-community/bind-community',
-    'pages/distribution/distribution'
+    'pages/distribution/distribution',
+    'pages/points/points'
   ],
   window: {
     backgroundTextStyle: 'light',

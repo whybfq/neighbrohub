@@ -61,5 +61,33 @@ export const PAGE_PATH = {
   PROFILE: '/pages/profile/profile',
   LOGIN: '/pages/login/login',
   BIND_COMMUNITY: '/pages/bind-community/bind-community',
-  DISTRIBUTION: '/pages/distribution/distribution'
+  DISTRIBUTION: '/pages/distribution/distribution',
+  POINTS: '/pages/points/points'
+};
+
+// ==================== 积分系统常量 ====================
+
+// 积分获取规则：1元 = 1积分
+export const POINTS_PER_YUAN = 1;
+
+// 积分服务分类
+export const POINTS_SERVICE_CATEGORY = {
+  CLEANING: 'cleaning',       // 保洁服务
+  CAR_WASH: 'car_wash',       // 洗车服务
+  PROPERTY_FEE: 'property_fee', // 免物业费
+  OTHER: 'other'              // 其他服务
+};
+
+// 积分服务分类中文
+export const POINTS_SERVICE_CATEGORY_TEXT = {
+  [POINTS_SERVICE_CATEGORY.CLEANING]: '保洁服务',
+  [POINTS_SERVICE_CATEGORY.CAR_WASH]: '洗车服务',
+  [POINTS_SERVICE_CATEGORY.PROPERTY_FEE]: '免物业费',
+  [POINTS_SERVICE_CATEGORY.OTHER]: '其他服务'
+};
+
+// 积分记录类型
+export const POINTS_RECORD_TYPE = {
+  EARN: 'earn',   // 获取
+  SPEND: 'spend'  // 消费
 };

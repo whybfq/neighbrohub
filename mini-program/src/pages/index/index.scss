@@ -201,6 +201,60 @@
   }
 }
 
+// 积分入口
+.points-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 24px 16px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #fff7e6, #fff0d9);
+  border-radius: 16px;
+  border: 1px solid #ffd591;
+
+  .points-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    .points-icon {
+      font-size: 44px;
+    }
+
+    .points-info {
+      .points-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #333;
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      .points-desc {
+        font-size: 22px;
+        color: #ad6800;
+      }
+    }
+  }
+
+  .points-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .points-value {
+      font-size: 36px;
+      font-weight: 800;
+      color: #fa8c16;
+    }
+
+    .points-arrow {
+      font-size: 32px;
+      color: #ccc;
+    }
+  }
+}
+
 // 楼长推荐
 .leader-recommend {
   margin: 0 24px 16px;

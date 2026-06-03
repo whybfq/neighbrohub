@@ -157,3 +157,54 @@ export const useOrderStore = create<OrderState>((set) => ({
   setOrderList: (list) => set({ orderList: list }),
   setActiveTab: (tab) => set({ activeTab: tab })
 }));
+
+// ==================== 积分状态 ====================
+interface PointsState {
+  totalPoints: number;
+  totalEarned: number;
+  totalSpent: number;
+  records: any[];
+  services: any[];
+  exchanges: any[];
+  loading: boolean;
+
+  setPointsInfo: (info: { totalPoints: number; totalEarned: number; totalSpent: number }) => void;
+  setRecords: (records: any[]) => void;
+  setServices: (services: any[]) => void;
+  setExchanges: (exchanges: any[]) => void;
+  addPoints: (amount: number) => void;
+  spendPoints: (amount: number) => void;
+  setLoading: (loading: boolean) => void;
+}
+
+export const usePointsStore = create<PointsState>((set, get) => ({
+  totalPoints: 0,
+  totalEarned: 0,
+  totalSpent: 0,
+  records: [],
+  services: [],
+  exchanges: [],
+  loading: false,
+
+  setPointsInfo: (info) => set({
+    totalPoints: info.totalPoints,
+    totalEarned: info.totalEarned,
+    totalSpent: info.totalSpent
+  }),
+
+  setRecords: (records) => set({ records }),
+  setServices: (services) => set({ services }),
+  setExchanges: (exchanges) => set({ exchanges }),
+
+  addPoints: (amount) => set({
+    totalPoints: get().totalPoints + amount,
+    totalEarned: get().totalEarned + amount
+  }),
+
+  spendPoints: (amount) => set({
+    totalPoints: get().totalPoints - amount,
+    totalSpent: get().totalSpent + amount
+  }),
+
+  setLoading: (loading) => set({ loading })
+}));

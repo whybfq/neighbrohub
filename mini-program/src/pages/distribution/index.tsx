@@ -249,6 +249,12 @@ export default class DistributionPage extends Component<{}, State> {
             <View className='rule-item'>
               <Text className='rule-num'>4</Text>
               <Text className='rule-text'>
+                楼长可选择送货上门或让用户到团长自提点自取，配送费用由平台承担。
+              </Text>
+            </View>
+            <View className='rule-item'>
+              <Text className='rule-num'>5</Text>
+              <Text className='rule-text'>
                 如发生退款，对应佣金将自动扣除。恶意刷单行为将被取消楼长资格。
               </Text>
             </View>

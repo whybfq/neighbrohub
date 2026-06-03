@@ -5,7 +5,7 @@ import { useUserStore, useCartStore } from '../../store';
 import { productApi, cartApi } from '../../services/api';
 import { mockProducts } from '../../services/mockData';
 import { formatPrice, showToast, navigateTo, PAGE_PATH } from '../../utils';
-import { COMMISSION_RATE, DELIVERY_TYPE } from '../../config/constants';
+import { COMMISSION_RATE, DELIVERY_TYPE, POINTS_PER_YUAN } from '../../config/constants';
 import './index.scss';
 
 interface State {
@@ -295,6 +295,20 @@ export default class DetailPage extends Component<{}, State> {
             <Text className='commission-tip-text'>
               💡 成为楼长即可享受分销佣金，分享商品给邻居赚取收益
             </Text>
+          </View>
+
+          {/* 积分预估 */}
+          <View className='points-preview-section'>
+            <View className='points-preview-header'>
+              <Text className='points-icon'>⭐</Text>
+              <Text className='points-title'>购买可获积分</Text>
+            </View>
+            <View className='points-preview-content'>
+              <Text className='points-amount'>
+                预计获得 <Text className='highlight'>{Math.floor(totalPrice) * POINTS_PER_YUAN}</Text> 积分
+              </Text>
+              <Text className='points-rule'>消费1元=1积分，确认收货后到账，永不过期</Text>
+            </View>
           </View>
 
           {/* 商品详情 */}

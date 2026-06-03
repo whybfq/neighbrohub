@@ -175,6 +175,21 @@ export default class IndexPage extends Component<{}, State> {
             </ScrollView>
           </View>
 
+          {/* 积分入口 */}
+          <View className='points-entry' onClick={() => Taro.navigateTo({ url: '/pages/points/points' })}>
+            <View className='points-left'>
+              <Text className='points-icon'>⭐</Text>
+              <View className='points-info'>
+                <Text className='points-title'>我的积分</Text>
+                <Text className='points-desc'>消费1元=1积分，永不过期</Text>
+              </View>
+            </View>
+            <View className='points-right'>
+              <Text className='points-value'>5,680</Text>
+              <Text className='points-arrow'>›</Text>
+            </View>
+          </View>
+
           {/* 楼长推荐 */}
           <View className='leader-recommend'>
             <View className='recommend-header'>

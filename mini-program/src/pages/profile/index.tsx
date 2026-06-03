@@ -3,7 +3,7 @@ import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useUserStore } from '../../store';
 import { navigateTo, PAGE_PATH } from '../../utils';
-import { USER_ROLE } from '../../config/constants';
+import { USER_ROLE, PAGE_PATH } from '../../config/constants';
 import './index.scss';
 
 export default class ProfilePage extends Component {
@@ -20,6 +20,11 @@ export default class ProfilePage extends Component {
   // 设置
   goToSettings = () => {
     Taro.showToast({ title: '设置页面开发中', icon: 'none' });
+  };
+
+  // 积分中心
+  goToPoints = () => {
+    navigateTo(PAGE_PATH.POINTS);
   };
 
   // 地址管理
@@ -61,6 +66,21 @@ export default class ProfilePage extends Component {
                   <Text className='user-code'>邀请码：{userInfo?.distributorCode}</Text>
                 )}
               </View>
+            </View>
+          </View>
+
+          {/* 积分卡片 */}
+          <View className='points-card' onClick={this.goToPoints}>
+            <View className='points-card-left'>
+              <Text className='points-card-icon'>⭐</Text>
+              <View className='points-card-info'>
+                <Text className='points-card-title'>我的积分</Text>
+                <Text className='points-card-desc'>消费1元=1积分，永不过期</Text>
+              </View>
+            </View>
+            <View className='points-card-right'>
+              <Text className='points-card-value'>5,680</Text>
+              <Text className='points-card-arrow'>›</Text>
             </View>
           </View>
 
@@ -124,6 +144,12 @@ export default class ProfilePage extends Component {
             <View className='menu-item'>
               <Text className='menu-icon'>⭐</Text>
               <Text className='menu-text'>我的收藏</Text>
+              <Text className='menu-arrow'>›</Text>
+            </View>
+            <View className='menu-item' onClick={this.goToPoints}>
+              <Text className='menu-icon'>⭐</Text>
+              <Text className='menu-text'>积分商城</Text>
+              <Text className='menu-value'>5,680</Text>
               <Text className='menu-arrow'>›</Text>
             </View>
             <View className='menu-item' onClick={this.goToAddress}>

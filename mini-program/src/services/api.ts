@@ -3,7 +3,8 @@ import { API_BASE_URL } from '../config/constants';
 import {
   mockProducts, mockCategories, mockCartItems, mockOrders,
   mockUser, mockFlashSales, mockDistributionData, mockCoupons,
-  mockCommunity, mockAddresses
+  mockCommunity, mockAddresses,
+  mockPointsInfo, mockPointsRecords, mockPointsServices, mockExchangeRecords
 } from './mockData';
 
 // 请求封装
@@ -54,6 +55,11 @@ const mockRequest = (url: string, options: any): any => {
       if (url.includes('/coupons/list')) return resolve(mockCoupons);
       if (url.includes('/community/info')) return resolve(mockCommunity);
       if (url.includes('/address/list')) return resolve(mockAddresses);
+      if (url.includes('/points/info')) return resolve(mockPointsInfo);
+      if (url.includes('/points/records')) return resolve(mockPointsRecords);
+      if (url.includes('/points/services')) return resolve(mockPointsServices);
+      if (url.includes('/points/exchanges')) return resolve(mockExchangeRecords);
+      if (url.includes('/points/exchange')) return resolve({ success: true, message: '兑换成功' });
       resolve({ success: true });
     }, 300);
   });
@@ -201,6 +207,27 @@ export const communityApi = {
   searchCommunity: (keyword: string) => request('/community/search', { data: { keyword } }),
 };
 
+// ==================== 积分相关 API ====================
+export const pointsApi = {
+  // 获取积分总览
+  getPointsInfo: () => request('/points/info'),
+
+  // 获取积分流水
+  getPointsRecords: (params: { page?: number; pageSize?: number; type?: string }) =>
+    request('/points/records', { data: params }),
+
+  // 获取可兑换服务列表
+  getServices: () => request('/points/services'),
+
+  // 积分兑换服务
+  exchangeService: (serviceId: string) =>
+    request('/points/exchange', { method: 'POST', data: { serviceId } }),
+
+  // 获取兑换记录
+  getExchangeRecords: (params: { page?: number; pageSize?: number }) =>
+    request('/points/exchanges', { data: params }),
+};
+
 export default {
   user: userApi,
   product: productApi,
@@ -208,5 +235,6 @@ export default {
   order: orderApi,
   distribution: distributionApi,
   coupon: couponApi,
-  community: communityApi
+  community: communityApi,
+  points: pointsApi
 };
