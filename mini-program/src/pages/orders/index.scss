@@ -138,7 +138,16 @@
     }
   }
 
-  .distributor-info {
+  .order-address {
+  padding: 0 24px 16px;
+
+  .order-address-text {
+    font-size: 24px;
+    color: #999;
+  }
+}
+
+.distributor-info {
     padding: 10px 20px;
     background: #fffbe6;
     border-top: 1px solid #fff1b8;

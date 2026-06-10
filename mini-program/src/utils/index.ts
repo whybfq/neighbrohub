@@ -1,5 +1,14 @@
 import Taro from '@tarojs/taro';
-import { ORDER_STATUS_TEXT, PAGE_PATH, POINTS_PER_YUAN } from '../config/constants';
+import {
+  ORDER_STATUS,
+  ORDER_STATUS_TEXT,
+  ORDER_TAB_STATUS_GROUPS,
+  PAGE_PATH,
+  POINTS_PER_YUAN,
+  TRACKABLE_ORDER_STATUSES,
+} from '../config/constants';
+
+export { PAGE_PATH } from '../config/constants';
 
 /**
  * 格式化价格
@@ -39,14 +48,51 @@ export const getOrderStatusText = (status: string): string => {
 export const getOrderStatusColor = (status: string): string => {
   const colorMap: Record<string, string> = {
     pending_pay: '#fa8c16',
-    pending_deliver: '#1890ff',
+    paid: '#1890ff',
+    picking: '#1890ff',
+    packed: '#722ed1',
+    dispatching: '#13c2c2',
     delivering: '#52c41a',
+    delivered: '#52c41a',
     completed: '#999',
+    cancelled: '#999',
     refunding: '#f5222d',
     refunded: '#999',
-    closed: '#999'
+    pending_deliver: '#1890ff',
+    closed: '#999',
   };
   return colorMap[status] || '#999';
+};
+
+/**
+ * 订单是否匹配列表 Tab
+ */
+export const matchOrderTab = (status: string, tab: string): boolean => {
+  if (tab === 'all') return true;
+  if (tab === ORDER_STATUS.PENDING_PAY) return status === ORDER_STATUS.PENDING_PAY;
+  if (tab === ORDER_STATUS.COMPLETED) return status === ORDER_STATUS.COMPLETED;
+  if (ORDER_TAB_STATUS_GROUPS[tab]) {
+    return ORDER_TAB_STATUS_GROUPS[tab].includes(status);
+  }
+  return status === tab;
+};
+
+/**
+ * 是否可查看配送追踪
+ */
+export const isTrackableOrder = (status: string): boolean => {
+  return TRACKABLE_ORDER_STATUSES.includes(status);
+};
+
+/**
+ * 格式化预计送达时间文案
+ */
+export const formatEtaText = (minutes: number = 120): string => {
+  const now = new Date();
+  const eta = new Date(now.getTime() + minutes * 60 * 1000);
+  const h = String(eta.getHours()).padStart(2, '0');
+  const m = String(eta.getMinutes()).padStart(2, '0');
+  return `今天 ${h}:${m} 前`;
 };
 
 /**

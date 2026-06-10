@@ -5,11 +5,13 @@ import { useUserStore } from '../../store';
 import { userApi } from '../../services/api';
 import { mockCommunity } from '../../services/mockData';
 import { showToast, navigateTo, PAGE_PATH } from '../../utils';
+import { MVP_COMMUNITY, MVP_FEATURES, MVP_ZONES, formatMvpAddress } from '../../config/constants';
 import './index.scss';
 
 interface State {
   step: number;
   community: any;
+  selectedZone: string;
   selectedBuilding: string;
   selectedUnit: string;
   roomNumber: string;
@@ -22,10 +24,11 @@ export default class BindCommunityPage extends Component<{}, State> {
   state: State = {
     step: 1,
     community: mockCommunity,
+    selectedZone: MVP_ZONES[0].id,
     selectedBuilding: '',
     selectedUnit: '',
     roomNumber: '',
-    buildings: [],
+    buildings: mockCommunity.zones[0].buildings,
     units: [],
     submitting: false
   };
@@ -35,10 +38,25 @@ export default class BindCommunityPage extends Component<{}, State> {
   }
 
   loadCommunityInfo = () => {
-    // 实际项目通过定位或搜索获取小区信息
     this.setState({
       community: mockCommunity,
-      buildings: mockCommunity.buildings
+      buildings: mockCommunity.zones[0].buildings,
+    });
+  };
+
+  getCurrentZone = () => {
+    const { community, selectedZone } = this.state;
+    return community.zones?.find((z: any) => z.id === selectedZone) || community.zones[0];
+  };
+
+  handleZoneChange = (zoneId: string) => {
+    const zone = this.state.community.zones.find((z: any) => z.id === zoneId);
+    this.setState({
+      selectedZone: zoneId,
+      buildings: zone?.buildings || [],
+      selectedBuilding: '',
+      selectedUnit: '',
+      units: [],
     });
   };
 
@@ -59,13 +77,14 @@ export default class BindCommunityPage extends Component<{}, State> {
     this.setState({ selectedUnit: this.state.units[index] });
   };
 
-  // 切换小区
-  handleSwitchCommunity = () => {
+  // 切换东西区（MVP 仅服务山屿西山著）
+  handleSwitchZone = () => {
     Taro.showActionSheet({
-      itemList: ['阳光花园小区', '翠竹苑小区', '碧海蓝天小区', '金色家园小区'],
+      itemList: MVP_ZONES.map((z) => z.name),
       success: (res) => {
-        const communities = ['阳光花园小区', '翠竹苑小区', '碧海蓝天小区', '金色家园小区'];
-        showToast(`已选择：${communities[res.tapIndex]}`);
+        const zone = MVP_ZONES[res.tapIndex];
+        this.handleZoneChange(zone.id);
+        showToast(`已选择：${MVP_COMMUNITY.name}${zone.name}`);
       }
     });
   };
@@ -85,7 +104,7 @@ export default class BindCommunityPage extends Component<{}, State> {
 
   // 提交绑定
   handleSubmit = async () => {
-    const { selectedBuilding, selectedUnit, roomNumber, community } = this.state;
+    const { selectedBuilding, selectedUnit, roomNumber, community, selectedZone } = this.state;
 
     if (!selectedBuilding) {
       Taro.showToast({ title: '请选择楼栋', icon: 'none' });
@@ -103,21 +122,57 @@ export default class BindCommunityPage extends Component<{}, State> {
     this.setState({ submitting: true });
 
     try {
+      const zone = community.zones.find((z: any) => z.id === selectedZone);
+      const building = this.state.buildings.find(b => b.id === selectedBuilding);
+      const fullAddress = formatMvpAddress(zone.name, building?.name || '', selectedUnit, roomNumber.trim());
+      const store = useUserStore.getState();
+
       await userApi.bindCommunity({
         communityId: community.id,
         buildingId: selectedBuilding,
         unit: selectedUnit,
-        room: roomNumber.trim()
+        room: roomNumber.trim(),
+        zoneId: zone?.id,
+        zoneName: zone?.name,
+        buildingName: building?.name,
+        contactName: store.userInfo?.nickname,
+        contactPhone: store.userInfo?.phone,
+        fullAddress,
       });
 
-      const store = useUserStore.getState();
-      const building = this.state.buildings.find(b => b.id === selectedBuilding);
       store.setCommunity(community);
       store.setBuilding({ id: selectedBuilding, name: building?.name, unit: selectedUnit, room: roomNumber });
+      store.setUserInfo({
+        ...(store.userInfo || {}),
+        community,
+        zone: zone ? { id: zone.id, name: zone.name } : undefined,
+      });
+
+      await userApi.addAddress({
+        id: `A${Date.now()}`,
+        name: store.userInfo?.nickname || '收货人',
+        phone: store.userInfo?.phone || '138****5678',
+        address: fullAddress,
+        zone: zone?.name || '',
+        zoneId: zone?.id || '',
+        buildingId: selectedBuilding,
+        buildingName: building?.name,
+        unit: selectedUnit,
+        room: roomNumber.trim(),
+        isDefault: true,
+      });
 
       Taro.showToast({ title: '绑定成功', icon: 'success' });
+
+      const from = Taro.getCurrentInstance().router?.params?.from;
       setTimeout(() => {
-        Taro.switchTab({ url: '/pages/index/index' });
+        if (from === 'address') {
+          Taro.navigateBack();
+        } else if (from === 'order') {
+          Taro.navigateBack();
+        } else {
+          Taro.switchTab({ url: '/pages/index/index' });
+        }
       }, 1500);
     } catch (err: any) {
       Taro.showToast({ title: err.message || '绑定失败', icon: 'none' });
@@ -127,14 +182,15 @@ export default class BindCommunityPage extends Component<{}, State> {
   };
 
   render() {
-    const { step, community, selectedBuilding, selectedUnit, roomNumber, buildings, units, submitting } = this.state;
+    const { step, community, selectedZone, selectedBuilding, selectedUnit, roomNumber, buildings, units, submitting } = this.state;
+    const currentZone = this.getCurrentZone();
 
     return (
       <View className='bind-page'>
         {/* 头部 */}
         <View className='bind-header'>
-          <Text className='bind-title'>🏘️ 绑定您的小区</Text>
-          <Text className='bind-desc'>绑定小区和楼栋，享受本社区专属服务</Text>
+          <Text className='bind-title'>🏘️ 绑定您的地址</Text>
+          <Text className='bind-desc'>选择山屿西山著东区或西区，享受专属配送</Text>
         </View>
 
         {/* 步骤条 */}
@@ -157,19 +213,36 @@ export default class BindCommunityPage extends Component<{}, State> {
 
         {/* 表单区域 */}
         <View className='bind-form'>
-          {/* 小区信息 */}
+          {/* 小区与分区 */}
           <View className='form-section'>
-            <View className='section-title'>📍 所在小区</View>
+            <View className='section-title'>📍 所在社区</View>
             <View className='community-card'>
               <Text className='community-name'>{community.name}</Text>
               <Text className='community-addr'>{community.address}</Text>
-              <Text className='change-btn' onClick={this.handleSwitchCommunity}>不是我的小区？切换</Text>
+              <Text className='change-btn' onClick={this.handleSwitchZone}>切换东西区</Text>
+            </View>
+          </View>
+
+          {/* 选择东西区 */}
+          <View className='form-section'>
+            <View className='section-title'>🧭 选择分区</View>
+            <View className='building-grid'>
+              {community.zones.map((zone: any) => (
+                <View
+                  key={zone.id}
+                  className={`building-item ${selectedZone === zone.id ? 'active' : ''}`}
+                  onClick={() => this.handleZoneChange(zone.id)}
+                >
+                  <Text className='building-name'>{zone.name}</Text>
+                  <Text className='building-units'>{zone.buildings.length}栋楼</Text>
+                </View>
+              ))}
             </View>
           </View>
 
           {/* 选择楼栋 */}
           <View className='form-section'>
-            <View className='section-title'>🏢 选择楼栋</View>
+            <View className='section-title'>🏢 {currentZone.name} · 选择楼栋</View>
             <View className='building-grid'>
               {buildings.map(building => (
                 <View
@@ -238,7 +311,15 @@ export default class BindCommunityPage extends Component<{}, State> {
             </Button>
           </View>
 
-          {/* 楼长申请提示 */}
+          {!MVP_FEATURES.DISTRIBUTION && (
+          <View className='leader-tip'>
+            <Text className='tip-icon'>💡</Text>
+            <Text className='tip-text'>
+              MVP 当前仅服务山屿西山著东区、西区，绑定后可在首页下单。
+            </Text>
+          </View>
+          )}
+          {MVP_FEATURES.DISTRIBUTION && (
           <View className='leader-tip'>
             <Text className='tip-icon'>💡</Text>
             <Text className='tip-text'>
@@ -247,6 +328,7 @@ export default class BindCommunityPage extends Component<{}, State> {
               ，分享商品给邻居赚取佣金哦！
             </Text>
           </View>
+          )}
         </View>
       </View>
     );

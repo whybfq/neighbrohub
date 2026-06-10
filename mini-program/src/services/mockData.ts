@@ -7,17 +7,18 @@ import { ORDER_STATUS, USER_ROLE, STORAGE_TYPE, SHELF_LIFE_CATEGORY, TASTE_PERIO
 export const mockUser = {
   id: 'U10001',
   openid: 'oxxxxxxxxxxxxxx',
-  nickname: '阳光花园-李明',
+  nickname: '山屿西山著-李明',
   avatar: '😊',
   phone: '138****5678',
   role: USER_ROLE.BUILDING_LEADER,
   community: {
     id: 'C001',
-    name: '阳光花园小区',
-    address: 'XX市XX区XX路100号'
+    name: '山屿西山著',
+    address: '北京市海淀区山屿西山著'
   },
+  zone: { id: 'EAST', name: '东区' },
   building: {
-    id: 'B003',
+    id: 'E-B003',
     name: '3栋',
     unit: '2单元'
   },
@@ -25,7 +26,7 @@ export const mockUser = {
   superiorDistributor: {       // 上级团长
     id: 'D001',
     name: '王阿姨',
-    community: '阳光花园小区'
+    community: '山屿西山著'
   },
   balance: 1280.50,  // 可提现佣金
   totalCommission: 3680.00, // 累计佣金
@@ -451,75 +452,151 @@ export const mockCartItems = [
 export const mockOrders = [
   {
     id: 'O001',
-    orderNo: 'LX20260604001',
+    orderNo: '20260608001',
     status: ORDER_STATUS.DELIVERING,
+    signCode: '836291',
     items: [
-      { productId: 'P001', productName: '农夫山泉 饮用天然水', icon: '💧', skuName: '550ml×24瓶', price: 29.90, quantity: 2 }
+      { productId: 'P001', productName: '农夫山泉 饮用天然水', icon: '💧', skuName: '550ml×24瓶', price: 29.90, quantity: 2 },
+      { productId: 'P009', productName: '新鲜西红柿', icon: '🥬', skuName: '500g', price: 6.90, quantity: 1 },
     ],
-    totalAmount: 59.80,
-    payAmount: 49.80,
-    discount: 10.00,
-    deliveryType: 'self_pickup',
-    buildingLeader: { id: 'BL8888', name: '李明' },
-    communityLeader: { id: 'D001', name: '王阿姨' },
-    commission: { buildingLeader: 2.99, communityLeader: 1.79 },
-    pickupAddress: '阳光花园小区3栋2单元 团长自提点',
-    createdAt: '2026-06-04 09:30',
-    paidAt: '2026-06-04 09:31'
+    totalAmount: 66.70,
+    payAmount: 66.70,
+    discount: 0,
+    deliveryType: 'door_delivery',
+    address: '山屿西山著东区 3栋 2单元 501室',
+    contactName: '李明',
+    contactPhone: '13812345678',
+    etaText: '今天 16:30 前',
+    courier: { name: '张师傅', phone: '13812341234' },
+    createdAt: '2026-06-08 14:02',
+    paidAt: '2026-06-08 14:02',
   },
   {
     id: 'O002',
-    orderNo: 'LX20260603012',
-    status: ORDER_STATUS.COMPLETED,
+    orderNo: '20260607008',
+    status: ORDER_STATUS.PICKING,
+    signCode: '452817',
     items: [
-      { productId: 'P002', productName: '青岛啤酒 经典1903', icon: '🍺', skuName: '500ml×12听', price: 59.90, quantity: 1 }
+      { productId: 'P009', productName: '新鲜西红柿', icon: '🥬', skuName: '500g', price: 6.90, quantity: 1 },
+      { productId: 'P010', productName: '农家土鸡蛋', icon: '🥚', skuName: '10枚', price: 21.90, quantity: 1 },
     ],
-    totalAmount: 59.90,
-    payAmount: 49.90,
-    discount: 10.00,
+    totalAmount: 28.80,
+    payAmount: 28.80,
+    discount: 0,
     deliveryType: 'door_delivery',
-    buildingLeader: { id: 'BL8888', name: '李明' },
-    communityLeader: { id: 'D001', name: '王阿姨' },
-    commission: { buildingLeader: 2.50, communityLeader: 1.50 },
-    pickupAddress: '阳光花园小区3栋2单元 1501室',
-    createdAt: '2026-06-03 14:20',
-    paidAt: '2026-06-03 14:21',
-    completedAt: '2026-06-03 17:30'
+    address: '山屿西山著西区 7栋 1202室',
+    contactName: '李明',
+    contactPhone: '13812345678',
+    etaText: '今天 17:00 前',
+    createdAt: '2026-06-07 15:10',
+    paidAt: '2026-06-07 15:10',
   },
   {
     id: 'O003',
-    orderNo: 'LX20260602005',
+    orderNo: '20260603012',
     status: ORDER_STATUS.COMPLETED,
+    signCode: '918273',
+    items: [
+      { productId: 'P002', productName: '青岛啤酒 经典1903', icon: '🍺', skuName: '500ml×12听', price: 59.90, quantity: 1 },
+    ],
+    totalAmount: 59.90,
+    payAmount: 59.90,
+    discount: 0,
+    deliveryType: 'door_delivery',
+    address: '山屿西山著东区 3栋 2单元 501室',
+    contactName: '李明',
+    contactPhone: '13812345678',
+    createdAt: '2026-06-03 14:20',
+    paidAt: '2026-06-03 14:21',
+    completedAt: '2026-06-03 16:45',
+  },
+  {
+    id: 'O004',
+    orderNo: '20260608015',
+    status: ORDER_STATUS.PENDING_PAY,
     items: [
       { productId: 'P003', productName: '康师傅 红烧牛肉面', icon: '🍜', skuName: '桶装110g×12桶', price: 45.90, quantity: 1 },
-      { productId: 'P008', productName: '怡宝纯净水', icon: '💙', skuName: '555ml×24瓶', price: 26.90, quantity: 1 }
     ],
-    totalAmount: 72.80,
-    payAmount: 57.80,
-    discount: 15.00,
-    deliveryType: 'self_pickup',
-    buildingLeader: { id: 'BL8888', name: '李明' },
-    communityLeader: { id: 'D001', name: '王阿姨' },
-    commission: { buildingLeader: 3.64, communityLeader: 2.18 },
-    pickupAddress: '阳光花园小区3栋2单元 团长自提点',
-    createdAt: '2026-06-02 18:45',
-    paidAt: '2026-06-02 18:46',
-    completedAt: '2026-06-03 10:00'
-  }
+    totalAmount: 45.90,
+    payAmount: 45.90,
+    discount: 0,
+    deliveryType: 'door_delivery',
+    address: '山屿西山著东区 3栋 2单元 501室',
+    contactName: '李明',
+    contactPhone: '13812345678',
+    createdAt: '2026-06-08 14:25',
+  },
 ];
+
+// 配送追踪 Mock
+export const mockOrderTracks: Record<string, any> = {
+  O001: {
+    orderId: 'O001',
+    orderNo: '20260608001',
+    status: ORDER_STATUS.DELIVERING,
+    statusText: '配送员正在赶来',
+    etaText: '今天 16:30 前',
+    signCode: '836291',
+    address: '山屿西山著东区 3栋 2单元 501室',
+    contactName: '李明',
+    contactPhone: '13812345678',
+    courier: { name: '张师傅', phone: '13812341234' },
+    timeline: [
+      { step: 'delivered', text: '商品已送达', time: null, done: false, current: false },
+      { step: 'delivering', text: '配送员正在赶来', time: '2026-06-08 14:18:00', done: true, current: true, extra: '张师傅已接单，正在前往仓库取货' },
+      { step: 'packed', text: '仓库已完成拣货', time: '2026-06-08 14:10:00', done: true, current: false },
+      { step: 'picking', text: '仓库正在拣货', time: '2026-06-08 14:05:00', done: true, current: false },
+      { step: 'paid', text: '订单已支付', time: '2026-06-08 14:02:00', done: true, current: false },
+    ],
+  },
+  O002: {
+    orderId: 'O002',
+    orderNo: '20260607008',
+    status: ORDER_STATUS.PICKING,
+    statusText: '仓库正在拣货',
+    etaText: '今天 17:00 前',
+    signCode: '452817',
+    address: '山屿西山著西区 7栋 1202室',
+    contactName: '李明',
+    contactPhone: '13812345678',
+    timeline: [
+      { step: 'delivered', text: '商品已送达', time: null, done: false, current: false },
+      { step: 'delivering', text: '配送员正在赶来', time: null, done: false, current: false },
+      { step: 'packed', text: '仓库已完成拣货', time: null, done: false, current: false },
+      { step: 'picking', text: '仓库正在拣货', time: '2026-06-07 15:15:00', done: true, current: true },
+      { step: 'paid', text: '订单已支付', time: '2026-06-07 15:10:00', done: true, current: false },
+    ],
+  },
+};
 
 // ==================== 社区与楼栋 ====================
 export const mockCommunity = {
   id: 'C001',
-  name: '阳光花园小区',
-  address: 'XX市XX区XX路100号',
-  buildings: [
-    { id: 'B001', name: '1栋', units: ['1单元', '2单元', '3单元'] },
-    { id: 'B002', name: '2栋', units: ['1单元', '2单元'] },
-    { id: 'B003', name: '3栋', units: ['1单元', '2单元', '3单元'] },
-    { id: 'B004', name: '5栋', units: ['1单元', '2单元'] },
-    { id: 'B005', name: '6栋', units: ['1单元', '2单元', '3单元'] }
-  ]
+  name: '山屿西山著',
+  address: '北京市海淀区山屿西山著',
+  zones: [
+    {
+      id: 'EAST',
+      name: '东区',
+      buildings: [
+        { id: 'E-B001', name: '1栋', units: ['1单元', '2单元', '3单元'] },
+        { id: 'E-B002', name: '2栋', units: ['1单元', '2单元'] },
+        { id: 'E-B003', name: '3栋', units: ['1单元', '2单元', '3单元'] },
+        { id: 'E-B004', name: '5栋', units: ['1单元', '2单元'] },
+        { id: 'E-B005', name: '6栋', units: ['1单元', '2单元', '3单元'] },
+      ],
+    },
+    {
+      id: 'WEST',
+      name: '西区',
+      buildings: [
+        { id: 'W-B001', name: '1栋', units: ['1单元', '2单元'] },
+        { id: 'W-B002', name: '3栋', units: ['1单元', '2单元', '3单元'] },
+        { id: 'W-B003', name: '5栋', units: ['1单元', '2单元'] },
+        { id: 'W-B004', name: '7栋', units: ['1单元', '2单元'] },
+      ],
+    },
+  ],
 };
 
 // ==================== 楼长分销数据 ====================
@@ -564,8 +641,8 @@ export const mockBanners = [
 
 // ==================== 地址 ====================
 export const mockAddresses = [
-  { id: 'A001', name: '李明', phone: '138****5678', address: '阳光花园小区3栋2单元1501室', isDefault: true },
-  { id: 'A002', name: '李明', phone: '138****5678', address: '阳光花园小区3栋2单元 团长自提点', isDefault: false }
+  { id: 'A001', name: '李明', phone: '138****5678', address: '山屿西山著东区 3栋 2单元 501室', zone: '东区', zoneId: 'EAST', isDefault: true },
+  { id: 'A002', name: '李明', phone: '138****5678', address: '山屿西山著西区 7栋 1202室', zone: '西区', zoneId: 'WEST', isDefault: false },
 ];
 
 // ==================== 积分系统 ====================

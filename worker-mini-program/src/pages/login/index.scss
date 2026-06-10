@@ -1,0 +1,24 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background: linear-gradient(180deg, #f6ffed 0%, #fff 60%);
+
+  .logo { font-size: 80px; margin-bottom: 16px; }
+  .title { font-size: 40px; font-weight: 700; color: #333; }
+  .subtitle { font-size: 26px; color: #999; margin: 12px 0 40px; }
+  .features { display: flex; flex-direction: column; gap: 12px; margin-bottom: 48px; }
+  .feat { font-size: 28px; color: #666; }
+  .login-btn {
+    width: 100%;
+    background: #52c41a;
+    color: #fff;
+    border-radius: 44px;
+    font-size: 32px;
+    border: none;
+  }
+  .tip { font-size: 22px; color: #bbb; margin-top: 24px; }
+}

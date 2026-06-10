@@ -1,16 +1,23 @@
 import Taro from '@tarojs/taro';
-import { API_BASE_URL } from '../config/constants';
+import { API_BASE_URL, USE_MOCK_API } from '../config/constants';
 import {
   mockProducts, mockCategories, mockCartItems, mockOrders,
   mockUser, mockFlashSales, mockDistributionData, mockCoupons,
-  mockCommunity, mockAddresses,
-  mockPointsInfo, mockPointsRecords, mockPointsServices, mockExchangeRecords
+  mockCommunity,
+  mockPointsInfo, mockPointsRecords, mockPointsServices, mockExchangeRecords,
+  mockOrderTracks
 } from './mockData';
+import {
+  getStoredAddresses,
+  addAddress,
+  updateAddress,
+  deleteAddress,
+  setDefaultAddress,
+} from './addressStorage';
 
 // 请求封装
 const request = async <T>(url: string, options: any = {}): Promise<T> => {
-  // 开发阶段使用模拟数据
-  if (process.env.NODE_ENV === 'development') {
+  if (USE_MOCK_API) {
     return mockRequest(url, options) as T;
   }
 
@@ -22,6 +29,7 @@ const request = async <T>(url: string, options: any = {}): Promise<T> => {
       header: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${Taro.getStorageSync('token')}`,
+        'X-Client-Type': 'consumer',
         ...options.header
       }
     });
@@ -29,8 +37,8 @@ const request = async <T>(url: string, options: any = {}): Promise<T> => {
       return res.data.data as T;
     }
     throw new Error(res.data.message || '请求失败');
-  } catch (err) {
-    Taro.showToast({ title: '网络错误', icon: 'none' });
+  } catch (err: any) {
+    Taro.showToast({ title: err.message || '网络错误', icon: 'none' });
     throw err;
   }
 };
@@ -48,13 +56,32 @@ const mockRequest = (url: string, options: any): any => {
       if (url.includes('/cart/update')) return resolve({ success: true });
       if (url.includes('/cart/delete')) return resolve({ success: true });
       if (url.includes('/orders/list')) return resolve(mockOrders);
-      if (url.includes('/orders/create')) return resolve({ orderId: 'O999', orderNo: 'LX20260604' + Date.now() });
+      if (url.includes('/orders/track/')) {
+        const orderId = url.split('/orders/track/')[1]?.split('?')[0];
+        return resolve(mockOrderTracks[orderId] || mockOrderTracks.O001);
+      }
+      if (url.includes('/orders/create')) return resolve({ orderId: 'O001', orderNo: '20260608001', signCode: '836291' });
       if (url.includes('/user/info')) return resolve(mockUser);
       if (url.includes('/user/login')) return resolve({ token: 'mock_token_' + Date.now(), user: mockUser });
       if (url.includes('/distribution/data')) return resolve(mockDistributionData);
       if (url.includes('/coupons/list')) return resolve(mockCoupons);
       if (url.includes('/community/info')) return resolve(mockCommunity);
-      if (url.includes('/address/list')) return resolve(mockAddresses);
+      if (url.includes('/address/list')) return resolve(getStoredAddresses());
+      if (url.includes('/address/add')) {
+        const list = addAddress(options.data, options.data?.isDefault !== false);
+        return resolve(list[0]);
+      }
+      if (url.match(/\/address\/[^/]+$/) && options.method === 'PUT') {
+        const id = url.split('/address/')[1];
+        if (options.data?.isDefault) {
+          return resolve(setDefaultAddress(id));
+        }
+        return resolve(updateAddress(id, options.data));
+      }
+      if (url.match(/\/address\/[^/]+$/) && options.method === 'DELETE') {
+        const id = url.split('/address/')[1];
+        return resolve(deleteAddress(id));
+      }
       if (url.includes('/points/info')) return resolve(mockPointsInfo);
       if (url.includes('/points/records')) return resolve(mockPointsRecords);
       if (url.includes('/points/services')) return resolve(mockPointsServices);
@@ -77,8 +104,18 @@ export const userApi = {
   updateUserInfo: (data: any) => request('/user/update', { method: 'PUT', data }),
 
   // 绑定小区和楼栋
-  bindCommunity: (data: { communityId: string; buildingId: string; unit: string; room: string }) =>
-    request('/user/bind-community', { method: 'POST', data }),
+  bindCommunity: (data: {
+    communityId: string;
+    buildingId: string;
+    unit: string;
+    room: string;
+    zoneId?: string;
+    zoneName?: string;
+    buildingName?: string;
+    contactName?: string;
+    contactPhone?: string;
+    fullAddress?: string;
+  }) => request('/user/bind-community', { method: 'POST', data }),
 
   // 获取地址列表
   getAddresses: () => request('/address/list'),
@@ -139,6 +176,9 @@ export const orderApi = {
 
   // 获取订单详情
   getOrderDetail: (id: string) => request(`/orders/detail/${id}`),
+
+  // 配送追踪
+  getOrderTrack: (id: string) => request(`/orders/track/${id}`),
 
   // 创建订单
   createOrder: (data: {

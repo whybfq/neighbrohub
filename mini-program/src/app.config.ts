@@ -9,7 +9,9 @@ export default defineAppConfig({
     'pages/login/login',
     'pages/bind-community/bind-community',
     'pages/distribution/distribution',
-    'pages/points/points'
+    'pages/points/points',
+    'pages/track/index',
+    'pages/address/index'
   ],
   window: {
     backgroundTextStyle: 'light',

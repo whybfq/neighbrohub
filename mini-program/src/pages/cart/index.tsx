@@ -3,6 +3,7 @@ import { View, Text, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useCartStore } from '../../store';
 import { formatPrice, navigateTo, showToast, PAGE_PATH } from '../../utils';
+import { BUSINESS_RULES } from '../../config/constants';
 import EmptyState from '../../components/empty-state/index';
 import './index.scss';
 
@@ -100,6 +101,12 @@ export default class CartPage extends Component<{}, State> {
 
     if (checkedItems.length === 0) {
       showToast('请选择商品');
+      return;
+    }
+
+    const totalAmount = checkedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    if (totalAmount < BUSINESS_RULES.minOrderAmount) {
+      showToast(`未满起送价 ¥${BUSINESS_RULES.minOrderAmount}，请继续选购`);
       return;
     }
 

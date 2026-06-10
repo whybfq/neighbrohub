@@ -1,30 +1,127 @@
-// API 基础地址配置
-export const API_BASE_URL = 'https://api.linshe.com/v1';
+// API 基础地址（本地统一后端；生产环境请改为实际域名）
+export const API_BASE_URL = 'http://localhost:8090/api/v1';
+
+/** 设为 true 时走本地 Mock，不请求后端 */
+export const USE_MOCK_API = false;
 
 // 图片资源基础地址
 export const IMG_BASE_URL = 'https://cdn.linshe.com';
 
-// 订单状态枚举
+// MVP 功能开关
+export const MVP_FEATURES = {
+  DISTRIBUTION: false,
+  POINTS: false,
+  COUPONS: false,
+};
+
+// 服务范围（MVP 单仓 · 山屿西山著东/西区）
+export const MVP_ZONES = [
+  { id: 'EAST', name: '东区' },
+  { id: 'WEST', name: '西区' },
+] as const;
+
+export const MVP_COMMUNITY = {
+  id: 'C001',
+  name: '山屿西山著',
+  warehouseName: '山屿西山著地下仓',
+  address: '北京市海淀区山屿西山著',
+  etaMinutes: 120,
+  businessOpen: '08:00',
+  businessClose: '21:00',
+};
+
+/** 格式化配送地址：山屿西山著东区 3栋 2单元 501室 */
+export const formatMvpAddress = (
+  zoneName: string,
+  building: string,
+  unit?: string,
+  room?: string
+): string => {
+  const base = `山屿西山著${zoneName} ${building}`;
+  if (unit && room) return `${base} ${unit} ${room}室`;
+  if (unit) return `${base} ${unit}`;
+  return base;
+};
+
+export const MVP_LOCATION_LABEL = `${MVP_COMMUNITY.name}（${MVP_ZONES.map((z) => z.name).join('·')}）`;
+
+// 业务规则（MVP 可后台配置）
+export const BUSINESS_RULES = {
+  minOrderAmount: 1,              // 起送价 ¥1
+  deliveryFee: 0,                 // 内测免配送费
+  courierFeePerOrder: 5,          // 配送员每单收入
+  maxConcurrentOrders: 100,       // 配送员同时持单上限
+  unpaidTimeoutMinutes: 15,
+  pickupTimeoutMinutes: 20,
+};
+
 export const ORDER_STATUS = {
-  PENDING_PAY: 'pending_pay',       // 待付款
-  PENDING_DELIVER: 'pending_deliver', // 待发货
-  DELIVERING: 'delivering',         // 配送中
-  COMPLETED: 'completed',           // 已完成
-  REFUNDING: 'refunding',           // 退款中
-  REFUNDED: 'refunded',             // 已退款
-  CLOSED: 'closed'                  // 已关闭
+  PENDING_PAY: 'pending_pay',
+  PAID: 'paid',
+  PICKING: 'picking',
+  PACKED: 'packed',
+  DISPATCHING: 'dispatching',
+  DELIVERING: 'delivering',
+  DELIVERED: 'delivered',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+  REFUNDING: 'refunding',
+  REFUNDED: 'refunded',
+  // 兼容旧数据
+  PENDING_DELIVER: 'pending_deliver',
+  CLOSED: 'closed',
 };
 
 // 订单状态中文映射
-export const ORDER_STATUS_TEXT = {
+export const ORDER_STATUS_TEXT: Record<string, string> = {
   [ORDER_STATUS.PENDING_PAY]: '待付款',
-  [ORDER_STATUS.PENDING_DELIVER]: '待发货',
+  [ORDER_STATUS.PAID]: '备货中',
+  [ORDER_STATUS.PICKING]: '拣货中',
+  [ORDER_STATUS.PACKED]: '待配送',
+  [ORDER_STATUS.DISPATCHING]: '已接单',
   [ORDER_STATUS.DELIVERING]: '配送中',
+  [ORDER_STATUS.DELIVERED]: '已送达',
   [ORDER_STATUS.COMPLETED]: '已完成',
+  [ORDER_STATUS.CANCELLED]: '已取消',
   [ORDER_STATUS.REFUNDING]: '退款中',
   [ORDER_STATUS.REFUNDED]: '已退款',
-  [ORDER_STATUS.CLOSED]: '已关闭'
+  [ORDER_STATUS.PENDING_DELIVER]: '备货中',
+  [ORDER_STATUS.CLOSED]: '已关闭',
 };
+
+// 订单列表 Tab 分组
+export const ORDER_LIST_TABS = [
+  { key: 'all', label: '全部' },
+  { key: ORDER_STATUS.PENDING_PAY, label: '待付款' },
+  { key: 'preparing', label: '备货中' },
+  { key: 'delivering', label: '配送中' },
+  { key: ORDER_STATUS.COMPLETED, label: '已完成' },
+];
+
+export const ORDER_TAB_STATUS_GROUPS: Record<string, string[]> = {
+  preparing: [
+    ORDER_STATUS.PAID,
+    ORDER_STATUS.PICKING,
+    ORDER_STATUS.PACKED,
+    ORDER_STATUS.PENDING_DELIVER,
+  ],
+  delivering: [
+    ORDER_STATUS.DISPATCHING,
+    ORDER_STATUS.DELIVERING,
+    ORDER_STATUS.DELIVERED,
+  ],
+};
+
+// 可查看配送追踪的状态
+export const TRACKABLE_ORDER_STATUSES = [
+  ORDER_STATUS.PAID,
+  ORDER_STATUS.PICKING,
+  ORDER_STATUS.PACKED,
+  ORDER_STATUS.DISPATCHING,
+  ORDER_STATUS.DELIVERING,
+  ORDER_STATUS.DELIVERED,
+  ORDER_STATUS.PENDING_DELIVER,
+];
 
 // 用户角色
 export const USER_ROLE = {
@@ -62,7 +159,9 @@ export const PAGE_PATH = {
   LOGIN: '/pages/login/login',
   BIND_COMMUNITY: '/pages/bind-community/bind-community',
   DISTRIBUTION: '/pages/distribution/distribution',
-  POINTS: '/pages/points/points'
+  POINTS: '/pages/points/points',
+  TRACK: '/pages/track/index',
+  ADDRESS: '/pages/address/index',
 };
 
 // ==================== 仓储系统常量 ====================

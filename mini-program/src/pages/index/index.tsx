@@ -4,8 +4,8 @@ import Taro from '@tarojs/taro';
 import { useUserStore, usePointsStore } from '../../store';
 import { productApi } from '../../services/api';
 import { mockCategories, mockFlashSales, mockBanners } from '../../services/mockData';
-import { navigateTo, formatPrice, PAGE_PATH, showToast } from '../../utils';
-import { POINTS_PER_YUAN } from '../../config/constants';
+import { navigateTo, formatPrice, PAGE_PATH, showToast, formatEtaText } from '../../utils';
+import { MVP_COMMUNITY, MVP_FEATURES, MVP_ZONES } from '../../config/constants';
 import ProductCard from '../../components/product-card/index';
 import './index.scss';
 
@@ -19,6 +19,7 @@ interface State {
   currentBanner: number;
   countdown: { hours: string; minutes: string; seconds: string };
   countdownEndTime: number;
+  displayZoneId: string;
 }
 
 export default class IndexPage extends Component<{}, State> {
@@ -33,7 +34,8 @@ export default class IndexPage extends Component<{}, State> {
     searchKeyword: '',
     currentBanner: 0,
     countdown: { hours: '02', minutes: '35', seconds: '18' },
-    countdownEndTime: Date.now() + (2 * 3600 + 35 * 60 + 18) * 1000
+    countdownEndTime: Date.now() + (2 * 3600 + 35 * 60 + 18) * 1000,
+    displayZoneId: MVP_ZONES[0].id,
   };
 
   componentDidMount() {
@@ -42,6 +44,9 @@ export default class IndexPage extends Component<{}, State> {
   }
 
   onShow() {
+    const userStore = useUserStore.getState();
+    const zoneId = userStore.userInfo?.zone?.id || this.state.displayZoneId || MVP_ZONES[0].id;
+    this.setState({ displayZoneId: zoneId });
     this.loadData();
   }
 
@@ -129,13 +134,20 @@ export default class IndexPage extends Component<{}, State> {
     this.setState({ currentBanner: index });
   };
 
-  // 定位切换
+  // 切换东/西区（MVP 仅服务山屿西山著）
   handleLocationTap = () => {
     Taro.showActionSheet({
-      itemList: ['阳光花园小区', '翠竹苑小区', '碧海蓝天小区', '金色家园小区'],
+      itemList: MVP_ZONES.map((z) => z.name),
       success: (res) => {
-        showToast(`已切换到小区`);
-      }
+        const zone = MVP_ZONES[res.tapIndex];
+        this.setState({ displayZoneId: zone.id });
+        const store = useUserStore.getState();
+        store.setUserInfo({
+          ...(store.userInfo || {}),
+          zone: { id: zone.id, name: zone.name },
+        });
+        showToast(`已切换至${MVP_COMMUNITY.name}${zone.name}`);
+      },
     });
   };
 
@@ -152,7 +164,7 @@ export default class IndexPage extends Component<{}, State> {
     const store = useUserStore.getState();
     const distributorCode = store.userInfo?.distributorCode || '';
     return {
-      title: '邻选社区 - 小区好物，团长直供',
+      title: `邻选社区 - 前置仓2小时达，${MVP_COMMUNITY.name}专属`,
       path: `${PAGE_PATH.INDEX}?from=${distributorCode}`,
       imageUrl: ''
     };
@@ -161,6 +173,11 @@ export default class IndexPage extends Component<{}, State> {
   render() {
     const { categories, flashSales, banners, products, searchKeyword, currentBanner, countdown, loading } = this.state;
     const pointsStore = usePointsStore.getState();
+    const userStore = useUserStore.getState();
+    const zone = MVP_ZONES.find((z) => z.id === this.state.displayZoneId)
+      || userStore.userInfo?.zone
+      || MVP_ZONES[0];
+    const zoneName = zone.name;
 
     return (
       <View className='index-page'>
@@ -168,12 +185,20 @@ export default class IndexPage extends Component<{}, State> {
         <View className='header-bar'>
           <View className='location-info' onClick={this.handleLocationTap}>
             <Text className='location-icon'>📍</Text>
-            <Text className='location-name'>阳光花园小区</Text>
+            <Text className='location-name'>{MVP_COMMUNITY.name} · {zoneName}</Text>
             <Text className='location-arrow'>▾</Text>
           </View>
           <View className='header-right'>
             <Text className='notify-icon' onClick={this.handleNotification}>🔔</Text>
           </View>
+        </View>
+
+        <View className='eta-bar'>
+          <View className='eta-left'>
+            <Text className='eta-icon'>🕐</Text>
+            <Text className='eta-text'>预计 {formatEtaText(MVP_COMMUNITY.etaMinutes)}送达</Text>
+          </View>
+          <Text className='eta-badge'>营业中</Text>
         </View>
 
         {/* 搜索栏 */}
@@ -241,28 +266,29 @@ export default class IndexPage extends Component<{}, State> {
             </ScrollView>
           </View>
 
-          {/* 积分入口 */}
-          <View className='points-entry' onClick={() => Taro.navigateTo({ url: '/pages/points/points' })}>
-            <View className='points-left'>
-              <Text className='points-icon'>⭐</Text>
-              <View className='points-info'>
-                <Text className='points-title'>我的积分</Text>
-                <Text className='points-desc'>消费1元=1积分，永不过期</Text>
+          {MVP_FEATURES.POINTS && (
+            <View className='points-entry' onClick={() => Taro.navigateTo({ url: '/pages/points/points' })}>
+              <View className='points-left'>
+                <Text className='points-icon'>⭐</Text>
+                <View className='points-info'>
+                  <Text className='points-title'>我的积分</Text>
+                  <Text className='points-desc'>消费1元=1积分，永不过期</Text>
+                </View>
+              </View>
+              <View className='points-right'>
+                <Text className='points-value'>{pointsStore.totalPoints.toLocaleString()}</Text>
+                <Text className='points-arrow'>›</Text>
               </View>
             </View>
-            <View className='points-right'>
-              <Text className='points-value'>{pointsStore.totalPoints.toLocaleString()}</Text>
-              <Text className='points-arrow'>›</Text>
-            </View>
-          </View>
+          )}
 
-          {/* 地下仓储特色入口 */}
+          {/* 前置仓特色入口 */}
           <View className='warehouse-entry'>
             <View className='warehouse-header'>
               <Text className='warehouse-icon'>🏗️</Text>
               <View className='warehouse-title-wrap'>
-                <Text className='warehouse-title'>地下仓储直供</Text>
-                <Text className='warehouse-subtitle'>1000+恒温仓库，新鲜直达</Text>
+                <Text className='warehouse-title'>{MVP_COMMUNITY.warehouseName}</Text>
+                <Text className='warehouse-subtitle'>单仓直配东区·西区 · 下单即拣 · 2小时达</Text>
               </View>
             </View>
             <View className='warehouse-stats'>
@@ -288,17 +314,18 @@ export default class IndexPage extends Component<{}, State> {
             </View>
           </View>
 
-          {/* 楼长推荐 */}
-          <View className='leader-recommend' onClick={() => navigateTo(PAGE_PATH.DISTRIBUTION)}>
-            <View className='recommend-header'>
-              <Text className='recommend-icon'>🏅</Text>
-              <Text className='recommend-title'>本楼楼长推荐</Text>
-              <Text className='recommend-tag'>3栋-李明</Text>
+          {MVP_FEATURES.DISTRIBUTION && (
+            <View className='leader-recommend' onClick={() => navigateTo(PAGE_PATH.DISTRIBUTION)}>
+              <View className='recommend-header'>
+                <Text className='recommend-icon'>🏅</Text>
+                <Text className='recommend-title'>本楼楼长推荐</Text>
+                <Text className='recommend-tag'>3栋-李明</Text>
+              </View>
+              <View className='recommend-tip'>
+                <Text className='tip-text'>💡 通过楼长分享链接下单，享额外优惠和佣金奖励</Text>
+              </View>
             </View>
-            <View className='recommend-tip'>
-              <Text className='tip-text'>💡 通过楼长分享链接下单，享额外优惠和佣金奖励</Text>
-            </View>
-          </View>
+          )}
 
           {/* 限时秒杀 */}
           {flashSales.length > 0 && (

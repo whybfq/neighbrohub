@@ -3,7 +3,7 @@ import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useUserStore, usePointsStore } from '../../store';
 import { navigateTo, PAGE_PATH, showToast } from '../../utils';
-import { USER_ROLE } from '../../config/constants';
+import { USER_ROLE, MVP_FEATURES } from '../../config/constants';
 import './index.scss';
 
 export default class ProfilePage extends Component {
@@ -32,10 +32,7 @@ export default class ProfilePage extends Component {
 
   // 地址管理
   goToAddress = () => {
-    showToast('加载地址中...');
-    setTimeout(() => {
-      Taro.showToast({ title: '地址管理开发中', icon: 'none' });
-    }, 800);
+    navigateTo(PAGE_PATH.ADDRESS);
   };
 
   // 优惠券
@@ -112,24 +109,25 @@ export default class ProfilePage extends Component {
                   <Text className='user-name'>
                     {userInfo?.nickname || '点击登录'}
                   </Text>
-                  {(isBuildingLeader || isCommunityLeader) && (
+                  {(MVP_FEATURES.DISTRIBUTION && (isBuildingLeader || isCommunityLeader)) && (
                     <Text className='role-badge'>
                       {isCommunityLeader ? '团长' : '楼长'}
                     </Text>
                   )}
                 </View>
                 <Text className='user-community'>
-                  {userInfo?.community?.name || '阳光花园小区'}
+                  {userInfo?.community?.name || '山屿西山著'}
+                  {userInfo?.zone?.name && ` · ${userInfo.zone.name}`}
                   {userInfo?.building && ` · ${userInfo.building.name}${userInfo.building.unit}`}
                 </Text>
-                {isBuildingLeader && (
+                {MVP_FEATURES.DISTRIBUTION && isBuildingLeader && (
                   <Text className='user-code'>邀请码：{userInfo?.distributorCode}</Text>
                 )}
               </View>
             </View>
           </View>
 
-          {/* 积分卡片 */}
+          {MVP_FEATURES.POINTS && (
           <View className='points-card' onClick={this.goToPoints}>
             <View className='points-card-left'>
               <Text className='points-card-icon'>⭐</Text>
@@ -143,9 +141,10 @@ export default class ProfilePage extends Component {
               <Text className='points-card-arrow'>›</Text>
             </View>
           </View>
+          )}
 
           {/* 楼长/团长入口 */}
-          {(isBuildingLeader || isCommunityLeader) && (
+          {MVP_FEATURES.DISTRIBUTION && (isBuildingLeader || isCommunityLeader) && (
             <View className='distributor-entry' onClick={this.goToDistribution}>
               <View className='entry-left'>
                 <Text className='entry-icon'>🏅</Text>
@@ -167,20 +166,20 @@ export default class ProfilePage extends Component {
           {/* 订单统计 */}
           <View className='order-stats'>
             <View className='stat-item' onClick={() => this.goToOrders()}>
-              <Text className='stat-num'>0</Text>
+              <Text className='stat-num'>1</Text>
               <Text className='stat-label'>待付款</Text>
             </View>
             <View className='stat-item' onClick={() => this.goToOrders()}>
-              <Text className='stat-num'>0</Text>
-              <Text className='stat-label'>待发货</Text>
+              <Text className='stat-num'>1</Text>
+              <Text className='stat-label'>备货中</Text>
             </View>
             <View className='stat-item' onClick={() => this.goToOrders()}>
               <Text className='stat-num'>1</Text>
               <Text className='stat-label'>配送中</Text>
             </View>
             <View className='stat-item' onClick={() => this.goToOrders()}>
-              <Text className='stat-num'>2</Text>
-              <Text className='stat-label'>待评价</Text>
+              <Text className='stat-num'>5</Text>
+              <Text className='stat-label'>已完成</Text>
             </View>
             <View className='stat-item' onClick={() => this.goToOrders()}>
               <Text className='stat-num'>0</Text>
@@ -195,23 +194,14 @@ export default class ProfilePage extends Component {
               <Text className='menu-text'>全部订单</Text>
               <Text className='menu-arrow'>›</Text>
             </View>
-            <View className='menu-item' onClick={this.goToCoupons}>
-              <Text className='menu-icon'>🎫</Text>
-              <Text className='menu-text'>优惠券</Text>
-              <Text className='menu-badge'>3张可用</Text>
-              <Text className='menu-arrow'>›</Text>
-            </View>
-            <View className='menu-item' onClick={this.goToFavorites}>
-              <Text className='menu-icon'>⭐</Text>
-              <Text className='menu-text'>我的收藏</Text>
-              <Text className='menu-arrow'>›</Text>
-            </View>
-            <View className='menu-item' onClick={this.goToPoints}>
-              <Text className='menu-icon'>⭐</Text>
-              <Text className='menu-text'>积分商城</Text>
-              <Text className='menu-value'>{pointsStore.totalPoints.toLocaleString()}</Text>
-              <Text className='menu-arrow'>›</Text>
-            </View>
+            {MVP_FEATURES.COUPONS && (
+              <View className='menu-item' onClick={this.goToCoupons}>
+                <Text className='menu-icon'>🎫</Text>
+                <Text className='menu-text'>优惠券</Text>
+                <Text className='menu-badge'>3张可用</Text>
+                <Text className='menu-arrow'>›</Text>
+              </View>
+            )}
             <View className='menu-item' onClick={this.goToAddress}>
               <Text className='menu-icon'>📍</Text>
               <Text className='menu-text'>收货地址</Text>
@@ -220,7 +210,7 @@ export default class ProfilePage extends Component {
           </View>
 
           {/* 楼长相关菜单 */}
-          {isBuildingLeader && (
+          {MVP_FEATURES.DISTRIBUTION && isBuildingLeader && (
             <View className='menu-section'>
               <View className='menu-item' onClick={this.goToDistribution}>
                 <Text className='menu-icon'>💰</Text>
@@ -262,7 +252,7 @@ export default class ProfilePage extends Component {
           </View>
 
           {/* 申请成为楼长入口（普通用户可见） */}
-          {!isBuildingLeader && !isCommunityLeader && (
+          {MVP_FEATURES.DISTRIBUTION && !isBuildingLeader && !isCommunityLeader && (
             <View className='apply-section'>
               <View className='apply-card'>
                 <Text className='apply-icon'>🏅</Text>

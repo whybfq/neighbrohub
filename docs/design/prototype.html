@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>社区私域购物平台 - 产品原型设计</title>
+<title>邻选社区 - 前置仓即时配送 MVP 原型 v3.0</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f0f2f5; color: #333; }
@@ -270,6 +270,52 @@
   .success-card-popup .sc-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
   .success-card-popup .sc-desc { font-size: 13px; color: #999; }
 
+  /* v3.0 MVP 新增 */
+  .eta-bar { margin: 0 16px 10px; padding: 10px 14px; background: linear-gradient(135deg, #e8f4fd, #f0f8ff); border-radius: 10px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #d6ebff; }
+  .eta-bar .eta-left { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #1890ff; font-weight: 600; }
+  .eta-bar .eta-right { font-size: 11px; color: #52c41a; background: #f6ffed; padding: 2px 8px; border-radius: 10px; }
+  .checkout-card { background: white; margin: 10px 16px; border-radius: 10px; padding: 14px; }
+  .checkout-card .cc-title { font-size: 13px; color: #999; margin-bottom: 8px; }
+  .checkout-eta { display: flex; align-items: center; gap: 8px; padding: 12px 0; border-top: 1px solid #f5f5f5; }
+  .checkout-eta .eta-icon { font-size: 20px; }
+  .checkout-eta .eta-text { font-size: 15px; font-weight: 600; color: #1890ff; }
+  .checkout-eta .eta-sub { font-size: 11px; color: #999; }
+  .track-header { background: linear-gradient(135deg, #667eea, #764ba2); padding: 24px 20px; color: white; text-align: center; }
+  .track-header .th-status { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .track-header .th-eta { font-size: 13px; opacity: 0.9; }
+  .timeline { margin: 16px; background: white; border-radius: 12px; padding: 16px; }
+  .timeline-item { display: flex; gap: 12px; padding-bottom: 20px; position: relative; }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-item:not(:last-child)::before { content: ''; position: absolute; left: 7px; top: 18px; bottom: 0; width: 2px; background: #e8e8e8; }
+  .timeline-item.done:not(:last-child)::before { background: #667eea; }
+  .tl-dot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #ddd; background: white; flex-shrink: 0; margin-top: 2px; z-index: 1; }
+  .timeline-item.done .tl-dot { background: #667eea; border-color: #667eea; }
+  .timeline-item.current .tl-dot { background: #667eea; border-color: #667eea; box-shadow: 0 0 0 4px rgba(102,126,234,0.25); }
+  .tl-content { flex: 1; }
+  .tl-text { font-size: 14px; font-weight: 600; color: #333; }
+  .timeline-item.pending .tl-text { color: #bbb; font-weight: 400; }
+  .tl-time { font-size: 11px; color: #999; margin-top: 2px; }
+  .tl-extra { font-size: 12px; color: #666; margin-top: 4px; }
+  .sign-code-card { margin: 0 16px 12px; background: white; border-radius: 12px; padding: 16px; text-align: center; }
+  .sign-code-card .sc-label { font-size: 13px; color: #999; margin-bottom: 8px; }
+  .sign-code-card .sc-digits { display: flex; justify-content: center; gap: 8px; }
+  .sign-code-card .sc-digit { width: 36px; height: 44px; background: #f5f7ff; border: 1px solid #d6e0ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #667eea; }
+  .sign-code-card .sc-tip { font-size: 11px; color: #999; margin-top: 8px; }
+  .courier-card { margin: 0 16px 12px; background: white; border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 12px; }
+  .courier-avatar { width: 44px; height: 44px; background: #f0f4ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .worker-selector { margin-bottom: 16px; }
+  .worker-selector .ws-label { text-align: center; font-size: 13px; color: #666; margin-bottom: 8px; }
+  .worker-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .worker-btn { padding: 8px 16px; border: 2px solid #52c41a; background: white; color: #52c41a; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; }
+  .worker-btn:hover, .worker-btn.active { background: #52c41a; color: white; }
+  .grab-card { background: white; margin: 8px 16px; border-radius: 10px; padding: 14px; border-left: 4px solid #52c41a; }
+  .grab-card .gc-top { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .grab-card .gc-order { font-size: 13px; font-weight: 600; }
+  .grab-card .gc-fee { color: #ff6b6b; font-weight: 700; font-size: 14px; }
+  .grab-btn { margin-top: 8px; padding: 8px; background: #52c41a; color: white; border-radius: 8px; text-align: center; font-weight: 600; font-size: 14px; cursor: pointer; }
+  .online-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #52c41a; font-weight: 600; }
+  .online-badge::before { content: ''; width: 8px; height: 8px; background: #52c41a; border-radius: 50%; }
+
   @media (max-width: 768px) {
     .phone-frame { width: 100%; max-width: 375px; border-radius: 0; box-shadow: 0 0 0 2px #1a1a2e; }
     header { padding: 24px 16px; }
@@ -282,16 +328,25 @@
 <div class="container">
   <header>
     <h1>🏘️ 邻选社区</h1>
-    <p>社区私域购物平台 - 产品原型设计 v1.0</p>
+    <p>前置仓即时配送 MVP · 山屿西山著（东区·西区）· 原型 v3.0</p>
   </header>
 
   <div class="page-selector">
-    <button class="page-btn active" onclick="switchPage('home')">📱 首页</button>
-    <button class="page-btn" onclick="switchPage('detail')">📦 商品详情</button>
-    <button class="page-btn" onclick="switchPage('cart')">🛒 购物车</button>
-    <button class="page-btn" onclick="switchPage('orders')">📋 订单</button>
-    <button class="page-btn" onclick="switchPage('points')">⭐ 积分商城</button>
-    <button class="page-btn" onclick="switchPage('profile')">👤 我的</button>
+    <button class="page-btn active" data-page="home" onclick="switchPage('home', this)">📱 首页</button>
+    <button class="page-btn" data-page="detail" onclick="switchPage('detail', this)">📦 商品详情</button>
+    <button class="page-btn" data-page="cart" onclick="switchPage('cart', this)">🛒 购物车</button>
+    <button class="page-btn" data-page="checkout" onclick="switchPage('checkout', this)">📝 下单确认</button>
+    <button class="page-btn" data-page="orders" onclick="switchPage('orders', this)">📋 订单</button>
+    <button class="page-btn" data-page="track" onclick="switchPage('track', this)">🚚 配送追踪</button>
+    <button class="page-btn" data-page="profile" onclick="switchPage('profile', this)">👤 我的</button>
+  </div>
+  <div class="worker-selector">
+    <div class="ws-label">邻选·作业端预览</div>
+    <div class="worker-btns">
+      <button class="worker-btn" data-page="worker-inbound" onclick="switchPage('worker-inbound', this)">📥 入库</button>
+      <button class="worker-btn" data-page="worker-pick" onclick="switchPage('worker-pick', this)">📦 分拣</button>
+      <button class="worker-btn" data-page="worker-delivery" onclick="switchPage('worker-delivery', this)">🛵 抢单配送</button>
+    </div>
   </div>
 
   <div class="phone-frame">
@@ -306,12 +361,15 @@
       <div class="nav-bar">
         <div style="display:flex;align-items:center;gap:6px;">
           <span style="font-size:18px;">📍</span>
-          <span style="font-weight:600;font-size:14px;">阳光花园小区</span>
-          <span style="font-size:10px;color:#999;">▼</span>
+          <span style="font-weight:600;font-size:14px;">山屿西山著</span>
         </div>
         <div style="display:flex;gap:16px;">
           <span style="font-size:18px;">🔔</span>
         </div>
+      </div>
+      <div class="eta-bar">
+        <div class="eta-left">🕐 预计 16:30 前送达</div>
+        <div class="eta-right">● 营业中</div>
       </div>
       <div class="page-content">
         <div class="search-bar">
@@ -337,8 +395,8 @@
         </div>
 
         <div class="warehouse-entry">
-          <div class="wh-title">🏭 地下仓储直供</div>
-          <div class="wh-subtitle">1000+恒温仓库 · 新鲜直达 · 品质保障</div>
+          <div class="wh-title">🏭 山屿西山著地下前置仓</div>
+          <div class="wh-subtitle">单仓直配本小区 · 下单即拣 · 2小时送达</div>
           <div class="wh-stats">
             <div class="wh-stat cold">
               <div class="wh-num">128</div>
@@ -450,22 +508,12 @@
           </div>
         </div>
 
-        <div class="points-entry" style="margin: 0 16px 12px;">
-          <span class="pe-icon">⭐</span>
-          <div class="pe-info">
-            <div class="pe-title">积分商城</div>
-            <div class="pe-desc">消费1元=1积分，永不过期，兑换社区服务</div>
-          </div>
-          <span class="pe-balance">5,680</span>
-          <span class="pe-arrow">›</span>
-        </div>
       </div>
 
       <div class="bottom-nav">
         <div class="tab active"><span class="tab-icon">🏠</span>首页</div>
-        <div class="tab"><span class="tab-icon">📂</span>分类</div>
-        <div class="tab"><span class="tab-icon">👥</span>社区</div>
         <div class="tab"><span class="tab-icon">🛒</span>购物车</div>
+        <div class="tab"><span class="tab-icon">📋</span>订单</div>
         <div class="tab"><span class="tab-icon">👤</span>我的</div>
       </div>
     </div>
@@ -528,11 +576,11 @@
 
           <div style="display:flex;justify-content:space-between;padding:12px 0;border-top:1px solid #f0f0f0;margin-top:8px;">
             <span style="color:#666;">配送方式</span>
-            <span style="color:#333;">🏪 小区团长自提 / 🚀 送货上门</span>
+            <span style="color:#333;">🚀 送货上门 · 2小时内达</span>
           </div>
           <div style="display:flex;justify-content:space-between;padding:12px 0;border-top:1px solid #f0f0f0;">
-            <span style="color:#666;">团长</span>
-            <span style="color:#333;">👤 王阿姨 (阳光花园2栋) ›</span>
+            <span style="color:#666;">发货仓库</span>
+            <span style="color:#333;">🏭 山屿西山著地下仓 ›</span>
           </div>
 
           <div class="prod-desc">
@@ -625,119 +673,346 @@
       </div>
     </div>
 
+    <!-- CHECKOUT PAGE -->
+    <div id="page-checkout" class="page">
+      <div class="status-bar"><span>14:02</span><span>📶 🔋</span></div>
+      <div class="nav-bar"><span class="nav-title">确认订单</span></div>
+      <div class="page-content" style="padding-bottom:80px;">
+        <div class="checkout-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-weight:600;font-size:15px;">李明 138****5678</div>
+              <div style="font-size:13px;color:#666;margin-top:4px;">山屿西山著东区 3栋 2单元 501室</div>
+            </div>
+            <span style="color:#ccc;">›</span>
+          </div>
+          <div class="checkout-eta">
+            <span class="eta-icon">🕐</span>
+            <div>
+              <div class="eta-text">预计今天 16:30 前送达</div>
+              <div class="eta-sub">由山屿西山著地下仓拣货配送</div>
+            </div>
+          </div>
+        </div>
+        <div class="checkout-card">
+          <div class="cc-title">商品清单</div>
+          <div style="display:flex;gap:10px;padding:8px 0;">
+            <div style="width:60px;height:60px;background:#f5f5f5;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;">💧</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;">农夫山泉 550ml×24瓶</div>
+              <div style="font-size:12px;color:#999;">×2</div>
+            </div>
+            <div style="font-weight:600;">¥59.80</div>
+          </div>
+          <div style="display:flex;gap:10px;padding:8px 0;border-top:1px solid #f5f5f5;">
+            <div style="width:60px;height:60px;background:#f5f5f5;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;">🥬</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;">新鲜西红柿 500g</div>
+              <div style="font-size:12px;color:#999;">×1</div>
+            </div>
+            <div style="font-weight:600;">¥6.90</div>
+          </div>
+        </div>
+        <div class="checkout-card">
+          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px;"><span>商品金额</span><span>¥66.70</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px;"><span>配送费</span><span style="color:#52c41a;">¥0.00</span></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:16px;font-weight:700;border-top:1px solid #f5f5f5;margin-top:6px;"><span>实付</span><span style="color:#ff6b6b;">¥66.70</span></div>
+        </div>
+        <div class="checkout-card">
+          <div class="cc-title">备注</div>
+          <div style="font-size:13px;color:#999;">放门口即可</div>
+        </div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">实付：<span class="amount">¥66.70</span></div>
+        <div class="cart-submit">微信支付</div>
+      </div>
+    </div>
+
     <!-- ORDERS PAGE -->
     <div id="page-orders" class="page">
-      <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+      <div class="status-bar"><span>14:20</span><span>📶 🔋</span></div>
       <div class="nav-bar"><span class="nav-title">我的订单</span></div>
       <div class="order-tabs">
         <span class="order-tab active">全部</span>
         <span class="order-tab">待付款</span>
-        <span class="order-tab">待发货</span>
-        <span class="order-tab">待收货</span>
-        <span class="order-tab">待评价</span>
+        <span class="order-tab">备货中</span>
+        <span class="order-tab">配送中</span>
+        <span class="order-tab">已完成</span>
       </div>
       <div class="page-content">
         <div class="order-card">
-          <div class="order-header">订单号：LX20260604001 <span style="float:right;color:#667eea;">待收货</span></div>
+          <div class="order-header">订单号：20260608001 <span style="float:right;color:#52c41a;">配送中</span></div>
           <div class="order-body">
             <div class="order-img">💧</div>
             <div class="order-info">
               <div class="order-name">农夫山泉 饮用天然水 550ml×24瓶</div>
-              <div class="order-spec">规格：550ml×24瓶 x2 | 🏭 常温仓</div>
-              <div class="order-price">¥59.80</div>
+              <div class="order-spec">3栋501 · 共3件</div>
+              <div class="order-price">¥66.70</div>
             </div>
           </div>
           <div class="order-footer">
-            <div class="order-total">共2件 实付 <span class="price">¥59.80</span></div>
+            <div class="order-total">实付 <span class="price">¥66.70</span></div>
             <div class="order-actions">
-              <button class="order-btn secondary">查看物流</button>
+              <button class="order-btn secondary" onclick="switchPage('track', document.querySelector('[data-page=track]'))">查看配送</button>
               <button class="order-btn primary">确认收货</button>
             </div>
           </div>
         </div>
 
         <div class="order-card">
-          <div class="order-header">订单号：LX20260603012 <span style="float:right;color:#999;">已完成</span></div>
+          <div class="order-header">订单号：20260607008 <span style="float:right;color:#1890ff;">备货中</span></div>
+          <div class="order-body">
+            <div class="order-img">🥬</div>
+            <div class="order-info">
+              <div class="order-name">新鲜西红柿 + 鸡蛋组合</div>
+              <div class="order-spec">西区7栋1202 · 共2件</div>
+              <div class="order-price">¥28.80</div>
+            </div>
+          </div>
+          <div class="order-footer">
+            <div class="order-total">实付 <span class="price">¥28.80</span></div>
+            <div class="order-actions">
+              <button class="order-btn secondary">查看配送</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-card">
+          <div class="order-header">订单号：20260603012 <span style="float:right;color:#999;">已完成</span></div>
           <div class="order-body">
             <div class="order-img">🍺</div>
             <div class="order-info">
               <div class="order-name">青岛啤酒 经典 500ml×12罐装</div>
-              <div class="order-spec">规格：500ml×12罐 x1 | 🏭 常温仓</div>
+              <div class="order-spec">3栋501 · 共1件</div>
               <div class="order-price">¥59.90</div>
             </div>
           </div>
           <div class="order-footer">
-            <div class="order-total">共1件 实付 <span class="price">¥59.90</span></div>
+            <div class="order-total">实付 <span class="price">¥59.90</span></div>
             <div class="order-actions">
-              <button class="order-btn secondary">再次购买</button>
-              <button class="order-btn secondary">去评价</button>
+              <button class="order-btn secondary">再来一单</button>
             </div>
           </div>
         </div>
       </div>
       <div class="bottom-nav">
         <div class="tab"><span class="tab-icon">🏠</span>首页</div>
-        <div class="tab"><span class="tab-icon">📂</span>分类</div>
-        <div class="tab"><span class="tab-icon">👥</span>社区</div>
         <div class="tab"><span class="tab-icon">🛒</span>购物车</div>
-        <div class="tab active"><span class="tab-icon">👤</span>我的</div>
+        <div class="tab active"><span class="tab-icon">📋</span>订单</div>
+        <div class="tab"><span class="tab-icon">👤</span>我的</div>
+      </div>
+    </div>
+
+    <!-- TRACK PAGE -->
+    <div id="page-track" class="page">
+      <div class="status-bar"><span>14:20</span><span>📶 🔋</span></div>
+      <div class="nav-bar"><span class="nav-icon">‹</span><span class="nav-title">配送追踪</span><span></span></div>
+      <div class="track-header">
+        <div class="th-status">配送员正在赶来</div>
+        <div class="th-eta">预计今天 16:30 前送达</div>
+      </div>
+      <div class="page-content">
+        <div class="courier-card">
+          <div class="courier-avatar">🛵</div>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:15px;">张师傅</div>
+            <div style="font-size:12px;color:#999;">138****1234</div>
+          </div>
+          <div style="font-size:12px;color:#667eea;">联系客服</div>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item done current">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-text">配送员正在赶来</div>
+              <div class="tl-time">14:18</div>
+              <div class="tl-extra">张师傅已接单，正在前往仓库取货</div>
+            </div>
+          </div>
+          <div class="timeline-item done">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-text">仓库已完成拣货</div>
+              <div class="tl-time">14:10</div>
+            </div>
+          </div>
+          <div class="timeline-item done">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-text">仓库正在拣货</div>
+              <div class="tl-time">14:05</div>
+            </div>
+          </div>
+          <div class="timeline-item done">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-text">订单已支付</div>
+              <div class="tl-time">14:02</div>
+            </div>
+          </div>
+          <div class="timeline-item pending">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-text">商品已送达</div>
+              <div class="tl-time">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="sign-code-card">
+          <div class="sc-label">签收码（送达时向配送员出示）</div>
+          <div class="sc-digits">
+            <span class="sc-digit">8</span><span class="sc-digit">3</span><span class="sc-digit">6</span>
+            <span class="sc-digit">2</span><span class="sc-digit">9</span><span class="sc-digit">1</span>
+          </div>
+          <div class="sc-tip">配送员送达时需输入此码确认</div>
+        </div>
+        <div class="checkout-card" style="margin-bottom:20px;">
+          <div class="cc-title">配送地址</div>
+          <div style="font-size:14px;">山屿西山著东区 3栋 2单元 501室</div>
+          <div style="font-size:12px;color:#999;margin-top:4px;">李明 138****5678</div>
+        </div>
       </div>
     </div>
 
     <!-- PROFILE PAGE -->
     <div id="page-profile" class="page">
-      <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+      <div class="status-bar"><span>14:20</span><span>📶 🔋</span></div>
       <div class="profile-header">
         <div class="avatar">😊</div>
         <div>
-          <div class="profile-name">阳光花园-李明</div>
-          <div class="profile-id">团长ID: LX8888</div>
+          <div class="profile-name">山屿西山著-李明</div>
+          <div class="profile-id">山屿西山著东区 3栋2单元</div>
         </div>
       </div>
       <div class="page-content">
         <div class="profile-stats">
-          <div class="stat-item"><div class="stat-num">12</div><div class="stat-label">待付款</div></div>
-          <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">待发货</div></div>
-          <div class="stat-item"><div class="stat-num">5</div><div class="stat-label">待收货</div></div>
-          <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">待评价</div></div>
-          <div class="stat-item"><div class="stat-num">2</div><div class="stat-label">售后</div></div>
+          <div class="stat-item"><div class="stat-num">1</div><div class="stat-label">待付款</div></div>
+          <div class="stat-item"><div class="stat-num">1</div><div class="stat-label">备货中</div></div>
+          <div class="stat-item"><div class="stat-num">1</div><div class="stat-label">配送中</div></div>
+          <div class="stat-item"><div class="stat-num">5</div><div class="stat-label">已完成</div></div>
+          <div class="stat-item"><div class="stat-num">0</div><div class="stat-label">售后</div></div>
         </div>
 
         <div class="menu-list" style="margin-top:20px;">
           <div class="menu-item"><span class="menu-icon">📦</span><span class="menu-text">全部订单</span><span class="menu-arrow">›</span></div>
-          <div class="menu-item"><span class="menu-icon">🎫</span><span class="menu-text">优惠券</span><span style="font-size:12px;color:#ff6b6b;">3张可用</span><span class="menu-arrow">›</span></div>
-          <div class="menu-item" style="background:linear-gradient(135deg,#fff7e6,#fff0f0);">
-            <span class="menu-icon">⭐</span>
-            <span class="menu-text" style="font-weight:600;">积分商城</span>
-            <span style="font-size:14px;color:#ff6b6b;font-weight:700;">5,680</span>
-            <span class="menu-arrow">›</span>
-          </div>
-          <div class="menu-item"><span class="menu-icon">💖</span><span class="menu-text">我的收藏</span><span class="menu-arrow">›</span></div>
           <div class="menu-item"><span class="menu-icon">📍</span><span class="menu-text">收货地址</span><span class="menu-arrow">›</span></div>
+          <div class="menu-item"><span class="menu-icon">🔔</span><span class="menu-text">消息通知</span><span class="menu-arrow">›</span></div>
         </div>
 
         <div class="menu-list">
-          <div class="menu-item"><span class="menu-icon">💰</span><span class="menu-text">我的佣金</span><span style="font-size:14px;color:#ff6b6b;font-weight:700;">¥1,280.50</span><span class="menu-arrow">›</span></div>
-          <div class="menu-item"><span class="menu-icon">👥</span><span class="menu-text">我的团员</span><span style="font-size:12px;color:#999;">38人</span><span class="menu-arrow">›</span></div>
-          <div class="menu-item"><span class="menu-icon">📊</span><span class="menu-text">推广数据</span><span class="menu-arrow">›</span></div>
-        </div>
-
-        <div class="menu-list">
-          <div class="menu-item"><span class="menu-icon">🔔</span><span class="menu-text">消息通知</span><span style="background:#ff6b6b;color:white;font-size:10px;padding:2px 7px;border-radius:10px;">5</span><span class="menu-arrow">›</span></div>
           <div class="menu-item"><span class="menu-icon">⚙️</span><span class="menu-text">设置</span><span class="menu-arrow">›</span></div>
           <div class="menu-item"><span class="menu-icon">❓</span><span class="menu-text">帮助与反馈</span><span class="menu-arrow">›</span></div>
+          <div class="menu-item"><span class="menu-icon">📞</span><span class="menu-text">联系客服</span><span class="menu-arrow">›</span></div>
         </div>
       </div>
       <div class="bottom-nav">
         <div class="tab"><span class="tab-icon">🏠</span>首页</div>
-        <div class="tab"><span class="tab-icon">📂</span>分类</div>
-        <div class="tab"><span class="tab-icon">👥</span>社区</div>
         <div class="tab"><span class="tab-icon">🛒</span>购物车</div>
+        <div class="tab"><span class="tab-icon">📋</span>订单</div>
         <div class="tab active"><span class="tab-icon">👤</span>我的</div>
       </div>
     </div>
 
-    <!-- POINTS PAGE -->
+    <!-- WORKER INBOUND PAGE -->
+    <div id="page-worker-inbound" class="page">
+      <div class="status-bar"><span>09:30</span><span>📶 🔋</span></div>
+      <div class="nav-bar"><span class="nav-title">扫码入库</span><span style="font-size:12px;color:#667eea;">今日 +28</span></div>
+      <div class="page-content">
+        <div class="checkout-card" style="text-align:center;padding:24px;">
+          <div style="font-size:48px;margin-bottom:8px;">📷</div>
+          <div style="font-size:15px;font-weight:600;color:#333;">扫描商品条码</div>
+          <div style="font-size:12px;color:#999;margin-top:4px;">或手动搜索 SKU</div>
+        </div>
+        <div class="checkout-card">
+          <div class="cc-title">入库信息</div>
+          <div style="font-size:14px;font-weight:600;margin:8px 0;">农夫山泉 550ml×24瓶</div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;border-top:1px solid #f5f5f5;">
+            <span style="color:#666;">入库数量</span>
+            <span style="font-weight:600;">10 箱</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;">
+            <span style="color:#666;">生产日期</span>
+            <span>2026-05-01</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;">
+            <span style="color:#666;">上架库位</span>
+            <span style="color:#667eea;font-weight:600;">A-012 · 常温</span>
+          </div>
+          <div class="grab-btn" style="background:#667eea;margin-top:12px;">确认入库</div>
+        </div>
+        <div style="margin:16px;font-size:13px;font-weight:700;">最近入库</div>
+        <div class="checkout-card">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;">
+            <span>西红柿 500g ×20</span><span style="color:#999;">B-003 · 09:15</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-top:1px solid #f5f5f5;">
+            <span>纯牛奶 250ml×24 ×15</span><span style="color:#999;">B-008 · 09:02</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKER PICK PAGE -->
+    <div id="page-worker-pick" class="page">
+      <div class="status-bar"><span>14:08</span><span>📶 🔋</span></div>
+      <div class="nav-bar"><span class="nav-title">分拣任务</span><span style="font-size:12px;color:#667eea;">待拣 3 单</span></div>
+      <div class="page-content">
+        <div class="grab-card" style="border-left-color:#667eea;">
+          <div class="gc-top"><span class="gc-order">#20260608001 · 3栋501</span><span style="font-size:12px;color:#fa8c16;">等待 8分钟</span></div>
+          <div style="font-size:12px;color:#666;">3件商品 · 常温2 + 冷藏1</div>
+          <div class="grab-btn" style="background:#667eea;">开始拣货</div>
+        </div>
+        <div style="margin:16px;font-size:14px;font-weight:700;">拣货清单（按库位排序）</div>
+        <div class="checkout-card">
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 0;">
+            <span style="width:20px;height:20px;border:2px solid #ddd;border-radius:4px;"></span>
+            <div style="flex:1;"><div style="font-size:14px;">农夫山泉 ×2</div><div style="font-size:11px;color:#999;">A-012 · 常温</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #f5f5f5;">
+            <span style="width:20px;height:20px;border:2px solid #ddd;border-radius:4px;"></span>
+            <div style="flex:1;"><div style="font-size:14px;">西红柿 500g ×1</div><div style="font-size:11px;color:#999;">B-003 · 冷藏 ❄️</div></div>
+          </div>
+        </div>
+        <div style="margin:16px;display:flex;gap:10px;">
+          <div style="flex:1;padding:12px;border:1px solid #ddd;border-radius:8px;text-align:center;font-size:14px;">缺货上报</div>
+          <div style="flex:1.5;padding:12px;background:#667eea;color:white;border-radius:8px;text-align:center;font-weight:600;">打包完成</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKER DELIVERY PAGE -->
+    <div id="page-worker-delivery" class="page">
+      <div class="status-bar"><span>14:15</span><span>📶 🔋</span></div>
+      <div class="nav-bar">
+        <span class="online-badge">在线接单</span>
+        <span class="nav-title">抢单大厅</span>
+        <span style="font-size:12px;color:#999;">持单 1/100</span>
+      </div>
+      <div class="page-content">
+        <div class="grab-card">
+          <div class="gc-top"><span class="gc-order">#20260608001 · 3栋501</span><span class="gc-fee">¥5</span></div>
+          <div style="font-size:12px;color:#666;">3件 · 下单 14:10 · 等待 12分钟</div>
+          <div class="grab-btn">立即抢单</div>
+        </div>
+        <div class="grab-card">
+          <div class="gc-top"><span class="gc-order">#20260607008 · 西区7栋1202</span><span class="gc-fee">¥5</span></div>
+          <div style="font-size:12px;color:#666;">2件 · 下单 14:12 · 等待 10分钟</div>
+          <div class="grab-btn">立即抢单</div>
+        </div>
+        <div style="margin:16px;font-size:14px;font-weight:700;color:#333;">配送中 (1)</div>
+        <div class="checkout-card">
+          <div style="font-weight:600;">#20260606003 · 5栋802</div>
+          <div style="font-size:12px;color:#999;margin:6px 0;">已取货 · 配送中</div>
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;padding:10px;background:#f5f5f5;border-radius:8px;text-align:center;font-size:13px;">导航</div>
+            <div style="flex:1;padding:10px;background:#52c41a;color:white;border-radius:8px;text-align:center;font-size:13px;font-weight:600;">确认送达</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POINTS PAGE (二期保留) -->
     <div id="page-points" class="page">
       <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
       <div class="points-header">
@@ -860,44 +1135,41 @@
 
   <!-- Description Panel -->
   <div class="desc-panel">
-    <h3>🎨 设计说明</h3>
+    <h3>🎨 MVP 设计说明 v3.0</h3>
     <p>
-      <strong>产品名称：</strong>邻选社区 — 定位为社区私域快消品购物平台<br>
-      <strong>商业模式：</strong>地下仓储直供 + 社区团购 + 快消品零售<br>
-      <strong>核心特色：</strong>
+      <strong>产品定位：</strong>类小象超市的社区前置仓即时配送（单仓·山屿西山著地下仓·山屿西山著（东区·西区））<br>
+      <strong>端形态：</strong>邻选·购（消费者）+ 邻选·作业（仓配）+ Web 管理后台<br>
+      <strong>MVP 核心链路：</strong>下单支付 → 仓库拣货 → 配送员抢单 → 送达签收 → 全程时间轴追踪
     </p>
     <div class="feature-list">
-      <span class="feature-tag">🏭 地下仓储</span>
+      <span class="feature-tag">🕐 2小时达</span>
+      <span class="feature-tag">📍 东/西区围栏</span>
+      <span class="feature-tag">🚚 配送时间轴</span>
+      <span class="feature-tag">🔢 签收码</span>
+      <span class="feature-tag">🏭 前置仓分拣</span>
+      <span class="feature-tag">🛵 开放抢单</span>
       <span class="feature-tag">🍽️ 赏味提示</span>
-      <span class="feature-tag">⭐ 积分商城</span>
-      <span class="feature-tag">🏘️ 小区绑定</span>
-      <span class="feature-tag">👥 团长分销</span>
-      <span class="feature-tag">🚀 社区配送</span>
-      <span class="feature-tag">💬 邻里评价</span>
-      <span class="feature-tag">⚡ 限时秒杀</span>
-      <span class="feature-tag">🎫 优惠券</span>
-      <span class="feature-tag">👥 社区拼团</span>
-      <span class="feature-tag">💰 佣金分润</span>
-      <span class="feature-tag">📊 数据看板</span>
-      <span class="feature-tag">🔔 消息推送</span>
+      <span class="feature-tag">❄️ 冷链分区</span>
+      <span class="feature-tag">🔔 订阅消息</span>
     </div>
     <p style="margin-top:16px;">
-      <strong>仓储体系：</strong>1000+地下恒温仓库，分为冷链仓（128座）、常温仓（652座）、干燥仓（320座），
-      确保水饮、啤酒、方便面、牛奶、坚果等快消品在最佳条件下储存。<br>
-      <strong>赏味系统：</strong>每件商品标注保质期分类（长保质期/中保质期/短期）、生产日期、赏味期状态（最佳赏味期/正常食用期/临近保质期），
-      并提供个性化最佳赏味提示，让用户喝得更安心、吃得更放心。<br>
-      <strong>积分商城：</strong>消费1元=1积分，永不过期。积分可兑换保洁服务、洗车服务、物业费抵扣等社区实用服务，
-      形成"消费→积分→服务"的完整闭环，增强用户粘性。
+      <strong>本期不做：</strong>团长分销、积分商城、优惠券、地图实时追踪、多仓扩展（均规划为二期）。<br>
+      <strong>详细规格：</strong>见 <code>docs/MVP-DESIGN.md</code> 与 <code>docs/SDD-SPEC.md</code>。
     </p>
   </div>
 </div>
 
 <script>
-  function switchPage(page) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  function switchPage(page, btn) {
+    document.querySelectorAll('.phone-frame .page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('page-' + page).classList.add('active');
-    event.target.classList.add('active');
+    document.querySelectorAll('.worker-btn').forEach(b => b.classList.remove('active'));
+    const el = document.getElementById('page-' + page);
+    if (el) el.classList.add('active');
+    if (btn) {
+      if (btn.classList.contains('worker-btn')) btn.classList.add('active');
+      else btn.classList.add('active');
+    }
   }
 </script>
 

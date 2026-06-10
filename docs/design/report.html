@@ -60,11 +60,11 @@
   <div class="cover">
     <div class="logo">🏘️</div>
     <h1>邻选社区</h1>
-    <p class="subtitle">社区私域购物平台 · 设计方案总结报告</p>
+    <p class="subtitle">前置仓即时配送平台 · MVP 设计方案总结 v3.0</p>
     <div class="meta">
-      <span>版本: v1.0</span>
-      <span>日期: 2026-06-04</span>
-      <span>方法论: SDD 规范驱动开发</span>
+      <span>版本: v3.0</span>
+      <span>日期: 2026-06-08</span>
+      <span>范围: 单仓单小区 MVP</span>
     </div>
   </div>
 
@@ -80,8 +80,8 @@
       <tr><td>维护成本</td><td class="highlight">中</td><td>低</td><td>高</td></tr>
     </table>
     <div class="highlight-box">
-      <p><strong>最终决策：</strong>微信小程序（C端）+ Web管理后台（B端）+ H5备用站</p>
-      <p style="margin-top:6px;">理由：私域流量的核心是社交传播，微信小程序无需下载、分享便捷、支付顺畅，最符合社区购物场景。</p>
+      <p><strong>最终决策：</strong>邻选·购（消费者小程序）+ 邻选·作业（仓配小程序）+ Web 管理后台</p>
+      <p style="margin-top:6px;">MVP 锁定单仓（山屿西山著地下仓）+ 山屿西山著（东区·西区），对标小象超市「下单→拣货→抢单配送→时间轴追踪」闭环。</p>
     </div>
   </div>
 
@@ -141,16 +141,16 @@
 
   <!-- Key Features -->
   <div class="section">
-    <h2>🎯 核心功能</h2>
+    <h2>🎯 核心功能（MVP）</h2>
     <div class="highlight-box">
-      <p><strong>差异化竞争力（vs 京东/淘宝）：</strong></p>
+      <p><strong>对标小象超市的履约链路：</strong></p>
       <ul style="margin-top:8px;">
-        <li><strong>小区绑定：</strong>用户自动定位到所在小区，看到本小区的商品和活动</li>
-        <li><strong>团长分销：</strong>社区KOL（团长）分享推广赚佣金，天然信任背书</li>
-        <li><strong>社区配送：</strong>团长自提点 + 送货上门，解决最后一公里</li>
-        <li><strong>邻里评价：</strong>真实邻居的评价和晒单，转化率远超陌生人评价</li>
-        <li><strong>社区拼团：</strong>同小区拼团降低物流成本，价格更有竞争力</li>
-        <li><strong>私域沉淀：</strong>所有用户数据属于平台自身，可反复触达</li>
+        <li><strong>消费者端：</strong>浏览商品、下单支付、配送时间轴、签收码确认</li>
+        <li><strong>作业端：</strong>扫码入库、按库位分拣、配送员抢单、取货送达</li>
+        <li><strong>管理后台：</strong>商品/库存/订单/配送员审核、履约监控</li>
+        <li><strong>前置仓：</strong>常温/冷藏/冷冻分区，赏味期与库位溯源</li>
+        <li><strong>开放配送：</strong>任何人申请成为配送员，审核后可抢单</li>
+        <li><strong>本期不做：</strong>团长分销、积分商城、地图追踪、多仓（二期）</li>
       </ul>
     </div>
   </div>
@@ -159,39 +159,35 @@
   <div class="section">
     <h2>📅 开发路线图</h2>
     <div class="phase-card">
-      <h4>Phase 1: MVP 最小可行产品</h4>
-      <p class="time">预计 4-6 周</p>
+      <h4>Phase 1: MVP 履约闭环（单仓单小区）</h4>
+      <p class="time">预计 6-8 周</p>
       <ul class="checklist">
         <li>项目初始化与基础架构搭建</li>
-        <li class="pending">用户登录与小区绑定</li>
-        <li class="pending">商品分类与列表展示</li>
-        <li class="pending">商品详情页 + 购物车</li>
-        <li class="pending">下单与微信支付</li>
-        <li class="pending">基础订单管理</li>
-        <li class="pending">简易管理后台</li>
+        <li class="pending">邻选·购：下单支付 + 配送追踪页</li>
+        <li class="pending">邻选·作业：入库 + 分拣 + 抢单配送</li>
+        <li class="pending">管理后台：商品/订单/配送员审核</li>
+        <li class="pending">后端 API + 订单状态机</li>
+        <li class="pending">山屿西山著内测验收</li>
       </ul>
     </div>
     <div class="phase-card" style="border-left-color: #52c41a;">
-      <h4>Phase 2: 增长功能</h4>
+      <h4>Phase 2: 效率与体验</h4>
       <p class="time">预计 4-6 周</p>
       <ul class="checklist">
-        <li class="pending">优惠券系统</li>
-        <li class="pending">秒杀/拼团活动</li>
-        <li class="pending">团长分销系统</li>
-        <li class="pending">社区评价功能</li>
-        <li class="pending">物流追踪</li>
-        <li class="pending">消息推送</li>
+        <li class="pending">波次分拣、地图位置</li>
+        <li class="pending">订阅消息全链路推送</li>
+        <li class="pending">配送费结算、数据报表</li>
+        <li class="pending">优惠券 / 秒杀</li>
       </ul>
     </div>
     <div class="phase-card" style="border-left-color: #fa8c16;">
-      <h4>Phase 3: 成熟运营</h4>
-      <p class="time">预计 4-6 周</p>
+      <h4>Phase 3: 规模扩展</h4>
+      <p class="time">预计 6-8 周</p>
       <ul class="checklist">
-        <li class="pending">数据大屏与BI分析</li>
-        <li class="pending">智能推荐算法</li>
-        <li class="pending">会员体系 + 积分商城</li>
-        <li class="pending">直播带货</li>
-        <li class="pending">多小区扩展</li>
+        <li class="pending">多前置仓、跨小区</li>
+        <li class="pending">智能拣货路径</li>
+        <li class="pending">积分 / 分销（可选）</li>
+        <li class="pending">后端微服务拆分</li>
       </ul>
     </div>
   </div>
@@ -210,6 +206,11 @@
         <div class="title">系统架构图</div>
         <div class="desc">技术架构全景图（5个视图）</div>
       </a>
+      <a href="../MVP-DESIGN.md" class="link-card">
+        <div class="icon">📐</div>
+        <div class="title">MVP 详细设计</div>
+        <div class="desc">单仓单小区：页面/API/状态机</div>
+      </a>
       <a href="../SDD-SPEC.md" class="link-card">
         <div class="icon">📋</div>
         <div class="title">SDD规范文档</div>
@@ -222,16 +223,16 @@
   <div class="section">
     <h2>🚀 下一步行动建议</h2>
     <ol style="padding-left: 20px; color: #666; line-height: 2; font-size: 15px;">
-      <li><strong>注册小程序：</strong>在微信公众平台注册小程序账号，完成企业认证</li>
-      <li><strong>准备服务器：</strong>购买云服务器（阿里云/腾讯云），配置开发环境</li>
-      <li><strong>搭建基础架构：</strong>初始化微服务项目骨架、CI/CD流水线</li>
-      <li><strong>开发MVP：</strong>按Phase 1路线图开始编码实现</li>
-      <li><strong>种子用户运营：</strong>联系小区团长、邀请第一批体验用户</li>
+      <li><strong>注册小程序：</strong>消费者端 + 作业端各注册一个（或同主体子包）</li>
+      <li><strong>搭建后端：</strong>Spring Boot 单体 + MySQL + Redis</li>
+      <li><strong>开发 MVP：</strong>按 6 周排期实现三端联调</li>
+      <li><strong>招募配送员：</strong>山屿西山著内 3～5 名兼职骑手内测</li>
+      <li><strong>种子用户：</strong>邀请 20+ 小区居民体验完整下单配送流程</li>
     </ol>
   </div>
 
   <div style="text-align:center;color:white;padding:30px;opacity:0.7;font-size:13px;">
-    © 2026 邻选社区 · 社区私域购物平台设计方案 · SDD v1.0
+    © 2026 邻选社区 · 前置仓即时配送 MVP · SDD v3.0
   </div>
 </div>
 

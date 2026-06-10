@@ -6,7 +6,7 @@ import { productApi, cartApi } from '../../services/api';
 import { mockProducts } from '../../services/mockData';
 import { formatPrice, showToast, navigateTo, PAGE_PATH } from '../../utils';
 import {
-  COMMISSION_RATE, DELIVERY_TYPE, POINTS_PER_YUAN,
+  COMMISSION_RATE, DELIVERY_TYPE, POINTS_PER_YUAN, MVP_COMMUNITY, MVP_FEATURES,
   STORAGE_TYPE, STORAGE_TYPE_TEXT, STORAGE_TYPE_ICON,
   SHELF_LIFE_CATEGORY, SHELF_LIFE_CATEGORY_TEXT, SHELF_LIFE_CATEGORY_COLOR,
   TASTE_PERIOD_STATUS_TEXT, TASTE_PERIOD_STATUS_COLOR
@@ -244,25 +244,33 @@ export default class DetailPage extends Component<{}, State> {
             </View>
           </View>
 
-          {/* 配送与楼长信息 */}
+          {/* 配送信息 */}
           <View className='delivery-section'>
             <View className='delivery-row'>
               <Text className='label'>配送方式</Text>
-              <Text className='value'>🏪 团长自提点 / 🚀 送货上门</Text>
+              <Text className='value'>🚀 送货上门 · 2小时内达</Text>
             </View>
             <View className='delivery-row'>
-              <Text className='label'>楼长</Text>
-              <View className='value-wrap'>
-                <Text className='value'>👤 李明 (3栋2单元)</Text>
-                <Text className='commission-tip'>
-                  通过楼长下单，楼长得¥{formatPrice(commission.buildingLeader)}
-                </Text>
-              </View>
+              <Text className='label'>发货仓库</Text>
+              <Text className='value'>🏭 {MVP_COMMUNITY.warehouseName}</Text>
             </View>
-            <View className='delivery-row'>
-              <Text className='label'>团长</Text>
-              <Text className='value leader-link' onClick={this.handleViewLeader}>👤 王阿姨 (阳光花园) ›</Text>
-            </View>
+            {MVP_FEATURES.DISTRIBUTION && (
+              <>
+                <View className='delivery-row'>
+                  <Text className='label'>楼长</Text>
+                  <View className='value-wrap'>
+                    <Text className='value'>👤 李明 (3栋2单元)</Text>
+                    <Text className='commission-tip'>
+                      通过楼长下单，楼长得¥{formatPrice(commission.buildingLeader)}
+                    </Text>
+                  </View>
+                </View>
+                <View className='delivery-row'>
+                  <Text className='label'>团长</Text>
+                  <Text className='value leader-link' onClick={this.handleViewLeader}>👤 王阿姨 (山屿西山著) ›</Text>
+                </View>
+              </>
+            )}
           </View>
 
           {/* 仓储与赏味信息 */}
@@ -352,7 +360,7 @@ export default class DetailPage extends Component<{}, State> {
             <Text className='stock-info'>库存 {selectedSku?.stock || 0} 件</Text>
           </View>
 
-          {/* 佣金展示 */}
+          {MVP_FEATURES.DISTRIBUTION && (
           <View className='commission-section'>
             <View className='commission-header'>
               <Text className='commission-icon'>💰</Text>
@@ -372,7 +380,9 @@ export default class DetailPage extends Component<{}, State> {
               💡 成为楼长即可享受分销佣金，分享商品给邻居赚取收益
             </Text>
           </View>
+          )}
 
+          {MVP_FEATURES.POINTS && (
           {/* 积分预估 */}
           <View className='points-preview-section'>
             <View className='points-preview-header'>
@@ -386,6 +396,7 @@ export default class DetailPage extends Component<{}, State> {
               <Text className='points-rule'>消费1元=1积分，确认收货后到账，永不过期</Text>
             </View>
           </View>
+          )}
 
           {/* 商品详情 */}
           <View className='desc-section'>

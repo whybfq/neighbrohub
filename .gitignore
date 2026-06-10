@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+.swc/
+
+# IDE
+.idea/
+*.iml
+
+# OS
+.DS_Store
+
+# Env & secrets
+.env
+.env.*
+*.local
+
+# WeChat devtools private config (may contain appid secrets)
+project.private.config.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test scripts with credentials
+docs/design/test_poe.py

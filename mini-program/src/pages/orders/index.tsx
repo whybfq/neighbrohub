@@ -3,8 +3,18 @@ import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { orderApi } from '../../services/api';
 import { mockOrders } from '../../services/mockData';
-import { formatPrice, getOrderStatusText, getOrderStatusColor, showToast, showConfirm, navigateTo, PAGE_PATH } from '../../utils';
-import { ORDER_STATUS } from '../../config/constants';
+import {
+  formatPrice,
+  getOrderStatusText,
+  getOrderStatusColor,
+  showToast,
+  showConfirm,
+  navigateTo,
+  PAGE_PATH,
+  matchOrderTab,
+  isTrackableOrder,
+} from '../../utils';
+import { ORDER_STATUS, ORDER_LIST_TABS } from '../../config/constants';
 import EmptyState from '../../components/empty-state/index';
 import './index.scss';
 
@@ -14,19 +24,11 @@ interface State {
   loading: boolean;
 }
 
-const TABS = [
-  { key: 'all', label: '全部' },
-  { key: ORDER_STATUS.PENDING_PAY, label: '待付款' },
-  { key: ORDER_STATUS.PENDING_DELIVER, label: '待发货' },
-  { key: ORDER_STATUS.DELIVERING, label: '配送中' },
-  { key: ORDER_STATUS.COMPLETED, label: '已完成' }
-];
-
 export default class OrdersPage extends Component<{}, State> {
   state: State = {
     orders: mockOrders,
     activeTab: 'all',
-    loading: false
+    loading: false,
   };
 
   componentDidMount() {
@@ -40,12 +42,7 @@ export default class OrdersPage extends Component<{}, State> {
   loadOrders = async () => {
     this.setState({ loading: true });
     try {
-      const { activeTab } = this.state;
-      const params: any = { page: 1, pageSize: 20 };
-      if (activeTab !== 'all') {
-        params.status = activeTab;
-      }
-      const orders = await orderApi.getOrders(params);
+      const orders = await orderApi.getOrders({ page: 1, pageSize: 20 });
       this.setState({ orders });
     } catch (err) {
       // 使用模拟数据
@@ -54,12 +51,10 @@ export default class OrdersPage extends Component<{}, State> {
     }
   };
 
-  // 切换Tab
   handleTabChange = (tab: string) => {
-    this.setState({ activeTab: tab }, () => this.loadOrders());
+    this.setState({ activeTab: tab });
   };
 
-  // 支付订单
   handlePay = (orderId: string) => {
     Taro.showModal({
       title: '确认支付',
@@ -74,11 +69,10 @@ export default class OrdersPage extends Component<{}, State> {
             showToast('支付失败');
           }
         }
-      }
+      },
     });
   };
 
-  // 取消订单
   handleCancel = async (orderId: string) => {
     const confirmed = await showConfirm('取消订单', '确定要取消该订单吗？');
     if (confirmed) {
@@ -92,7 +86,6 @@ export default class OrdersPage extends Component<{}, State> {
     }
   };
 
-  // 确认收货
   handleConfirmReceive = async (orderId: string) => {
     const confirmed = await showConfirm('确认收货', '确认已收到商品？');
     if (confirmed) {
@@ -106,13 +99,10 @@ export default class OrdersPage extends Component<{}, State> {
     }
   };
 
-  // 查看订单详情
-  handleViewDetail = (orderId: string) => {
-    // 跳转到订单详情页
-    navigateTo('/pages/order-detail/index', { id: orderId });
+  handleTrack = (orderId: string) => {
+    navigateTo(PAGE_PATH.TRACK, { id: orderId });
   };
 
-  // 再来一单
   handleRebuy = (order: any) => {
     Taro.setStorageSync('temp_order', {
       items: order.items.map((item: any) => ({
@@ -122,40 +112,37 @@ export default class OrdersPage extends Component<{}, State> {
         productName: item.productName,
         productIcon: item.icon,
         skuName: item.skuName,
-        price: item.price
+        price: item.price,
       })),
-      fromRebuy: true
+      fromRebuy: true,
     });
     navigateTo(PAGE_PATH.ORDER);
   };
 
-  // 去评价
-  handleReview = (orderId: string) => {
-    Taro.showToast({ title: '评价功能开发中', icon: 'none' });
-  };
-
-  // 获取订单操作按钮
   getOrderActions = (order: any) => {
-    const { status } = order;
+    const { status, id } = order;
+
     switch (status) {
       case ORDER_STATUS.PENDING_PAY:
         return (
           <View className='action-btns' onClick={(e: any) => e.stopPropagation()}>
-            <View className='action-btn secondary' onClick={() => this.handleCancel(order.id)}>
+            <View className='action-btn secondary' onClick={() => this.handleCancel(id)}>
               <Text>取消订单</Text>
             </View>
-            <View className='action-btn primary' onClick={() => this.handlePay(order.id)}>
+            <View className='action-btn primary' onClick={() => this.handlePay(id)}>
               <Text>去支付</Text>
             </View>
           </View>
         );
       case ORDER_STATUS.DELIVERING:
+      case ORDER_STATUS.DISPATCHING:
+      case ORDER_STATUS.DELIVERED:
         return (
           <View className='action-btns' onClick={(e: any) => e.stopPropagation()}>
-            <View className='action-btn secondary' onClick={() => this.handleViewDetail(order.id)}>
-              <Text>查看物流</Text>
+            <View className='action-btn secondary' onClick={() => this.handleTrack(id)}>
+              <Text>查看配送</Text>
             </View>
-            <View className='action-btn primary' onClick={() => this.handleConfirmReceive(order.id)}>
+            <View className='action-btn primary' onClick={() => this.handleConfirmReceive(id)}>
               <Text>确认收货</Text>
             </View>
           </View>
@@ -166,29 +153,29 @@ export default class OrdersPage extends Component<{}, State> {
             <View className='action-btn secondary' onClick={() => this.handleRebuy(order)}>
               <Text>再来一单</Text>
             </View>
-            <View className='action-btn secondary' onClick={() => this.handleReview(order.id)}>
-              <Text>去评价</Text>
-            </View>
-          </View>
-        );
-      case ORDER_STATUS.PENDING_DELIVER:
-        return (
-          <View className='action-btns' onClick={(e: any) => e.stopPropagation()}>
-            <View className='action-btn secondary' onClick={() => this.handleCancel(order.id)}>
-              <Text>取消订单</Text>
-            </View>
           </View>
         );
       default:
+        if (isTrackableOrder(status)) {
+          return (
+            <View className='action-btns' onClick={(e: any) => e.stopPropagation()}>
+              <View className='action-btn secondary' onClick={() => this.handleTrack(id)}>
+                <Text>查看配送</Text>
+              </View>
+            </View>
+          );
+        }
         return null;
     }
   };
 
-  // 获取过滤后的订单
   getFilteredOrders = () => {
     const { orders, activeTab } = this.state;
-    if (activeTab === 'all') return orders;
-    return orders.filter(o => o.status === activeTab);
+    return orders.filter((o) => matchOrderTab(o.status, activeTab));
+  };
+
+  getItemCount = (order: any) => {
+    return order.items.reduce((s: number, i: any) => s + i.quantity, 0);
   };
 
   render() {
@@ -197,11 +184,10 @@ export default class OrdersPage extends Component<{}, State> {
 
     return (
       <View className='orders-page'>
-        {/* Tab切换 */}
         <View className='order-tabs'>
           <ScrollView scrollX className='tabs-scroll'>
             <View className='tabs-list'>
-              {TABS.map(tab => (
+              {ORDER_LIST_TABS.map((tab) => (
                 <View
                   key={tab.key}
                   className={`tab-item ${activeTab === tab.key ? 'active' : ''}`}
@@ -214,7 +200,6 @@ export default class OrdersPage extends Component<{}, State> {
           </ScrollView>
         </View>
 
-        {/* 订单列表 */}
         <ScrollView className='order-list' scrollY>
           {filteredOrders.length === 0 ? (
             <EmptyState
@@ -225,9 +210,12 @@ export default class OrdersPage extends Component<{}, State> {
               onAction={() => Taro.switchTab({ url: PAGE_PATH.INDEX })}
             />
           ) : (
-            filteredOrders.map(order => (
-              <View key={order.id} className='order-card' onClick={() => this.handleViewDetail(order.id)}>
-                {/* 订单头部 */}
+            filteredOrders.map((order) => (
+              <View
+                key={order.id}
+                className='order-card'
+                onClick={() => isTrackableOrder(order.status) && this.handleTrack(order.id)}
+              >
                 <View className='order-card-header'>
                   <Text className='order-no'>订单号：{order.orderNo}</Text>
                   <Text
@@ -238,7 +226,6 @@ export default class OrdersPage extends Component<{}, State> {
                   </Text>
                 </View>
 
-                {/* 商品信息 */}
                 {order.items.map((item: any, index: number) => (
                   <View key={index} className='order-item'>
                     <View className='item-img'>
@@ -255,24 +242,15 @@ export default class OrdersPage extends Component<{}, State> {
                   </View>
                 ))}
 
-                {/* 楼长/团长信息 */}
-                {order.buildingLeader && (
-                  <View className='distributor-info'>
-                    <Text className='distributor-text'>
-                      🏅 楼长：{order.buildingLeader.name} | 团长：{order.communityLeader?.name}
-                    </Text>
-                    {order.commission && (
-                      <Text className='commission-text'>
-                        佣金：楼长 ¥{formatPrice(order.commission.buildingLeader)} | 团长 ¥{formatPrice(order.commission.communityLeader)}
-                      </Text>
-                    )}
+                {order.address && (
+                  <View className='order-address'>
+                    <Text className='order-address-text'>📍 {order.address}</Text>
                   </View>
                 )}
 
-                {/* 订单底部 */}
                 <View className='order-card-footer'>
                   <View className='order-total'>
-                    <Text>共{order.items.reduce((s: number, i: any) => s + i.quantity, 0)}件</Text>
+                    <Text>共{this.getItemCount(order)}件</Text>
                     <Text>实付：</Text>
                     <Text className='total-price'>¥{formatPrice(order.payAmount)}</Text>
                   </View>

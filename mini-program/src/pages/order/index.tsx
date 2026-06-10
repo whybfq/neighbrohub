@@ -2,10 +2,10 @@ import { Component } from 'react';
 import { View, Text, Input, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useUserStore } from '../../store';
-import { orderApi } from '../../services/api';
-import { mockAddresses, mockCoupons } from '../../services/mockData';
-import { formatPrice, showToast, showConfirm, generateOrderNo, PAGE_PATH } from '../../utils';
-import { DELIVERY_TYPE, COMMISSION_RATE, POINTS_PER_YUAN } from '../../config/constants';
+import { orderApi, userApi } from '../../services/api';
+import { mockCoupons } from '../../services/mockData';
+import { formatPrice, showToast, formatEtaText, navigateTo } from '../../utils';
+import { BUSINESS_RULES, DELIVERY_TYPE, MVP_COMMUNITY, MVP_FEATURES, PAGE_PATH } from '../../config/constants';
 import './index.scss';
 
 interface State {
@@ -22,31 +22,39 @@ interface State {
   submitting: boolean;
   showAddressPicker: boolean;
   showCouponPicker: boolean;
+  orderInitialized: boolean;
 }
 
 export default class OrderPage extends Component<{}, State> {
   state: State = {
     orderItems: [],
     address: null,
-    addresses: mockAddresses,
+    addresses: [],
     coupon: null,
     coupons: mockCoupons,
-    deliveryType: DELIVERY_TYPE.SELF_PICKUP,
+    deliveryType: DELIVERY_TYPE.DOOR_DELIVERY,
     remark: '',
     totalAmount: 0,
     discount: 0,
     payAmount: 0,
     submitting: false,
     showAddressPicker: false,
-    showCouponPicker: false
+    showCouponPicker: false,
+    orderInitialized: false,
   };
 
   componentDidMount() {
-    this.initOrder();
+    this.initOrderFromStorage();
+    this.loadAddresses();
   }
 
-  initOrder = () => {
-    // 从临时存储中读取订单数据
+  onShow() {
+    this.loadAddresses();
+  }
+
+  initOrderFromStorage = () => {
+    if (this.state.orderInitialized) return;
+
     const tempOrder = Taro.getStorageSync('temp_order');
     if (!tempOrder || !tempOrder.items) {
       Taro.showToast({ title: '订单数据异常', icon: 'none' });
@@ -56,50 +64,85 @@ export default class OrderPage extends Component<{}, State> {
 
     const { items } = tempOrder;
     const totalAmount = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
-    const defaultAddress = this.state.addresses.find(a => a.isDefault) || this.state.addresses[0];
 
     this.setState({
       orderItems: items,
-      address: defaultAddress,
       totalAmount,
-      payAmount: totalAmount
+      payAmount: totalAmount,
+      orderInitialized: true,
     });
 
-    // 清除临时数据
     Taro.removeStorageSync('temp_order');
   };
 
-  // 切换配送方式
-  handleDeliveryChange = (type: string) => {
-    this.setState({ deliveryType: type });
+  loadAddresses = async () => {
+    try {
+      const addresses = (await userApi.getAddresses()) as any[];
+      const address = this.pickPreferredAddress(addresses);
+      this.setState({ addresses, address: address || this.state.address });
+    } catch {
+      // 保留当前选中地址
+    }
   };
 
-  // 选择优惠券
+  pickPreferredAddress = (addresses: any[]) => {
+    if (!addresses.length) return null;
+
+    const currentId = this.state.address?.id;
+    if (currentId && addresses.find((a) => a.id === currentId)) {
+      return addresses.find((a) => a.id === currentId);
+    }
+
+    const userStore = useUserStore.getState();
+    const zoneId = userStore.userInfo?.zone?.id;
+    if (zoneId) {
+      const zoneMatch = addresses.find((a) => a.zoneId === zoneId);
+      if (zoneMatch) return zoneMatch;
+    }
+
+    return addresses.find((a) => a.isDefault) || addresses[0];
+  };
+
   handleSelectCoupon = (coupon: any) => {
-    if (this.state.coupon?.id === coupon.id) {
+    if (this.state.coupon?.id === coupon?.id) {
       this.setState({ coupon: null, discount: 0, payAmount: this.state.totalAmount });
-    } else {
+    } else if (coupon) {
       const discount = coupon.value;
       this.setState({
         coupon,
         discount,
-        payAmount: Math.max(0, this.state.totalAmount - discount)
+        payAmount: Math.max(0, this.state.totalAmount - discount),
       });
+    } else {
+      this.setState({ coupon: null, discount: 0, payAmount: this.state.totalAmount });
     }
     this.setState({ showCouponPicker: false });
   };
 
-  // 选择地址
   handleSelectAddress = (address: any) => {
+    const userStore = useUserStore.getState();
+    userStore.setUserInfo({
+      ...(userStore.userInfo || {}),
+      zone: address.zoneId ? { id: address.zoneId, name: address.zone } : userStore.userInfo?.zone,
+    });
     this.setState({ address, showAddressPicker: false });
   };
 
-  // 提交订单
+  handleAddAddress = () => {
+    this.setState({ showAddressPicker: false });
+    navigateTo(PAGE_PATH.BIND_COMMUNITY, { from: 'order' });
+  };
+
   handleSubmit = async () => {
-    const { orderItems, address, deliveryType, coupon, remark, payAmount } = this.state;
+    const { orderItems, address, deliveryType, coupon, remark, payAmount, totalAmount } = this.state;
 
     if (!address) {
       showToast('请选择收货地址');
+      return;
+    }
+
+    if (totalAmount < BUSINESS_RULES.minOrderAmount) {
+      showToast(`未满起送价 ¥${BUSINESS_RULES.minOrderAmount}`);
       return;
     }
 
@@ -110,32 +153,38 @@ export default class OrderPage extends Component<{}, State> {
         items: orderItems.map((item: any) => ({
           productId: item.productId,
           skuId: item.skuId,
-          quantity: item.quantity
+          quantity: item.quantity,
         })),
         addressId: address.id,
         couponId: coupon?.id,
         deliveryType,
-        remark
+        remark,
       };
 
       const result = await orderApi.createOrder(orderData);
+      const orderId = (result as any)?.orderId || 'O001';
 
-      // 跳转到支付
       Taro.showToast({ title: '下单成功', icon: 'success' });
 
       setTimeout(() => {
-        // 模拟支付流程
         Taro.showModal({
           title: '确认支付',
-          content: `需支付 ¥${formatPrice(payAmount)}`,
-          success: (res) => {
+          content: `配送至 ${address.zone} · 需支付 ¥${formatPrice(payAmount)}`,
+          success: async (res) => {
             if (res.confirm) {
-              Taro.showToast({ title: '支付成功', icon: 'success' });
-              setTimeout(() => {
-                Taro.redirectTo({ url: PAGE_PATH.ORDERS });
-              }, 1500);
+              try {
+                await orderApi.payOrder(orderId, 'wechat_pay');
+                Taro.showToast({ title: '支付成功', icon: 'success' });
+                setTimeout(() => {
+                  navigateTo(PAGE_PATH.TRACK, { id: orderId });
+                }, 1500);
+              } catch {
+                Taro.switchTab({ url: PAGE_PATH.ORDERS });
+              }
+            } else {
+              Taro.switchTab({ url: PAGE_PATH.ORDERS });
             }
-          }
+          },
         });
       }, 1000);
     } catch (err: any) {
@@ -148,14 +197,12 @@ export default class OrderPage extends Component<{}, State> {
   render() {
     const {
       orderItems, address, addresses, coupon, coupons,
-      deliveryType, remark, totalAmount, discount, payAmount,
-      submitting, showAddressPicker, showCouponPicker
+      remark, totalAmount, discount, payAmount,
+      submitting, showAddressPicker, showCouponPicker,
     } = this.state;
 
-    const commission = {
-      buildingLeader: payAmount * COMMISSION_RATE.BUILDING_LEADER,
-      communityLeader: payAmount * COMMISSION_RATE.COMMUNITY_LEADER
-    };
+    const etaText = formatEtaText(MVP_COMMUNITY.etaMinutes);
+    const belowMinOrder = totalAmount < BUSINESS_RULES.minOrderAmount;
 
     return (
       <View className='order-page'>
@@ -164,7 +211,6 @@ export default class OrderPage extends Component<{}, State> {
         </View>
 
         <ScrollView className='order-body' scrollY>
-          {/* 收货地址 */}
           <View className='address-section' onClick={() => this.setState({ showAddressPicker: true })}>
             {address ? (
               <View className='address-card'>
@@ -173,44 +219,30 @@ export default class OrderPage extends Component<{}, State> {
                   <Text className='address-phone'>{address.phone}</Text>
                 </View>
                 <Text className='address-detail'>
-                  <Text className='address-tag'>
-                    {address.id === 'A001' ? '默认' : '提货点'}
-                  </Text>
+                  <Text className='address-tag zone'>{address.zone}</Text>
+                  {address.isDefault && <Text className='address-tag'>默认</Text>}
                   {address.address}
                 </Text>
                 <Text className='address-arrow'>›</Text>
               </View>
             ) : (
-              <View className='no-address'>
-                <Text>请添加收货地址</Text>
+              <View className='no-address' onClick={(e: any) => { e.stopPropagation(); this.handleAddAddress(); }}>
+                <Text>请添加山屿西山著收货地址</Text>
+                <Text className='add-link'>去添加 ›</Text>
               </View>
             )}
           </View>
 
-          {/* 配送方式 */}
-          <View className='delivery-section'>
-            <Text className='section-title'>配送方式</Text>
-            <View className='delivery-options'>
-              <View
-                className={`delivery-option ${deliveryType === DELIVERY_TYPE.SELF_PICKUP ? 'active' : ''}`}
-                onClick={() => this.handleDeliveryChange(DELIVERY_TYPE.SELF_PICKUP)}
-              >
-                <Text className='option-icon'>🏪</Text>
-                <Text className='option-name'>团长自提</Text>
-                <Text className='option-desc'>免费</Text>
-              </View>
-              <View
-                className={`delivery-option ${deliveryType === DELIVERY_TYPE.DOOR_DELIVERY ? 'active' : ''}`}
-                onClick={() => this.handleDeliveryChange(DELIVERY_TYPE.DOOR_DELIVERY)}
-              >
-                <Text className='option-icon'>🚀</Text>
-                <Text className='option-name'>送货上门</Text>
-                <Text className='option-desc'>免费</Text>
-              </View>
+          <View className='eta-section'>
+            <View className='eta-icon-wrap'>
+              <Text className='eta-icon'>🕐</Text>
+            </View>
+            <View className='eta-info'>
+              <Text className='eta-title'>预计 {etaText}送达</Text>
+              <Text className='eta-desc'>由{MVP_COMMUNITY.warehouseName}拣货配送至{address?.zone || '您的地址'}</Text>
             </View>
           </View>
 
-          {/* 商品列表 */}
           <View className='items-section'>
             <Text className='section-title'>商品信息</Text>
             {orderItems.map((item: any, index: number) => (
@@ -230,60 +262,32 @@ export default class OrderPage extends Component<{}, State> {
             ))}
           </View>
 
-          {/* 优惠券 */}
-          <View className='coupon-section' onClick={() => this.setState({ showCouponPicker: true })}>
-            <View className='section-row'>
-              <Text className='row-label'>优惠券</Text>
-              <View className='row-value'>
-                <Text className={coupon ? 'coupon-selected' : 'coupon-none'}>
-                  {coupon ? `${coupon.name} -¥${coupon.value}` : '选择优惠券'}
-                </Text>
-                <Text className='row-arrow'>›</Text>
+          {MVP_FEATURES.COUPONS && (
+            <View className='coupon-section' onClick={() => this.setState({ showCouponPicker: true })}>
+              <View className='section-row'>
+                <Text className='row-label'>优惠券</Text>
+                <View className='row-value'>
+                  <Text className={coupon ? 'coupon-selected' : 'coupon-none'}>
+                    {coupon ? `${coupon.name} -¥${coupon.value}` : '选择优惠券'}
+                  </Text>
+                  <Text className='row-arrow'>›</Text>
+                </View>
               </View>
             </View>
-          </View>
+          )}
 
-          {/* 佣金预览 */}
-          <View className='commission-preview'>
-            <Text className='commission-title'>💰 本单分销佣金</Text>
-            <View className='commission-row'>
-              <Text>楼长佣金 (5%)</Text>
-              <Text className='commission-amount'>¥{formatPrice(commission.buildingLeader)}</Text>
-            </View>
-            <View className='commission-row'>
-              <Text>团长佣金 (3%)</Text>
-              <Text className='commission-amount'>¥{formatPrice(commission.communityLeader)}</Text>
-            </View>
-          </View>
-
-          {/* 积分预估 */}
-          <View className='points-preview'>
-            <View className='points-preview-header'>
-              <Text className='points-preview-icon'>⭐</Text>
-              <Text className='points-preview-title'>积分预估</Text>
-            </View>
-            <View className='points-preview-content'>
-              <Text className='points-preview-desc'>
-                确认收货后可获得 <Text className='points-highlight'>{Math.floor(payAmount) * POINTS_PER_YUAN}</Text> 积分
-              </Text>
-              <Text className='points-preview-rule'>消费1元=1积分，永不过期</Text>
-            </View>
-          </View>
-
-          {/* 备注 */}
           <View className='remark-section'>
             <Text className='section-title'>备注</Text>
             <Input
               className='remark-input'
               type='text'
-              placeholder='选填：给团长/楼长的留言'
+              placeholder='选填：配送备注，如放门口'
               value={remark}
               onInput={(e: any) => this.setState({ remark: e.detail.value })}
               maxlength={50}
             />
           </View>
 
-          {/* 价格明细 */}
           <View className='price-detail'>
             <View className='price-row'>
               <Text>商品总额</Text>
@@ -299,6 +303,11 @@ export default class OrderPage extends Component<{}, State> {
               <Text>配送费</Text>
               <Text className='free'>免费</Text>
             </View>
+            {belowMinOrder && (
+              <View className='min-order-tip'>
+                <Text>还差 ¥{formatPrice(BUSINESS_RULES.minOrderAmount - totalAmount)} 达到起送价 ¥{BUSINESS_RULES.minOrderAmount}</Text>
+              </View>
+            )}
             <View className='price-row total'>
               <Text>实付款</Text>
               <Text className='total-amount'>¥{formatPrice(payAmount)}</Text>
@@ -308,18 +317,21 @@ export default class OrderPage extends Component<{}, State> {
           <View className='safe-bottom' />
         </ScrollView>
 
-        {/* 底部提交栏 */}
         <View className='submit-bar'>
           <View className='submit-total'>
             <Text className='total-label'>实付：</Text>
             <Text className='total-price'>¥{formatPrice(payAmount)}</Text>
           </View>
-          <View className={`submit-btn ${submitting ? 'disabled' : ''}`} onClick={this.handleSubmit}>
-            <Text>{submitting ? '提交中...' : '提交订单'}</Text>
+          <View
+            className={`submit-btn ${submitting || belowMinOrder || !address ? 'disabled' : ''}`}
+            onClick={this.handleSubmit}
+          >
+            <Text>
+              {submitting ? '提交中...' : belowMinOrder ? `¥${BUSINESS_RULES.minOrderAmount}起送` : `微信支付 ¥${formatPrice(payAmount)}`}
+            </Text>
           </View>
         </View>
 
-        {/* 地址选择弹窗 */}
         {showAddressPicker && (
           <View className='picker-mask' onClick={() => this.setState({ showAddressPicker: false })}>
             <View className='picker-panel' onClick={(e: any) => e.stopPropagation()}>
@@ -328,7 +340,7 @@ export default class OrderPage extends Component<{}, State> {
                 <Text className='picker-close' onClick={() => this.setState({ showAddressPicker: false })}>✕</Text>
               </View>
               <View className='picker-body'>
-                {addresses.map(addr => (
+                {addresses.map((addr) => (
                   <View
                     key={addr.id}
                     className={`address-option ${address?.id === addr.id ? 'active' : ''}`}
@@ -337,17 +349,20 @@ export default class OrderPage extends Component<{}, State> {
                     <View className='addr-info'>
                       <Text className='addr-name'>{addr.name}</Text>
                       <Text className='addr-phone'>{addr.phone}</Text>
+                      <Text className='addr-zone'>{addr.zone}</Text>
                     </View>
                     <Text className='addr-text'>{addr.address}</Text>
                     {address?.id === addr.id && <Text className='addr-check'>✓</Text>}
                   </View>
                 ))}
+                <View className='add-address-btn' onClick={this.handleAddAddress}>
+                  <Text>+ 新增收货地址（东/西区）</Text>
+                </View>
               </View>
             </View>
           </View>
         )}
 
-        {/* 优惠券选择弹窗 */}
         {showCouponPicker && (
           <View className='picker-mask' onClick={() => this.setState({ showCouponPicker: false })}>
             <View className='picker-panel' onClick={(e: any) => e.stopPropagation()}>
@@ -356,10 +371,10 @@ export default class OrderPage extends Component<{}, State> {
                 <Text className='picker-close' onClick={() => this.setState({ showCouponPicker: false })}>✕</Text>
               </View>
               <View className='picker-body'>
-                <View className='coupon-option' onClick={() => this.handleSelectCoupon(null as any)}>
+                <View className='coupon-option' onClick={() => this.handleSelectCoupon(null)}>
                   <Text className={!coupon ? 'active' : ''}>不使用优惠券</Text>
                 </View>
-                {coupons.map(cp => (
+                {coupons.map((cp) => (
                   <View
                     key={cp.id}
                     className={`coupon-card ${coupon?.id === cp.id ? 'active' : ''}`}

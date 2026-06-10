@@ -79,22 +79,22 @@ export default class LoginPage extends Component {
           <View className='login-logo'>
             <Text className='logo-icon'>🏘️</Text>
             <Text className='logo-title'>邻选社区</Text>
-            <Text className='logo-subtitle'>社区私域购物平台</Text>
+            <Text className='logo-subtitle'>社区前置仓 · 2小时达</Text>
           </View>
 
           {/* 功能介绍 */}
           <View className='feature-list'>
             <View className='feature-item'>
-              <Text className='feature-icon'>🏪</Text>
-              <Text className='feature-text'>团长直供 · 楼长推荐</Text>
+              <Text className='feature-icon'>🏭</Text>
+              <Text className='feature-text'>地下前置仓 · 恒温储存</Text>
             </View>
             <View className='feature-item'>
               <Text className='feature-icon'>🚀</Text>
-              <Text className='feature-text'>社区配送 · 快速到家</Text>
+              <Text className='feature-text'>下单即拣 · 2小时送达</Text>
             </View>
             <View className='feature-item'>
-              <Text className='feature-icon'>💰</Text>
-              <Text className='feature-text'>分享赚钱 · 佣金可观</Text>
+              <Text className='feature-icon'>🚚</Text>
+              <Text className='feature-text'>全程追踪 · 签收码确认</Text>
             </View>
           </View>
 
