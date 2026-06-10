@@ -10,7 +10,7 @@ export const IMG_BASE_URL = 'https://cdn.linshe.com';
 // MVP 功能开关
 export const MVP_FEATURES = {
   DISTRIBUTION: false,
-  POINTS: false,
+  POINTS: true,
   COUPONS: false,
 };
 
@@ -228,20 +228,25 @@ export const TASTE_PERIOD_STATUS_COLOR: Record<string, string> = {
 // 积分获取规则：1元 = 1积分
 export const POINTS_PER_YUAN = 1;
 
+// 免物业费所需积分
+export const PROPERTY_FEE_POINTS = 30000;
+
 // 积分服务分类
 export const POINTS_SERVICE_CATEGORY = {
-  CLEANING: 'cleaning',       // 保洁服务
-  CAR_WASH: 'car_wash',       // 洗车服务
-  PROPERTY_FEE: 'property_fee', // 免物业费
-  OTHER: 'other'              // 其他服务
+  CLEANING: 'cleaning',
+  AC_CLEANING: 'ac_cleaning',
+  COOKING: 'cooking',
+  PROPERTY_FEE: 'property_fee',
+  OTHER: 'other',
 };
 
 // 积分服务分类中文
 export const POINTS_SERVICE_CATEGORY_TEXT = {
   [POINTS_SERVICE_CATEGORY.CLEANING]: '保洁服务',
-  [POINTS_SERVICE_CATEGORY.CAR_WASH]: '洗车服务',
+  [POINTS_SERVICE_CATEGORY.AC_CLEANING]: '空调清洗',
+  [POINTS_SERVICE_CATEGORY.COOKING]: '做饭服务',
   [POINTS_SERVICE_CATEGORY.PROPERTY_FEE]: '免物业费',
-  [POINTS_SERVICE_CATEGORY.OTHER]: '其他服务'
+  [POINTS_SERVICE_CATEGORY.OTHER]: '其他服务',
 };
 
 // 积分记录类型

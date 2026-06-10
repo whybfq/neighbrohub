@@ -1,8 +1,9 @@
 import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
-import { orderApi } from '../../services/api';
+import { orderApi, pointsApi } from '../../services/api';
 import { mockOrders } from '../../services/mockData';
+import { usePointsStore } from '../../store';
 import {
   formatPrice,
   getOrderStatusText,
@@ -14,8 +15,9 @@ import {
   matchOrderTab,
   isTrackableOrder,
 } from '../../utils';
-import { ORDER_STATUS, ORDER_LIST_TABS } from '../../config/constants';
+import { ORDER_STATUS, ORDER_LIST_TABS, MVP_FEATURES } from '../../config/constants';
 import EmptyState from '../../components/empty-state/index';
+import AppButton from '../../components/app-button';
 import './index.scss';
 
 interface State {
@@ -87,11 +89,17 @@ export default class OrdersPage extends Component<{}, State> {
   };
 
   handleConfirmReceive = async (orderId: string) => {
-    const confirmed = await showConfirm('确认收货', '确认已收到商品？');
+    const confirmed = await showConfirm('确认收货', '确认已收到商品？确认后将获得购物积分');
     if (confirmed) {
       try {
-        await orderApi.confirmReceive(orderId);
-        showToast('已确认收货', 'success');
+        const result: any = await orderApi.confirmReceive(orderId);
+        if (MVP_FEATURES.POINTS && result?.pointsEarned > 0) {
+          const info = await pointsApi.getPointsInfo();
+          usePointsStore.getState().setPointsInfo(info as any);
+          showToast(`已确认收货，获得 ${result.pointsEarned} 积分`, 'success');
+        } else {
+          showToast('已确认收货', 'success');
+        }
         this.loadOrders();
       } catch (err: any) {
         showToast('操作失败');
@@ -126,12 +134,8 @@ export default class OrdersPage extends Component<{}, State> {
       case ORDER_STATUS.PENDING_PAY:
         return (
           <View className='action-btns' onClick={(e: any) => e.stopPropagation()}>
-            <View className='action-btn secondary' onClick={() => this.handleCancel(id)}>
-              <Text>取消订单</Text>
-            </View>
-            <View className='action-btn primary' onClick={() => this.handlePay(id)}>
-              <Text>去支付</Text>
-            </View>
+            <AppButton type='secondary' size='sm' onClick={() => this.handleCancel(id)}>取消订单</AppButton>
+            <AppButton type='primary' size='sm' onClick={() => this.handlePay(id)}>去支付</AppButton>
           </View>
         );
       case ORDER_STATUS.DELIVERING:
@@ -139,29 +143,21 @@ export default class OrdersPage extends Component<{}, State> {
       case ORDER_STATUS.DELIVERED:
         return (
           <View className='action-btns' onClick={(e: any) => e.stopPropagation()}>
-            <View className='action-btn secondary' onClick={() => this.handleTrack(id)}>
-              <Text>查看配送</Text>
-            </View>
-            <View className='action-btn primary' onClick={() => this.handleConfirmReceive(id)}>
-              <Text>确认收货</Text>
-            </View>
+            <AppButton type='secondary' size='sm' onClick={() => this.handleTrack(id)}>查看配送</AppButton>
+            <AppButton type='primary' size='sm' onClick={() => this.handleConfirmReceive(id)}>确认收货</AppButton>
           </View>
         );
       case ORDER_STATUS.COMPLETED:
         return (
           <View className='action-btns' onClick={(e: any) => e.stopPropagation()}>
-            <View className='action-btn secondary' onClick={() => this.handleRebuy(order)}>
-              <Text>再来一单</Text>
-            </View>
+            <AppButton type='secondary' size='sm' onClick={() => this.handleRebuy(order)}>再来一单</AppButton>
           </View>
         );
       default:
         if (isTrackableOrder(status)) {
           return (
             <View className='action-btns' onClick={(e: any) => e.stopPropagation()}>
-              <View className='action-btn secondary' onClick={() => this.handleTrack(id)}>
-                <Text>查看配送</Text>
-              </View>
+              <AppButton type='secondary' size='sm' onClick={() => this.handleTrack(id)}>查看配送</AppButton>
             </View>
           );
         }
@@ -203,7 +199,7 @@ export default class OrdersPage extends Component<{}, State> {
         <ScrollView className='order-list' scrollY>
           {filteredOrders.length === 0 ? (
             <EmptyState
-              icon='📋'
+              iconName='order'
               text='暂无订单'
               subText='去逛逛社区好物吧'
               actionText='去首页'

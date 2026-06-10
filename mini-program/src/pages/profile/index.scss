@@ -106,7 +106,12 @@
     align-items: center;
     gap: 14px;
 
-    .points-card-icon {
+    .points-card-icon-img {
+    margin-right: 16px;
+    flex-shrink: 0;
+  }
+
+  .points-card-icon {
       font-size: 44px;
     }
 
@@ -256,6 +261,11 @@
 
     &:last-child {
       border-bottom: none;
+    }
+
+    .menu-icon-img {
+      margin-right: 16px;
+      flex-shrink: 0;
     }
 
     .menu-icon {

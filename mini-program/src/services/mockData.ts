@@ -657,18 +657,14 @@ export const mockPointsInfo = {
 // 积分流水记录
 export const mockPointsRecords = [
   { id: 'PR001', type: 'earn', amount: 98, description: '购物获得 - 订单 LX20260604001', orderNo: 'LX20260604001', createdAt: '2026-06-04 09:31' },
-  { id: 'PR002', type: 'spend', amount: 1000, description: '兑换保洁服务（1次）', serviceType: 'cleaning', createdAt: '2026-06-03 15:20' },
+  { id: 'PR002', type: 'spend', amount: 1000, description: '兑换家庭保洁服务', serviceType: 'cleaning', createdAt: '2026-06-03 15:20' },
   { id: 'PR003', type: 'earn', amount: 39, description: '购物获得 - 订单 LX20260603012', orderNo: 'LX20260603012', createdAt: '2026-06-03 14:21' },
-  { id: 'PR004', type: 'spend', amount: 800, description: '兑换洗车服务（1次）', serviceType: 'car_wash', createdAt: '2026-06-02 10:00' },
+  { id: 'PR004', type: 'spend', amount: 1500, description: '兑换空调深度清洗', serviceType: 'ac_cleaning', createdAt: '2026-06-02 10:00' },
   { id: 'PR005', type: 'earn', amount: 113, description: '购物获得 - 订单 LX20260602005', orderNo: 'LX20260602005', createdAt: '2026-06-02 18:46' },
-  { id: 'PR006', type: 'earn', amount: 55, description: '购物获得 - 订单 LX20260528003', orderNo: 'LX20260528003', createdAt: '2026-05-28 12:30' },
-  { id: 'PR007', type: 'spend', amount: 30000, description: '兑换免物业费（一年）', serviceType: 'property_fee', createdAt: '2026-05-20 09:00' },
-  { id: 'PR008', type: 'earn', amount: 128, description: '购物获得 - 订单 LX20260515007', orderNo: 'LX20260515007', createdAt: '2026-05-15 16:45' },
-  { id: 'PR009', type: 'earn', amount: 75, description: '购物获得 - 订单 LX20260510002', orderNo: 'LX20260510002', createdAt: '2026-05-10 11:20' },
-  { id: 'PR010', type: 'spend', amount: 2000, description: '兑换保洁服务（2次）', serviceType: 'cleaning', createdAt: '2026-05-05 14:30' }
+  { id: 'PR006', type: 'spend', amount: 30000, description: '兑换免物业费（一年）', serviceType: 'property_fee', createdAt: '2026-05-20 09:00' },
 ];
 
-// 可兑换的积分服务
+// 可兑换的积分服务（积分商城）
 export const mockPointsServices = [
   {
     id: 'PS001',
@@ -681,27 +677,36 @@ export const mockPointsServices = [
     stock: 50,
     sales: 328,
     description: '专业保洁人员上门服务，含客厅、卧室、厨房、卫生间全方位清洁，时长约2小时。',
-    images: ['🧹', '🏠', '✨'],
-    tags: ['热门', '品质保证'],
-    deliveryType: 'door_delivery'
+    tags: ['热门', '上门服务'],
   },
   {
     id: 'PS002',
-    name: '精致洗车服务',
-    icon: '🚗',
-    category: 'car_wash',
-    categoryName: '洗车服务',
-    pointsPrice: 800,
-    marketPrice: 68,
-    stock: 100,
-    sales: 156,
-    description: '小区内上门精洗，含车身清洗、内饰吸尘、轮胎护理、玻璃清洁。',
-    images: ['🚗', '💦', '✨'],
-    tags: ['便捷', '上门服务'],
-    deliveryType: 'self_pickup'
+    name: '空调深度清洗',
+    icon: '❄️',
+    category: 'ac_cleaning',
+    categoryName: '空调清洗',
+    pointsPrice: 1500,
+    marketPrice: 198,
+    stock: 40,
+    sales: 186,
+    description: '挂机/柜机空调深度拆洗，含滤网、蒸发器、风轮清洁与消毒，改善制冷效果与空气质量。',
+    tags: ['季节推荐', '上门服务'],
   },
   {
     id: 'PS003',
+    name: '上门做饭服务',
+    icon: '🍳',
+    category: 'cooking',
+    categoryName: '做饭服务',
+    pointsPrice: 1200,
+    marketPrice: 158,
+    stock: 30,
+    sales: 95,
+    description: '社区认证厨师上门，2-3人份家常菜（三菜一汤），含简单收拾厨房，需提前1天预约。',
+    tags: ['邻里优选', '上门服务'],
+  },
+  {
+    id: 'PS004',
     name: '物业费抵扣（一年）',
     icon: '🏠',
     category: 'property_fee',
@@ -710,32 +715,14 @@ export const mockPointsServices = [
     marketPrice: 3600,
     stock: 20,
     sales: 45,
-    description: '使用30000积分抵扣一整年物业费，超值兑换，直接抵扣至物业账单。',
-    images: ['🏠', '📋', '✅'],
+    description: '使用30000积分抵扣一整年物业费，直接抵扣至物业账单，每户每年限兑1次。',
     tags: ['超值', '限量'],
-    deliveryType: 'self_pickup'
   },
-  {
-    id: 'PS004',
-    name: '深度保洁服务（含厨房）',
-    icon: '🧼',
-    category: 'cleaning',
-    categoryName: '保洁服务',
-    pointsPrice: 2000,
-    marketPrice: 258,
-    stock: 30,
-    sales: 89,
-    description: '深度保洁，含厨房油烟机清洗、卫生间除垢、全屋地板打蜡，时长约4小时。',
-    images: ['🧼', '🏠', '✨'],
-    tags: ['深度清洁'],
-    deliveryType: 'door_delivery'
-  },
-
 ];
 
 // 积分兑换记录
 export const mockExchangeRecords = [
   { id: 'EX001', serviceName: '家庭保洁服务', points: 1000, status: 'completed', serviceDate: '2026-06-03', createdAt: '2026-06-03 15:20' },
-  { id: 'EX002', serviceName: '精致洗车服务', points: 800, status: 'completed', serviceDate: '2026-06-02', createdAt: '2026-06-02 10:00' },
-  { id: 'EX003', serviceName: '免物业费（一年）', points: 30000, status: 'completed', serviceDate: '2026-05-20', createdAt: '2026-05-20 09:00' }
+  { id: 'EX002', serviceName: '空调深度清洗', points: 1500, status: 'completed', serviceDate: '2026-06-02', createdAt: '2026-06-02 10:00' },
+  { id: 'EX003', serviceName: '物业费抵扣（一年）', points: 30000, status: 'completed', serviceDate: '2026-05-20', createdAt: '2026-05-20 09:00' },
 ];

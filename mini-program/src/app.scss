@@ -74,3 +74,24 @@ page {
   background: #e6f7ff;
   color: #1890ff;
 }
+
+/* 全局按钮按压态（View + hoverClass） */
+.btn-pressed {
+  opacity: 0.85;
+  transform: scale(0.97);
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64rpx;
+  min-height: 64rpx;
+  padding: 8rpx;
+  border-radius: 50%;
+
+  &--pressed {
+    background: rgba(0, 0, 0, 0.06);
+    transform: scale(0.94);
+  }
+}

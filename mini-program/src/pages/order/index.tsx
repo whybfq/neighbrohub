@@ -4,8 +4,8 @@ import Taro from '@tarojs/taro';
 import { useUserStore } from '../../store';
 import { orderApi, userApi } from '../../services/api';
 import { mockCoupons } from '../../services/mockData';
-import { formatPrice, showToast, formatEtaText, navigateTo } from '../../utils';
-import { BUSINESS_RULES, DELIVERY_TYPE, MVP_COMMUNITY, MVP_FEATURES, PAGE_PATH } from '../../config/constants';
+import { formatPrice, showToast, formatEtaText, navigateTo, calculatePoints } from '../../utils';
+import { BUSINESS_RULES, DELIVERY_TYPE, MVP_COMMUNITY, MVP_FEATURES, PAGE_PATH, POINTS_PER_YUAN } from '../../config/constants';
 import './index.scss';
 
 interface State {
@@ -289,6 +289,14 @@ export default class OrderPage extends Component<{}, State> {
           </View>
 
           <View className='price-detail'>
+            {MVP_FEATURES.POINTS && (
+              <View className='points-earn-row'>
+                <Text className='points-earn-label'>⭐ 确认收货后可获积分</Text>
+                <Text className='points-earn-value'>
+                  +{calculatePoints(payAmount)} 积分（{POINTS_PER_YUAN}元=1积分）
+                </Text>
+              </View>
+            )}
             <View className='price-row'>
               <Text>商品总额</Text>
               <Text>¥{formatPrice(totalAmount)}</Text>

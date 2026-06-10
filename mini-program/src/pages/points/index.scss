@@ -71,7 +71,17 @@
     font-size: 24px;
     color: rgba(255, 255, 255, 0.75);
     display: block;
+    margin-bottom: 12px;
+  }
+
+  .points-highlight {
+    font-size: 22px;
+    color: rgba(255, 255, 255, 0.95);
+    display: block;
     margin-bottom: 20px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
   }
 
   .points-stats {
@@ -158,6 +168,27 @@
   padding: 16px 24px;
 }
 
+.category-bar {
+  white-space: nowrap;
+  margin-bottom: 16px;
+
+  .category-chip {
+    display: inline-block;
+    padding: 10px 24px;
+    margin-right: 12px;
+    background: #fff;
+    border-radius: 24px;
+    font-size: 24px;
+    color: #666;
+
+    &.active {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+}
+
 .services-grid {
   display: flex;
   flex-direction: column;
@@ -201,6 +232,12 @@
     padding: 16px;
     display: flex;
     flex-direction: column;
+
+    .service-category {
+      font-size: 20px;
+      color: #667eea;
+      margin-bottom: 4px;
+    }
 
     .service-name {
       font-size: 28px;

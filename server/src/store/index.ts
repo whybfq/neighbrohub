@@ -6,6 +6,10 @@ import {
   deliveryPool as seedDeliveryPool,
   activeDelivery as seedActiveDelivery,
   inboundRecords as seedInboundRecords,
+  pointsInfo as seedPointsInfo,
+  pointsRecords as seedPointsRecords,
+  pointsServices as seedPointsServices,
+  pointsExchanges as seedPointsExchanges,
   orders as seedOrders,
   orderTracks,
   pickTasks as seedPickTasks,
@@ -37,6 +41,10 @@ export const store = {
   activeDelivery: clone(seedActiveDelivery) as typeof seedActiveDelivery | null,
   couriers: clone(seedCouriers),
   inboundRecords: clone(seedInboundRecords),
+  pointsInfo: clone(seedPointsInfo),
+  pointsRecords: clone(seedPointsRecords),
+  pointsServices: clone(seedPointsServices),
+  pointsExchanges: clone(seedPointsExchanges),
   holdingCount: 1,
 };
 

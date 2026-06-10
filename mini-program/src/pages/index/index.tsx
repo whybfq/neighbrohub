@@ -2,11 +2,12 @@ import { Component } from 'react';
 import { View, Text, Image, Input, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useUserStore, usePointsStore } from '../../store';
-import { productApi } from '../../services/api';
+import { productApi, pointsApi } from '../../services/api';
 import { mockCategories, mockFlashSales, mockBanners } from '../../services/mockData';
 import { navigateTo, formatPrice, PAGE_PATH, showToast, formatEtaText } from '../../utils';
 import { MVP_COMMUNITY, MVP_FEATURES, MVP_ZONES } from '../../config/constants';
 import ProductCard from '../../components/product-card/index';
+import AppIcon from '../../components/app-icon';
 import './index.scss';
 
 interface State {
@@ -48,6 +49,11 @@ export default class IndexPage extends Component<{}, State> {
     const zoneId = userStore.userInfo?.zone?.id || this.state.displayZoneId || MVP_ZONES[0].id;
     this.setState({ displayZoneId: zoneId });
     this.loadData();
+    if (MVP_FEATURES.POINTS) {
+      pointsApi.getPointsInfo().then((info: any) => {
+        usePointsStore.getState().setPointsInfo(info);
+      }).catch(() => {});
+    }
   }
 
   componentWillUnmount() {
@@ -187,19 +193,21 @@ export default class IndexPage extends Component<{}, State> {
       <View className='index-page'>
         {/* 顶部定位栏 */}
         <View className='header-bar'>
-          <View className='location-info' onClick={this.handleLocationTap}>
-            <Text className='location-icon'>📍</Text>
+          <View className='location-info' hoverClass='icon-btn--pressed' onClick={this.handleLocationTap}>
+            <AppIcon name='location' size={36} className='location-icon-img' />
             <Text className='location-name'>{MVP_COMMUNITY.name} · {zoneName}</Text>
             <Text className='location-arrow'>▾</Text>
           </View>
           <View className='header-right'>
-            <Text className='notify-icon' onClick={this.handleNotification}>🔔</Text>
+            <View className='icon-btn notify-btn' hoverClass='icon-btn--pressed' onClick={this.handleNotification}>
+              <AppIcon name='bell' size={40} />
+            </View>
           </View>
         </View>
 
         <View className='eta-bar'>
           <View className='eta-left'>
-            <Text className='eta-icon'>🕐</Text>
+            <AppIcon name='clock' size={32} />
             <Text className='eta-text'>预计 {formatEtaText(MVP_COMMUNITY.etaMinutes)}送达</Text>
           </View>
           <Text className='eta-badge'>营业中</Text>
@@ -208,7 +216,9 @@ export default class IndexPage extends Component<{}, State> {
         {/* 搜索栏 */}
         <View className='search-wrap'>
           <View className='search-bar'>
-            <Text className='search-icon' onClick={this.handleSearch}>🔍</Text>
+            <View className='search-icon-wrap' hoverClass='icon-btn--pressed' onClick={this.handleSearch}>
+              <AppIcon name='search' size={36} />
+            </View>
             <Input
               className='search-input'
               type='text'
@@ -271,12 +281,12 @@ export default class IndexPage extends Component<{}, State> {
           </View>
 
           {MVP_FEATURES.POINTS && (
-            <View className='points-entry' onClick={() => Taro.navigateTo({ url: '/pages/points/points' })}>
+            <View className='points-entry' hoverClass='btn-pressed' onClick={() => navigateTo(PAGE_PATH.POINTS)}>
               <View className='points-left'>
-                <Text className='points-icon'>⭐</Text>
+                <AppIcon name='star-active' size={44} />
                 <View className='points-info'>
-                  <Text className='points-title'>我的积分</Text>
-                  <Text className='points-desc'>消费1元=1积分，永不过期</Text>
+                  <Text className='points-title'>积分商城</Text>
+                  <Text className='points-desc'>消费1元=1积分 · 换保洁/做饭/免物业费</Text>
                 </View>
               </View>
               <View className='points-right'>

@@ -1,9 +1,10 @@
 import { Component } from 'react';
-import { View, Text, Button, Image } from '@tarojs/components';
+import { View, Text, Button } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useUserStore } from '../../store';
 import { userApi } from '../../services/api';
 import { PAGE_PATH } from '../../config/constants';
+import AppIcon from '../../components/app-icon';
 import './index.scss';
 
 export default class LoginPage extends Component {
@@ -104,18 +105,20 @@ export default class LoginPage extends Component {
               className='wechat-login-btn'
               loading={loading}
               disabled={loading}
+              hoverClass='btn-pressed'
               onClick={this.handleWechatLogin}
             >
-              <Text className='btn-icon'>💚</Text>
+              <AppIcon name='wechat-white' size={36} className='btn-icon-img' />
               <Text>微信一键登录</Text>
             </Button>
 
             <Button
               className='phone-login-btn'
               openType='getPhoneNumber'
+              hoverClass='btn-pressed'
               onGetPhoneNumber={this.handleGetPhone}
             >
-              <Text className='btn-icon'>📱</Text>
+              <AppIcon name='phone-white' size={36} className='btn-icon-img' />
               <Text>手机号快捷登录</Text>
             </Button>
           </View>

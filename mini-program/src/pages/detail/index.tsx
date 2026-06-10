@@ -11,6 +11,7 @@ import {
   SHELF_LIFE_CATEGORY, SHELF_LIFE_CATEGORY_TEXT, SHELF_LIFE_CATEGORY_COLOR,
   TASTE_PERIOD_STATUS_TEXT, TASTE_PERIOD_STATUS_COLOR
 } from '../../config/constants';
+import AppIcon from '../../components/app-icon';
 import './index.scss';
 
 interface State {
@@ -216,8 +217,8 @@ export default class DetailPage extends Component<{}, State> {
             ))}
           </View>
           {/* 返回按钮 */}
-          <View className='back-btn' onClick={() => Taro.navigateBack()}>
-            <Text>‹</Text>
+          <View className='back-btn' hoverClass='icon-btn--pressed' onClick={() => Taro.navigateBack()}>
+            <AppIcon name='back' size={40} />
           </View>
         </View>
 

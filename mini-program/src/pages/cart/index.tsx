@@ -5,6 +5,7 @@ import { useCartStore } from '../../store';
 import { formatPrice, navigateTo, showToast, PAGE_PATH } from '../../utils';
 import { BUSINESS_RULES } from '../../config/constants';
 import EmptyState from '../../components/empty-state/index';
+import AppIcon from '../../components/app-icon';
 import './index.scss';
 
 interface State {
@@ -150,7 +151,7 @@ export default class CartPage extends Component<{}, State> {
 
         {items.length === 0 ? (
           <EmptyState
-            icon='🛒'
+            iconName='cart'
             text='购物车还是空的'
             subText='去逛逛社区好物吧'
             actionText='去首页'
@@ -203,8 +204,8 @@ export default class CartPage extends Component<{}, State> {
                   </View>
 
                   {/* 删除按钮 */}
-                  <View className='delete-btn' onClick={() => this.handleDelete(item.id)}>
-                    <Text>🗑️</Text>
+                  <View className='delete-btn' hoverClass='icon-btn--pressed' onClick={() => this.handleDelete(item.id)}>
+                    <AppIcon name='trash' size={36} />
                   </View>
                 </View>
               ))}
@@ -229,7 +230,11 @@ export default class CartPage extends Component<{}, State> {
                       <Text className='total-label'>合计：</Text>
                       <Text className='total-price'>¥{formatPrice(totalAmount)}</Text>
                     </View>
-                    <View className={`checkout-btn ${checkedCount === 0 ? 'disabled' : ''}`} onClick={this.handleCheckout}>
+                    <View
+                      className={`checkout-btn ${checkedCount === 0 ? 'disabled' : ''}`}
+                      hoverClass={checkedCount === 0 ? '' : 'btn-pressed'}
+                      onClick={this.handleCheckout}
+                    >
                       <Text>结算({checkedCount})</Text>
                     </View>
                   </>

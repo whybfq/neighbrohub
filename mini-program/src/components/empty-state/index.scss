@@ -10,6 +10,11 @@
     margin-bottom: 20px;
   }
 
+  .empty-icon-img {
+    margin-bottom: 24px;
+    opacity: 0.55;
+  }
+
   .empty-text {
     font-size: 30px;
     color: #999;
@@ -20,14 +25,5 @@
     font-size: 24px;
     color: #ccc;
     margin-bottom: 30px;
-  }
-
-  .empty-action {
-    padding: 14px 40px;
-    background: #667eea;
-    color: #fff;
-    border-radius: 32px;
-    font-size: 28px;
-    font-weight: 500;
   }
 }

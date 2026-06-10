@@ -327,6 +327,88 @@ export const inboundRecords = [
   { id: 'IB002', category: '酒水饮料', brand: '蒙牛', spec: '250ml×24盒/箱', skuName: '纯牛奶', qty: 15, location: 'B-008', operator: '王芳', time: '2026-06-08 09:02' },
 ];
 
+// ==================== 积分商城 ====================
+export const POINTS_PER_YUAN = 1;
+export const PROPERTY_FEE_POINTS = 30000;
+
+export const pointsInfo = {
+  totalPoints: 5680,
+  totalEarned: 12800,
+  totalSpent: 7120,
+  level: '黄金会员',
+  levelIcon: '🥇',
+};
+
+export const pointsRecords = [
+  { id: 'PR001', type: 'earn', amount: 98, description: '购物获得 - 订单 20260604001', orderNo: '20260604001', createdAt: '2026-06-04 09:31' },
+  { id: 'PR002', type: 'spend', amount: 1000, description: '兑换家庭保洁服务', serviceType: 'cleaning', createdAt: '2026-06-03 15:20' },
+  { id: 'PR003', type: 'earn', amount: 39, description: '购物获得 - 订单 20260603012', orderNo: '20260603012', createdAt: '2026-06-03 14:21' },
+  { id: 'PR004', type: 'spend', amount: 1500, description: '兑换空调清洗服务', serviceType: 'ac_cleaning', createdAt: '2026-06-02 10:00' },
+  { id: 'PR005', type: 'earn', amount: 113, description: '购物获得 - 订单 20260602005', orderNo: '20260602005', createdAt: '2026-06-02 18:46' },
+  { id: 'PR006', type: 'spend', amount: 30000, description: '兑换免物业费（一年）', serviceType: 'property_fee', createdAt: '2026-05-20 09:00' },
+];
+
+export const pointsServices = [
+  {
+    id: 'PS001',
+    name: '家庭保洁服务',
+    icon: '🧹',
+    category: 'cleaning',
+    categoryName: '保洁服务',
+    pointsPrice: 1000,
+    marketPrice: 128,
+    stock: 50,
+    sales: 328,
+    description: '专业保洁人员上门服务，含客厅、卧室、厨房、卫生间全方位清洁，时长约2小时。',
+    tags: ['热门', '上门服务'],
+  },
+  {
+    id: 'PS002',
+    name: '空调深度清洗',
+    icon: '❄️',
+    category: 'ac_cleaning',
+    categoryName: '空调清洗',
+    pointsPrice: 1500,
+    marketPrice: 198,
+    stock: 40,
+    sales: 186,
+    description: '挂机/柜机空调深度拆洗，含滤网、蒸发器、风轮清洁与消毒，改善制冷效果与空气质量。',
+    tags: ['季节推荐', '上门服务'],
+  },
+  {
+    id: 'PS003',
+    name: '上门做饭服务',
+    icon: '🍳',
+    category: 'cooking',
+    categoryName: '做饭服务',
+    pointsPrice: 1200,
+    marketPrice: 158,
+    stock: 30,
+    sales: 95,
+    description: '社区认证厨师上门，2-3人份家常菜（三菜一汤），含简单收拾厨房，需提前1天预约。',
+    tags: ['邻里优选', '上门服务'],
+  },
+  {
+    id: 'PS004',
+    name: '物业费抵扣（一年）',
+    icon: '🏠',
+    category: 'property_fee',
+    categoryName: '免物业费',
+    pointsPrice: 30000,
+    marketPrice: 3600,
+    stock: 20,
+    sales: 45,
+    description: '使用30000积分抵扣一整年物业费，直接抵扣至物业账单，每户每年限兑1次。',
+    tags: ['超值', '限量'],
+  },
+];
+
+export const pointsExchanges = [
+  { id: 'EX001', serviceName: '家庭保洁服务', points: 1000, status: 'completed', serviceDate: '2026-06-03', createdAt: '2026-06-03 15:20' },
+  { id: 'EX002', serviceName: '空调深度清洗', points: 1500, status: 'completed', serviceDate: '2026-06-02', createdAt: '2026-06-02 10:00' },
+  { id: 'EX003', serviceName: '物业费抵扣（一年）', points: 30000, status: 'completed', serviceDate: '2026-05-20', createdAt: '2026-05-20 09:00' },
+];
+
 export function buildDashboard() {
   const pendingPick = orders.filter((o) => ['paid', 'picking'].includes(o.status)).length;
   const picking = orders.filter((o) => o.status === 'picking').length;

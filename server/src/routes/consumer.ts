@@ -257,7 +257,86 @@ router.put('/orders/:id/receive', (req, res) => {
   const order = store.orders.find((o: any) => o.id === req.params.id);
   if (!order) return sendFail(res, '订单不存在', 404);
   order.status = 'completed';
-  sendOk(res, { success: true });
+
+  let pointsEarned = 0;
+  if (!(order as any).pointsAwarded) {
+    pointsEarned = Math.floor(order.payAmount || order.amount || 0);
+    if (pointsEarned > 0) {
+      store.pointsInfo.totalPoints += pointsEarned;
+      store.pointsInfo.totalEarned += pointsEarned;
+      store.pointsRecords.unshift({
+        id: `PR${Date.now()}`,
+        type: 'earn',
+        amount: pointsEarned,
+        description: `购物获得 - 订单 ${order.orderNo}`,
+        orderNo: order.orderNo,
+        createdAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
+      });
+    }
+    (order as any).pointsAwarded = true;
+  }
+
+  sendOk(res, { success: true, pointsEarned });
+});
+
+// ---------- 积分商城 ----------
+router.get('/points/info', (_req, res) => {
+  sendOk(res, store.pointsInfo);
+});
+
+router.get('/points/records', (req, res) => {
+  const page = Number(req.query.page) || 1;
+  const pageSize = Number(req.query.pageSize) || 20;
+  const start = (page - 1) * pageSize;
+  sendOk(res, store.pointsRecords.slice(start, start + pageSize));
+});
+
+router.get('/points/services', (_req, res) => {
+  sendOk(res, store.pointsServices);
+});
+
+router.get('/points/exchanges', (req, res) => {
+  const page = Number(req.query.page) || 1;
+  const pageSize = Number(req.query.pageSize) || 20;
+  const start = (page - 1) * pageSize;
+  sendOk(res, store.pointsExchanges.slice(start, start + pageSize));
+});
+
+router.post('/points/exchange', (req, res) => {
+  const { serviceId } = req.body || {};
+  const service = store.pointsServices.find((s: any) => s.id === serviceId);
+  if (!service) return sendFail(res, '服务不存在', 404);
+  if (service.stock <= 0) return sendFail(res, '库存不足', 400);
+  if (store.pointsInfo.totalPoints < service.pointsPrice) {
+    return sendFail(res, `积分不足，还需 ${service.pointsPrice - store.pointsInfo.totalPoints} 积分`, 400);
+  }
+
+  store.pointsInfo.totalPoints -= service.pointsPrice;
+  store.pointsInfo.totalSpent += service.pointsPrice;
+  service.stock -= 1;
+  service.sales += 1;
+
+  const now = new Date().toISOString().replace('T', ' ').slice(0, 16);
+  const serviceDate = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+  const exchange = {
+    id: `EX${Date.now()}`,
+    serviceName: service.name,
+    points: service.pointsPrice,
+    status: 'pending',
+    serviceDate,
+    createdAt: now,
+  };
+  store.pointsExchanges.unshift(exchange);
+  store.pointsRecords.unshift({
+    id: `PR${Date.now()}`,
+    type: 'spend',
+    amount: service.pointsPrice,
+    description: `兑换${service.name}`,
+    serviceType: service.category,
+    createdAt: now,
+  });
+
+  sendOk(res, { success: true, message: '兑换成功', exchange });
 });
 
 export default router;

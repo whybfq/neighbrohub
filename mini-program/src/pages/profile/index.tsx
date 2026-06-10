@@ -4,9 +4,25 @@ import Taro from '@tarojs/taro';
 import { useUserStore, usePointsStore } from '../../store';
 import { navigateTo, PAGE_PATH, showToast } from '../../utils';
 import { USER_ROLE, MVP_FEATURES } from '../../config/constants';
+import { pointsApi } from '../../services/api';
+import AppIcon from '../../components/app-icon';
 import './index.scss';
 
 export default class ProfilePage extends Component {
+  componentDidMount() {
+    this.loadPointsInfo();
+  }
+
+  onShow() {
+    this.loadPointsInfo();
+  }
+
+  loadPointsInfo = () => {
+    if (!MVP_FEATURES.POINTS) return;
+    pointsApi.getPointsInfo().then((info: any) => {
+      usePointsStore.getState().setPointsInfo(info);
+    }).catch(() => {});
+  };
   // 跳转分销中心
   goToDistribution = () => {
     navigateTo(PAGE_PATH.DISTRIBUTION);
@@ -128,12 +144,12 @@ export default class ProfilePage extends Component {
           </View>
 
           {MVP_FEATURES.POINTS && (
-          <View className='points-card' onClick={this.goToPoints}>
+          <View className='points-card' hoverClass='btn-pressed' onClick={this.goToPoints}>
             <View className='points-card-left'>
-              <Text className='points-card-icon'>⭐</Text>
+              <AppIcon name='star-active' size={48} className='points-card-icon-img' />
               <View className='points-card-info'>
-                <Text className='points-card-title'>我的积分</Text>
-                <Text className='points-card-desc'>消费1元=1积分，永不过期</Text>
+                <Text className='points-card-title'>积分商城</Text>
+                <Text className='points-card-desc'>消费1元=1积分 · 30000分免一年物业费</Text>
               </View>
             </View>
             <View className='points-card-right'>
@@ -189,21 +205,29 @@ export default class ProfilePage extends Component {
 
           {/* 功能菜单 */}
           <View className='menu-section'>
-            <View className='menu-item' onClick={() => this.goToOrders()}>
-              <Text className='menu-icon'>📦</Text>
+            <View className='menu-item' hoverClass='btn-pressed' onClick={() => this.goToOrders()}>
+              <AppIcon name='order' size={40} className='menu-icon-img' />
               <Text className='menu-text'>全部订单</Text>
               <Text className='menu-arrow'>›</Text>
             </View>
             {MVP_FEATURES.COUPONS && (
-              <View className='menu-item' onClick={this.goToCoupons}>
-                <Text className='menu-icon'>🎫</Text>
+              <View className='menu-item' hoverClass='btn-pressed' onClick={this.goToCoupons}>
+                <AppIcon name='gift' size={40} className='menu-icon-img' />
                 <Text className='menu-text'>优惠券</Text>
                 <Text className='menu-badge'>3张可用</Text>
                 <Text className='menu-arrow'>›</Text>
               </View>
             )}
-            <View className='menu-item' onClick={this.goToAddress}>
-              <Text className='menu-icon'>📍</Text>
+            {MVP_FEATURES.POINTS && (
+              <View className='menu-item' hoverClass='btn-pressed' onClick={this.goToPoints}>
+                <AppIcon name='star-active' size={40} className='menu-icon-img' />
+                <Text className='menu-text'>积分商城</Text>
+                <Text className='menu-value'>{pointsStore.totalPoints.toLocaleString()}分</Text>
+                <Text className='menu-arrow'>›</Text>
+              </View>
+            )}
+            <View className='menu-item' hoverClass='btn-pressed' onClick={this.goToAddress}>
+              <AppIcon name='location' size={40} className='menu-icon-img' />
               <Text className='menu-text'>收货地址</Text>
               <Text className='menu-arrow'>›</Text>
             </View>
@@ -233,19 +257,19 @@ export default class ProfilePage extends Component {
 
           {/* 其他 */}
           <View className='menu-section'>
-            <View className='menu-item' onClick={this.goToNotifications}>
-              <Text className='menu-icon'>🔔</Text>
+            <View className='menu-item' hoverClass='btn-pressed' onClick={this.goToNotifications}>
+              <AppIcon name='bell' size={40} className='menu-icon-img' />
               <Text className='menu-text'>消息通知</Text>
               <Text className='menu-badge red'>5</Text>
               <Text className='menu-arrow'>›</Text>
             </View>
-            <View className='menu-item' onClick={this.goToSettings}>
-              <Text className='menu-icon'>⚙️</Text>
+            <View className='menu-item' hoverClass='btn-pressed' onClick={this.goToSettings}>
+              <AppIcon name='settings' size={40} className='menu-icon-img' />
               <Text className='menu-text'>设置</Text>
               <Text className='menu-arrow'>›</Text>
             </View>
-            <View className='menu-item' onClick={this.goToHelp}>
-              <Text className='menu-icon'>❓</Text>
+            <View className='menu-item' hoverClass='btn-pressed' onClick={this.goToHelp}>
+              <AppIcon name='help' size={40} className='menu-icon-img' />
               <Text className='menu-text'>帮助与反馈</Text>
               <Text className='menu-arrow'>›</Text>
             </View>

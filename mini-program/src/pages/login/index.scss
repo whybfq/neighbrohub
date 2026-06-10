@@ -72,6 +72,13 @@
   margin-bottom: 30px;
 }
 
+.wechat-login-btn,
+.phone-login-btn {
+  .btn-icon-img {
+    flex-shrink: 0;
+  }
+}
+
 .wechat-login-btn {
   width: 100%;
   height: 96px;
@@ -88,10 +95,6 @@
 
   &::after {
     border: none;
-  }
-
-  .btn-icon {
-    font-size: 36px;
   }
 }
 
@@ -111,10 +114,6 @@
 
   &::after {
     border: none;
-  }
-
-  .btn-icon {
-    font-size: 36px;
   }
 }
 
