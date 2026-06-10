@@ -10,8 +10,8 @@ export const MVP_COMMUNITY = {
 };
 
 export const MVP_ZONES = [
-  { id: 'EAST', name: '东区' },
-  { id: 'WEST', name: '西区' },
+  { id: 'EAST', name: '东区', buildingCount: 21, unitsPerBuilding: 3 },
+  { id: 'WEST', name: '西区', buildingCount: 17, unitsPerBuilding: 3 },
 ];
 
 export const BUSINESS_RULES = {

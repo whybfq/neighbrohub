@@ -16,8 +16,8 @@ export const MVP_FEATURES = {
 
 // 服务范围（MVP 单仓 · 山屿西山著东/西区）
 export const MVP_ZONES = [
-  { id: 'EAST', name: '东区' },
-  { id: 'WEST', name: '西区' },
+  { id: 'EAST', name: '东区', buildingCount: 21, unitsPerBuilding: 3 },
+  { id: 'WEST', name: '西区', buildingCount: 17, unitsPerBuilding: 3 },
 ] as const;
 
 export const MVP_COMMUNITY = {

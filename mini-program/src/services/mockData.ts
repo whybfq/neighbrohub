@@ -2,6 +2,7 @@
 // 本文件用于开发阶段的UI展示和测试
 
 import { ORDER_STATUS, USER_ROLE, STORAGE_TYPE, SHELF_LIFE_CATEGORY, TASTE_PERIOD_STATUS } from '../config/constants';
+import { EAST_BUILDINGS, WEST_BUILDINGS } from '../config/buildings';
 
 // ==================== 用户数据 ====================
 export const mockUser = {
@@ -576,23 +577,12 @@ export const mockCommunity = {
     {
       id: 'EAST',
       name: '东区',
-      buildings: [
-        { id: 'E-B001', name: '1栋', units: ['1单元', '2单元', '3单元'] },
-        { id: 'E-B002', name: '2栋', units: ['1单元', '2单元'] },
-        { id: 'E-B003', name: '3栋', units: ['1单元', '2单元', '3单元'] },
-        { id: 'E-B004', name: '5栋', units: ['1单元', '2单元'] },
-        { id: 'E-B005', name: '6栋', units: ['1单元', '2单元', '3单元'] },
-      ],
+      buildings: EAST_BUILDINGS,
     },
     {
       id: 'WEST',
       name: '西区',
-      buildings: [
-        { id: 'W-B001', name: '1栋', units: ['1单元', '2单元'] },
-        { id: 'W-B002', name: '3栋', units: ['1单元', '2单元', '3单元'] },
-        { id: 'W-B003', name: '5栋', units: ['1单元', '2单元'] },
-        { id: 'W-B004', name: '7栋', units: ['1单元', '2单元'] },
-      ],
+      buildings: WEST_BUILDINGS,
     },
   ],
 };

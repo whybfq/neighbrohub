@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { View, Text, Input, Picker, Button } from '@tarojs/components';
+import { View, Text, Input, Picker, Button, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useUserStore } from '../../store';
 import { userApi, communityApi } from '../../services/api';
@@ -235,8 +235,9 @@ export default class BindCommunityPage extends Component<{}, State> {
           </View>
 
           {/* 选择楼栋 */}
-          <View className='form-section'>
-            <View className='section-title'>🏢 {currentZone.name} · 选择楼栋</View>
+          <View className='form-section form-section--scroll'>
+            <View className='section-title'>🏢 {currentZone.name} · 选择楼栋（共 {buildings.length} 栋）</View>
+            <ScrollView className='building-scroll' scrollY enhanced showScrollbar={false}>
             <View className='building-grid'>
               {buildings.map(building => (
                 <View
@@ -255,6 +256,7 @@ export default class BindCommunityPage extends Component<{}, State> {
                 </View>
               ))}
             </View>
+            </ScrollView>
           </View>
 
           {/* 选择单元 */}

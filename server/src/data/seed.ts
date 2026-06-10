@@ -1,4 +1,5 @@
 /** 与服务三端 Mock 对齐的种子数据 */
+import { EAST_BUILDINGS, WEST_BUILDINGS } from './buildings.js';
 
 export const community = {
   id: 'C001',
@@ -9,19 +10,12 @@ export const community = {
     {
       id: 'EAST',
       name: '东区',
-      buildings: [
-        { id: 'E-B001', name: '1栋', units: ['1单元', '2单元', '3单元'] },
-        { id: 'E-B003', name: '3栋', units: ['1单元', '2单元', '3单元'] },
-        { id: 'E-B004', name: '5栋', units: ['1单元', '2单元'] },
-      ],
+      buildings: EAST_BUILDINGS,
     },
     {
       id: 'WEST',
       name: '西区',
-      buildings: [
-        { id: 'W-B002', name: '3栋', units: ['1单元', '2单元', '3单元'] },
-        { id: 'W-B004', name: '7栋', units: ['1单元', '2单元'] },
-      ],
+      buildings: WEST_BUILDINGS,
     },
   ],
   businessHours: { open: '08:00', close: '21:00' },
