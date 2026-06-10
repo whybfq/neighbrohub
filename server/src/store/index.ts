@@ -34,7 +34,7 @@ export const store = {
   workerOnline: true,
   pickTasks: clone(seedPickTasks),
   deliveryPool: clone(seedDeliveryPool),
-  activeDelivery: clone(seedActiveDelivery),
+  activeDelivery: clone(seedActiveDelivery) as typeof seedActiveDelivery | null,
   couriers: clone(seedCouriers),
   inboundRecords: clone(seedInboundRecords),
   holdingCount: 1,
@@ -57,9 +57,13 @@ export function getDashboard() {
 export function getInventory() {
   return store.adminProducts.map((p) => ({
     skuId: p.id,
+    category: p.category,
+    brand: p.brand,
+    spec: p.spec,
     name: p.name,
     location: p.storageZone,
     tempZone: p.tempZone,
+    quantity: p.stock,
     available: p.stock,
     reserved: p.id === 'P002' ? 12 : p.id === 'P001' ? 8 : 0,
   }));

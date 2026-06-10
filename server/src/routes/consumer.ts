@@ -41,13 +41,13 @@ router.post('/user/bind-community', (req, res) => {
       unit,
       room,
       isDefault: true,
-    });
+    } as any);
   }
   if (zoneId && zoneName) {
     store.user.zone = { id: zoneId, name: zoneName };
   }
   if (buildingName) {
-    store.user.building = { name: buildingName, unit };
+    store.user.building = { id: `B-${buildingName}`, name: buildingName, unit: unit || '' };
   }
   sendOk(res, { success: true });
 });
@@ -94,7 +94,7 @@ router.get('/products/categories', (_req, res) => {
 });
 
 router.get('/products/list', (_req, res) => {
-  sendOk(res, store.products);
+  sendOk(res, store.products.filter((p: any) => p.status !== 'off'));
 });
 
 router.get('/products/detail/:id', (req, res) => {
@@ -226,8 +226,9 @@ router.post('/orders/:id/pay', (req, res) => {
   if (!order) return sendFail(res, '订单不存在', 404);
   order.status = 'paid';
   if (store.orderTracks[order.id]) {
-    store.orderTracks[order.id].status = 'paid';
-    const tl = store.orderTracks[order.id].timeline as any[];
+    const track = store.orderTracks[order.id] as any;
+    track.status = 'paid';
+    const tl = track.timeline as any[];
     tl.forEach((t) => { t.done = t.step === 'paid'; t.current = t.step === 'paid'; });
     const paidStep = tl.find((t) => t.step === 'paid');
     if (paidStep) paidStep.time = new Date().toISOString().replace('T', ' ').slice(0, 19);

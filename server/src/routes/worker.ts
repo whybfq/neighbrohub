@@ -36,11 +36,17 @@ router.get('/wms/inbound/recent', (_req, res) => {
 });
 
 router.post('/wms/inbound', (req, res) => {
+  const body = req.body || {};
+  const qty = body.qty ?? body.quantity ?? 1;
   const rec = {
     id: `IB${Date.now()}`,
-    skuName: req.body?.name || '未知商品',
-    qty: req.body?.qty || 1,
-    location: req.body?.location || 'A-001',
+    category: body.category || '未分类',
+    brand: body.brand || '-',
+    spec: body.spec || '-',
+    skuName: body.name || body.skuName || '未知商品',
+    name: body.name || body.skuName || '未知商品',
+    qty,
+    location: body.location || 'A-001',
     operator: store.workerUser.nickname,
     time: new Date().toISOString().replace('T', ' ').slice(0, 16),
   };

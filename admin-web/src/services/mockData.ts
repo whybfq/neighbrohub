@@ -13,8 +13,10 @@ export const mockDashboard = {
 export const mockProducts = [
   {
     id: 'P001',
-    name: '农夫山泉 550ml×24瓶',
     category: '酒水饮料',
+    brand: '农夫山泉',
+    spec: '550ml×24瓶/箱',
+    name: '饮用天然水',
     price: 29.9,
     stock: 5000,
     sales: 2356,
@@ -24,8 +26,10 @@ export const mockProducts = [
   },
   {
     id: 'P002',
-    name: '西红柿 500g',
     category: '生鲜果蔬',
+    brand: '本地直采',
+    spec: '500g/份',
+    name: '西红柿',
     price: 5.9,
     stock: 120,
     sales: 890,
@@ -35,8 +39,10 @@ export const mockProducts = [
   },
   {
     id: 'P003',
-    name: '乐事薯片 原味 104g',
     category: '零食坚果',
+    brand: '乐事',
+    spec: '原味 104g/袋',
+    name: '薯片',
     price: 8.5,
     stock: 0,
     sales: 456,
@@ -46,8 +52,10 @@ export const mockProducts = [
   },
   {
     id: 'P004',
-    name: '纯牛奶 250ml×24',
     category: '酒水饮料',
+    brand: '蒙牛',
+    spec: '250ml×24盒/箱',
+    name: '纯牛奶',
     price: 59.9,
     stock: 800,
     sales: 1203,
@@ -59,9 +67,13 @@ export const mockProducts = [
 
 export const mockInventory = mockProducts.map((p) => ({
   skuId: p.id,
+  category: p.category,
+  brand: p.brand,
+  spec: p.spec,
   name: p.name,
   location: p.storageZone,
   tempZone: p.tempZone,
+  quantity: p.stock,
   available: p.stock,
   reserved: p.id === 'P002' ? 12 : p.id === 'P001' ? 8 : 0,
 }));
@@ -168,8 +180,8 @@ export const mockCouriers = [
 ];
 
 export const mockInboundRecords = [
-  { id: 'IB001', skuName: '西红柿 500g', qty: 20, location: 'B-003', operator: '王芳', time: '2026-06-08 09:15' },
-  { id: 'IB002', skuName: '纯牛奶 250ml×24', qty: 15, location: 'B-008', operator: '王芳', time: '2026-06-08 09:02' },
+  { id: 'IB001', category: '生鲜果蔬', brand: '本地直采', spec: '500g/份', skuName: '西红柿', qty: 20, location: 'B-003', operator: '王芳', time: '2026-06-08 09:15' },
+  { id: 'IB002', category: '酒水饮料', brand: '蒙牛', spec: '250ml×24盒/箱', skuName: '纯牛奶', qty: 15, location: 'B-008', operator: '王芳', time: '2026-06-08 09:02' },
 ];
 
 export const mockWarehouse = MVP_COMMUNITY;

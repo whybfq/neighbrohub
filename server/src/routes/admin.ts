@@ -26,6 +26,10 @@ router.put('/admin/products/:id/status', (req, res) => {
   const p = store.adminProducts.find((x: any) => x.id === req.params.id);
   if (!p) return sendFail(res, '商品不存在', 404);
   p.status = p.status === 'on' ? 'off' : 'on';
+  const consumer = store.products.find((x: any) => x.id === req.params.id);
+  if (consumer) {
+    consumer.status = p.status;
+  }
   sendOk(res, p);
 });
 

@@ -47,8 +47,8 @@ export default class InboundPage extends Component<{}, State> {
       });
       showToast('入库成功', 'success');
       this.loadRecent();
-    } catch {
-      showToast('入库成功（Mock）', 'success');
+    } catch (err: any) {
+      showToast(err?.message || '入库失败');
     }
   };
 
@@ -91,7 +91,7 @@ export default class InboundPage extends Component<{}, State> {
           <Text className='section-title'>最近入库</Text>
           {recent.map((item) => (
             <View key={item.id} className='recent-item'>
-              <Text className='recent-name'>{item.name} ×{item.qty}</Text>
+              <Text className='recent-name'>{item.skuName || item.name} ×{item.qty}</Text>
               <Text className='recent-meta'>{item.location} · {item.time}</Text>
             </View>
           ))}

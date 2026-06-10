@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { View, Text, Input, Picker, Button } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useUserStore } from '../../store';
-import { userApi } from '../../services/api';
+import { userApi, communityApi } from '../../services/api';
 import { mockCommunity } from '../../services/mockData';
 import { showToast, navigateTo, PAGE_PATH } from '../../utils';
 import { MVP_COMMUNITY, MVP_FEATURES, MVP_ZONES, formatMvpAddress } from '../../config/constants';
@@ -37,11 +37,21 @@ export default class BindCommunityPage extends Component<{}, State> {
     this.loadCommunityInfo();
   }
 
-  loadCommunityInfo = () => {
-    this.setState({
-      community: mockCommunity,
-      buildings: mockCommunity.zones[0].buildings,
-    });
+  loadCommunityInfo = async () => {
+    try {
+      const community = await communityApi.getCommunityInfo();
+      const zoneId = this.state.selectedZone || MVP_ZONES[0].id;
+      const zone = community.zones?.find((z: any) => z.id === zoneId) || community.zones[0];
+      this.setState({
+        community,
+        buildings: zone?.buildings || [],
+      });
+    } catch {
+      this.setState({
+        community: mockCommunity,
+        buildings: mockCommunity.zones[0].buildings,
+      });
+    }
   };
 
   getCurrentZone = () => {
@@ -148,30 +158,14 @@ export default class BindCommunityPage extends Component<{}, State> {
         zone: zone ? { id: zone.id, name: zone.name } : undefined,
       });
 
-      await userApi.addAddress({
-        id: `A${Date.now()}`,
-        name: store.userInfo?.nickname || '收货人',
-        phone: store.userInfo?.phone || '138****5678',
-        address: fullAddress,
-        zone: zone?.name || '',
-        zoneId: zone?.id || '',
-        buildingId: selectedBuilding,
-        buildingName: building?.name,
-        unit: selectedUnit,
-        room: roomNumber.trim(),
-        isDefault: true,
-      });
-
       Taro.showToast({ title: '绑定成功', icon: 'success' });
 
       const from = Taro.getCurrentInstance().router?.params?.from;
       setTimeout(() => {
-        if (from === 'address') {
-          Taro.navigateBack();
-        } else if (from === 'order') {
+        if (from === 'address' || from === 'order') {
           Taro.navigateBack();
         } else {
-          Taro.switchTab({ url: '/pages/index/index' });
+          Taro.switchTab({ url: PAGE_PATH.INDEX });
         }
       }, 1500);
     } catch (err: any) {

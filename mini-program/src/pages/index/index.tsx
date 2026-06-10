@@ -71,10 +71,16 @@ export default class IndexPage extends Component<{}, State> {
     }, 1000);
   };
 
-  loadData = async () => {
+  loadData = async (keyword?: string) => {
     this.setState({ loading: true });
     try {
-      const products = await productApi.getProducts({ page: 1, pageSize: 10 });
+      let products = await productApi.getProducts({ page: 1, pageSize: 10 });
+      if (keyword) {
+        const kw = keyword.toLowerCase();
+        products = products.filter((p: any) =>
+          p.name?.toLowerCase().includes(kw) || p.tags?.some((t: string) => t.includes(keyword))
+        );
+      }
       this.setState({ products });
     } catch (err) {
       console.error('加载数据失败:', err);
@@ -83,14 +89,12 @@ export default class IndexPage extends Component<{}, State> {
     }
   };
 
-  // 搜索
+  // 搜索（MVP：首页商品列表内过滤）
   handleSearch = () => {
     const { searchKeyword } = this.state;
-    if (searchKeyword.trim()) {
-      Taro.navigateTo({
-        url: `/pages/search/index?keyword=${encodeURIComponent(searchKeyword.trim())}`
-      });
-    }
+    if (!searchKeyword.trim()) return;
+    showToast(`搜索「${searchKeyword.trim()}」`);
+    this.loadData(searchKeyword.trim());
   };
 
   // 跳转商品详情

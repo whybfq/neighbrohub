@@ -383,7 +383,6 @@ export default class DetailPage extends Component<{}, State> {
           )}
 
           {MVP_FEATURES.POINTS && (
-          {/* 积分预估 */}
           <View className='points-preview-section'>
             <View className='points-preview-header'>
               <Text className='points-icon'>⭐</Text>

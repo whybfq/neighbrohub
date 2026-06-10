@@ -49,6 +49,7 @@ export const products = [
     tags: ['长保质期', '热卖'],
     skus: [{ id: 'SKU001', name: '550ml×24瓶', price: 29.9, stock: 3000 }],
     productIcon: '💧',
+    status: 'on',
   },
   {
     id: 'P002',
@@ -62,6 +63,7 @@ export const products = [
     tags: ['生鲜'],
     skus: [{ id: 'SKU009', name: '500g', price: 5.9, stock: 120 }],
     productIcon: '🍅',
+    status: 'on',
   },
   {
     id: 'P003',
@@ -75,20 +77,78 @@ export const products = [
     tags: [],
     skus: [{ id: 'SKU010', name: '104g', price: 8.5, stock: 800 }],
     productIcon: '🥔',
+    status: 'off',
+  },
+  {
+    id: 'P004',
+    name: '蒙牛 纯牛奶 250ml×24盒 整箱装',
+    categoryId: 1,
+    coverImage: '🥛',
+    price: 59.9,
+    marketPrice: 69.9,
+    stock: 800,
+    sales: 1203,
+    tags: ['热卖'],
+    skus: [{ id: 'SKU011', name: '250ml×24盒', price: 59.9, stock: 800 }],
+    productIcon: '🥛',
+    status: 'on',
   },
 ];
 
-export const adminProducts = products.map((p, i) => ({
-  id: p.id,
-  name: p.name.replace(' 饮用天然水 550ml×24瓶 整箱装', ' 550ml×24瓶').slice(0, 30),
-  category: categories.find((c) => c.id === p.categoryId)?.name || '其他',
-  price: p.price,
-  stock: p.stock,
-  sales: p.sales,
-  status: i === 2 ? 'off' : 'on',
-  storageZone: i === 1 ? 'B-003' : 'A-012',
-  tempZone: i === 1 ? '冷藏' : '常温',
-}));
+export const adminProducts = [
+  {
+    id: 'P001',
+    category: '酒水饮料',
+    brand: '农夫山泉',
+    spec: '550ml×24瓶/箱',
+    name: '饮用天然水',
+    price: 29.9,
+    stock: 5000,
+    sales: 2356,
+    status: 'on',
+    storageZone: 'A-012',
+    tempZone: '常温',
+  },
+  {
+    id: 'P002',
+    category: '生鲜果蔬',
+    brand: '本地直采',
+    spec: '500g/份',
+    name: '西红柿',
+    price: 5.9,
+    stock: 120,
+    sales: 890,
+    status: 'on',
+    storageZone: 'B-003',
+    tempZone: '冷藏',
+  },
+  {
+    id: 'P003',
+    category: '零食坚果',
+    brand: '乐事',
+    spec: '原味 104g/袋',
+    name: '薯片',
+    price: 8.5,
+    stock: 0,
+    sales: 456,
+    status: 'off',
+    storageZone: 'A-045',
+    tempZone: '常温',
+  },
+  {
+    id: 'P004',
+    category: '酒水饮料',
+    brand: '蒙牛',
+    spec: '250ml×24盒/箱',
+    name: '纯牛奶',
+    price: 59.9,
+    stock: 800,
+    sales: 1203,
+    status: 'on',
+    storageZone: 'B-008',
+    tempZone: '冷藏',
+  },
+];
 
 export const consumerUser = {
   id: 'U10001',
@@ -169,8 +229,8 @@ export const orders = [
     orderNo: '20260608003',
     status: 'paid',
     zone: '西区',
-    address: '山屿西山著西区 2栋301',
-    addressShort: '西区2栋301',
+    address: '西区3栋301',
+    addressShort: '西区3栋301',
     customer: '刘女士',
     contactName: '刘女士',
     contactPhone: '137****1234',
@@ -229,7 +289,7 @@ export const workerUser = {
 export const pickTasks = [
   { id: 'PT001', orderNo: '20260608001', address: '东区3栋501', zoneId: 'EAST', itemCount: 3, waitingMinutes: 8, status: 'pending' },
   { id: 'PT002', orderNo: '20260607008', address: '西区7栋1202', zoneId: 'WEST', itemCount: 2, waitingMinutes: 15, status: 'pending' },
-  { id: 'PT003', orderNo: '20260608003', address: '西区2栋301', zoneId: 'WEST', itemCount: 4, waitingMinutes: 5, status: 'pending' },
+  { id: 'PT003', orderNo: '20260608003', address: '西区3栋301', zoneId: 'WEST', itemCount: 4, waitingMinutes: 5, status: 'pending' },
 ];
 
 export const pickDetail = {
@@ -263,8 +323,8 @@ export const couriers = [
 ];
 
 export const inboundRecords = [
-  { id: 'IB001', skuName: '西红柿 500g', qty: 20, location: 'B-003', operator: '王芳', time: '2026-06-08 09:15' },
-  { id: 'IB002', skuName: '纯牛奶 250ml×24', qty: 15, location: 'B-008', operator: '王芳', time: '2026-06-08 09:02' },
+  { id: 'IB001', category: '生鲜果蔬', brand: '本地直采', spec: '500g/份', skuName: '西红柿', qty: 20, location: 'B-003', operator: '王芳', time: '2026-06-08 09:15' },
+  { id: 'IB002', category: '酒水饮料', brand: '蒙牛', spec: '250ml×24盒/箱', skuName: '纯牛奶', qty: 15, location: 'B-008', operator: '王芳', time: '2026-06-08 09:02' },
 ];
 
 export function buildDashboard() {
