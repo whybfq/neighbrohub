@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro';
-import { API_BASE_URL, USE_MOCK_API } from '../config/constants';
+import { API_BASE_URL, USE_MOCK_API, PAGE_PATH } from '../config/constants';
 import {
   mockWorkerUser,
   mockDashboard,
@@ -25,6 +25,13 @@ const request = async <T>(url: string, options: any = {}): Promise<T> => {
       'X-Client-Type': 'worker',
     },
   });
+
+  if (res.statusCode === 401) {
+    Taro.removeStorageSync('worker_token');
+    Taro.redirectTo({ url: PAGE_PATH.LOGIN });
+    throw new Error('登录已过期，请重新登录');
+  }
+
   if (res.statusCode === 200 && res.data.code === 0) {
     return res.data.data as T;
   }

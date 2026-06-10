@@ -162,6 +162,7 @@ export const PAGE_PATH = {
   POINTS: '/pages/points/index',
   TRACK: '/pages/track/index',
   ADDRESS: '/pages/address/index',
+  CATEGORY: '/pages/category/index',
 };
 
 // ==================== 仓储系统常量 ====================

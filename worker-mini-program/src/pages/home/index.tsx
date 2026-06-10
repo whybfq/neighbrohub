@@ -5,19 +5,14 @@ import { workerApi } from '../../services/api';
 import { mockDashboard, mockWorkerUser } from '../../services/mockData';
 import { checkWorkerLogin, navigateTo, PAGE_PATH } from '../../utils';
 import { MVP_COMMUNITY, BUSINESS_RULES } from '../../config/constants';
+import AppIcon from '../../components/app-icon';
+import AppButton from '../../components/app-button';
 import './index.scss';
 
 interface State {
   dashboard: typeof mockDashboard;
   user: typeof mockWorkerUser;
 }
-
-const NAV_ITEMS = [
-  { key: 'inbound', icon: '📥', label: '入库', path: PAGE_PATH.INBOUND, color: '#667eea' },
-  { key: 'pick', icon: '📦', label: '分拣', path: PAGE_PATH.PICK, color: '#764ba2' },
-  { key: 'delivery', icon: '🛵', label: '配送', path: PAGE_PATH.DELIVERY, color: '#52c41a' },
-  { key: 'mine', icon: '👤', label: '我的', path: PAGE_PATH.MINE, color: '#fa8c16' },
-];
 
 export default class HomePage extends Component<{}, State> {
   state: State = {
@@ -36,6 +31,10 @@ export default class HomePage extends Component<{}, State> {
     }
   }
 
+  onPullDownRefresh() {
+    this.loadData().finally(() => Taro.stopPullDownRefresh());
+  }
+
   loadData = async () => {
     try {
       const [dashboard, user] = await Promise.all([
@@ -43,9 +42,13 @@ export default class HomePage extends Component<{}, State> {
         workerApi.getProfile(),
       ]);
       this.setState({ dashboard: dashboard as any, user: user as any });
-    } catch {
-      // mock fallback
+    } catch (err) {
+      console.error('加载工作台失败', err);
     }
+  };
+
+  goTab = (path: string) => {
+    Taro.switchTab({ url: path });
   };
 
   render() {
@@ -54,8 +57,11 @@ export default class HomePage extends Component<{}, State> {
     return (
       <View className='home-page'>
         <View className='home-header'>
-          <Text className='warehouse'>{MVP_COMMUNITY.warehouseName}</Text>
-          <Text className='welcome'>{user.nickname}，今日加油 💪</Text>
+          <View className='header-top'>
+            <Text className='brand'>邻选·作业台</Text>
+            <Text className='warehouse-tag'>{MVP_COMMUNITY.warehouseName}</Text>
+          </View>
+          <Text className='welcome'>{user.nickname}，今日加油</Text>
         </View>
 
         <ScrollView className='home-body' scrollY>
@@ -78,24 +84,42 @@ export default class HomePage extends Component<{}, State> {
             </View>
           </View>
 
-          <View className='pending-bar'>
-            <Text>待分拣 {dashboard.pendingPick} 单</Text>
-            <Text>待配送 {dashboard.pendingDelivery} 单</Text>
-            <Text>持单 {dashboard.holdingCount}/{BUSINESS_RULES.maxConcurrentOrders}</Text>
+          <View className='todo-cards'>
+            <View className='todo-card pick' hoverClass='card-pressed' onClick={() => this.goTab(PAGE_PATH.PICK)}>
+              <View className='todo-left'>
+                <AppIcon name='order' size={44} />
+                <View>
+                  <Text className='todo-title'>待分拣</Text>
+                  <Text className='todo-desc'>东区·西区订单</Text>
+                </View>
+              </View>
+              <Text className='todo-badge'>{dashboard.pendingPick}</Text>
+            </View>
+            <View className='todo-card delivery' hoverClass='card-pressed' onClick={() => this.goTab(PAGE_PATH.DELIVERY)}>
+              <View className='todo-left'>
+                <AppIcon name='cart' size={44} />
+                <View>
+                  <Text className='todo-title'>待配送</Text>
+                  <Text className='todo-desc'>抢单大厅</Text>
+                </View>
+              </View>
+              <Text className='todo-badge'>{dashboard.pendingDelivery}</Text>
+            </View>
           </View>
 
-          <View className='nav-grid'>
-            {NAV_ITEMS.map((item) => (
-              <View
-                key={item.key}
-                className='nav-card'
-                style={{ borderLeftColor: item.color }}
-                onClick={() => navigateTo(item.path)}
-              >
-                <Text className='nav-icon'>{item.icon}</Text>
-                <Text className='nav-label'>{item.label}</Text>
+          <View className='hold-bar'>
+            <Text>当前持单 {dashboard.holdingCount}/{BUSINESS_RULES.maxConcurrentOrders}</Text>
+          </View>
+
+          <View className='inbound-entry' onClick={() => navigateTo(PAGE_PATH.INBOUND)}>
+            <View className='inbound-left'>
+              <AppIcon name='plus' size={48} />
+              <View>
+                <Text className='inbound-title'>扫码入库</Text>
+                <Text className='inbound-desc'>商品到货 · 录入库位</Text>
               </View>
-            ))}
+            </View>
+            <Text className='inbound-arrow'>›</Text>
           </View>
         </ScrollView>
       </View>

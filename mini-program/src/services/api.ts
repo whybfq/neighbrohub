@@ -47,7 +47,14 @@ const request = async <T>(url: string, options: any = {}): Promise<T> => {
 const mockRequest = (url: string, options: any): any => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      if (url.includes('/products/list')) return resolve(mockProducts);
+      if (url.includes('/products/list')) {
+        let list = mockProducts.filter((p: any) => p.status !== 'off');
+        const categoryId = options.data?.categoryId;
+        if (categoryId !== undefined && categoryId !== '') {
+          list = list.filter((p: any) => String(p.categoryId) === String(categoryId));
+        }
+        return resolve(list);
+      }
       if (url.includes('/products/categories')) return resolve(mockCategories);
       if (url.includes('/products/detail')) return resolve(mockProducts[0]);
       if (url.includes('/products/flash-sale')) return resolve(mockFlashSales);

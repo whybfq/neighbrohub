@@ -30,17 +30,21 @@ export const community = {
 };
 
 export const categories = [
-  { id: 1, name: '酒水饮料', icon: '🍺', color: '#e6f0ff' },
-  { id: 2, name: '方便速食', icon: '🍜', color: '#ffe6e6' },
-  { id: 9, name: '生鲜果蔬', icon: '🥬', color: '#fff0e6' },
-  { id: 4, name: '零食坚果', icon: '🥜', color: '#ffe6f0' },
+  { id: 1, name: '生鲜果蔬', icon: '🥬', color: '#fff0e6' },
+  { id: 2, name: '酒水饮料', icon: '🥤', color: '#e6f0ff' },
+  { id: 3, name: '粮油调味', icon: '🫗', color: '#f0ffe6' },
+  { id: 4, name: '方便速食', icon: '🍜', color: '#ffe6e6' },
+  { id: 5, name: '肉蛋水产', icon: '🥩', color: '#ffe8e8' },
+  { id: 6, name: '乳品烘焙', icon: '🥛', color: '#f5f8ff' },
+  { id: 7, name: '日用清洁', icon: '🧴', color: '#e6fff0' },
+  { id: 8, name: '零食坚果', icon: '🥜', color: '#ffe6f0' },
 ];
 
 export const products = [
   {
     id: 'P001',
     name: '农夫山泉 饮用天然水 550ml×24瓶 整箱装',
-    categoryId: 1,
+    categoryId: 2,
     coverImage: '💧',
     price: 29.9,
     marketPrice: 39.9,
@@ -54,7 +58,7 @@ export const products = [
   {
     id: 'P002',
     name: '西红柿 500g',
-    categoryId: 9,
+    categoryId: 1,
     coverImage: '🍅',
     price: 5.9,
     marketPrice: 7.9,
@@ -68,7 +72,7 @@ export const products = [
   {
     id: 'P003',
     name: '乐事薯片 原味 104g',
-    categoryId: 4,
+    categoryId: 8,
     coverImage: '🥔',
     price: 8.5,
     marketPrice: 10.0,
@@ -82,7 +86,7 @@ export const products = [
   {
     id: 'P004',
     name: '蒙牛 纯牛奶 250ml×24盒 整箱装',
-    categoryId: 1,
+    categoryId: 6,
     coverImage: '🥛',
     price: 59.9,
     marketPrice: 69.9,

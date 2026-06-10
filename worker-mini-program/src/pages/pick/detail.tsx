@@ -1,14 +1,15 @@
 import { Component } from 'react';
-import { View, Text, ScrollView } from '@tarojs/components';
+import { View, Text, ScrollView, Input } from '@tarojs/components';
 import Taro, { getCurrentInstance } from '@tarojs/taro';
 import { workerApi } from '../../services/api';
 import { mockPickDetail } from '../../services/mockData';
-import { checkWorkerLogin, showToast } from '../../utils';
+import { checkWorkerLogin, showToast, getZoneName } from '../../utils';
 import { STORAGE_ZONES } from '../../config/constants';
+import AppButton from '../../components/app-button';
 import './index.scss';
 
 interface State {
-  detail: typeof mockPickDetail;
+  detail: any;
   items: any[];
 }
 
@@ -33,8 +34,8 @@ export default class PickDetailPage extends Component<{}, State> {
         detail,
         items: detail.items.map((i: any) => ({ ...i })),
       });
-    } catch {
-      // mock
+    } catch (err: any) {
+      showToast(err?.message || '加载失败');
     }
   };
 
@@ -52,27 +53,31 @@ export default class PickDetailPage extends Component<{}, State> {
     }
     try {
       await workerApi.completePick(this.taskId);
-      showToast('打包完成', 'success');
+      showToast('打包完成，已进入抢单池', 'success');
       setTimeout(() => Taro.navigateBack(), 1000);
-    } catch {
-      showToast('打包完成（Mock）', 'success');
-      setTimeout(() => Taro.navigateBack(), 1000);
+    } catch (err: any) {
+      showToast(err?.message || '提交失败');
     }
   };
 
   render() {
     const { detail, items } = this.state;
     const allPicked = items.every((i) => i.picked);
+    const pickedCount = items.filter((i) => i.picked).length;
 
     return (
       <View className='pick-detail-page'>
         <View className='detail-header'>
           <Text className='order-no'>#{detail.orderNo}</Text>
+          {detail.zoneId && (
+            <Text className='zone-badge'>{getZoneName(detail.zoneId)}</Text>
+          )}
           <Text className='addr'>{detail.address}</Text>
+          <Text className='progress-text'>已拣 {pickedCount}/{items.length} 件</Text>
         </View>
 
         <ScrollView className='item-list' scrollY>
-          <Text className='list-title'>拣货清单（按库位排序）</Text>
+          <Text className='list-title'>拣货清单（按库位）</Text>
           {items.map((item, index) => (
             <View
               key={item.skuId}
@@ -94,12 +99,12 @@ export default class PickDetailPage extends Component<{}, State> {
         </ScrollView>
 
         <View className='detail-footer'>
-          <View className='btn-outline' onClick={() => showToast('已上报缺货')}>
-            <Text>缺货上报</Text>
-          </View>
-          <View className={`btn-primary ${allPicked ? '' : 'disabled'}`} onClick={this.handleComplete}>
-            <Text>打包完成</Text>
-          </View>
+          <AppButton type='secondary' size='md' onClick={() => showToast('已上报缺货，等待运营处理')}>
+            缺货上报
+          </AppButton>
+          <AppButton type='primary' size='md' disabled={!allPicked} onClick={this.handleComplete}>
+            打包完成
+          </AppButton>
         </View>
       </View>
     );

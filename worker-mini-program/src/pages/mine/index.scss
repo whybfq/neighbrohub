@@ -50,17 +50,18 @@
   .earn-rule { display: block; font-size: 24px; color: #bbb; }
 }
 
-.menu-item {
-  background: #fff;
-  border-radius: 12px;
-  padding: 28px;
-  margin-bottom: 12px;
-  font-size: 28px;
-  color: #333;
+.menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
-  &.logout {
-    text-align: center;
-    color: #ff4d4f;
-    margin-top: 24px;
-  }
+.logout-wrap {
+  margin-top: 8px;
+}
+
+.role-tag.active {
+  background: #e6f7ff;
+  color: #1890ff;
+  border-color: #91d5ff;
 }

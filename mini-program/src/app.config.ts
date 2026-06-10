@@ -11,7 +11,8 @@ export default defineAppConfig({
     'pages/distribution/index',
     'pages/points/index',
     'pages/track/index',
-    'pages/address/index'
+    'pages/address/index',
+    'pages/category/index'
   ],
   window: {
     backgroundTextStyle: 'light',

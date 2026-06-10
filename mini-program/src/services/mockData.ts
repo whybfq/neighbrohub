@@ -35,16 +35,14 @@ export const mockUser = {
 
 // ==================== 商品分类 ====================
 export const mockCategories = [
-  { id: 1, name: '酒水饮料', icon: '🍺', color: '#e6f0ff' },
-  { id: 2, name: '方便速食', icon: '🍜', color: '#ffe6e6' },
+  { id: 1, name: '生鲜果蔬', icon: '🥬', color: '#fff0e6' },
+  { id: 2, name: '酒水饮料', icon: '🥤', color: '#e6f0ff' },
   { id: 3, name: '粮油调味', icon: '🫗', color: '#f0ffe6' },
-  { id: 4, name: '零食坚果', icon: '🥜', color: '#ffe6f0' },
-  { id: 5, name: '日用百货', icon: '🧹', color: '#f5e6ff' },
-  { id: 6, name: '家居清洁', icon: '🧴', color: '#e6fff0' },
-  { id: 7, name: '母婴用品', icon: '🍼', color: '#fff5e6' },
-  { id: 8, name: '社区服务', icon: '🔧', color: '#f0f0ff' },
-  { id: 9, name: '生鲜果蔬', icon: '🥬', color: '#fff0e6' },
-  { id: 10, name: '冷冻食品', icon: '🧊', color: '#e0f0ff' }
+  { id: 4, name: '方便速食', icon: '🍜', color: '#ffe6e6' },
+  { id: 5, name: '肉蛋水产', icon: '🥩', color: '#ffe8e8' },
+  { id: 6, name: '乳品烘焙', icon: '🥛', color: '#f5f8ff' },
+  { id: 7, name: '日用清洁', icon: '🧴', color: '#e6fff0' },
+  { id: 8, name: '零食坚果', icon: '🥜', color: '#ffe6f0' },
 ];
 
 // ==================== 商品数据 ====================

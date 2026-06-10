@@ -80,14 +80,18 @@ export default class IndexPage extends Component<{}, State> {
   loadData = async (keyword?: string) => {
     this.setState({ loading: true });
     try {
-      let products = await productApi.getProducts({ page: 1, pageSize: 10 });
+      const [products, categories] = await Promise.all([
+        productApi.getProducts({ page: 1, pageSize: 10 }),
+        productApi.getCategories(),
+      ]);
+      let filtered = products;
       if (keyword) {
         const kw = keyword.toLowerCase();
-        products = products.filter((p: any) =>
+        filtered = products.filter((p: any) =>
           p.name?.toLowerCase().includes(kw) || p.tags?.some((t: string) => t.includes(keyword))
         );
       }
-      this.setState({ products });
+      this.setState({ products: filtered, categories });
     } catch (err) {
       console.error('加载数据失败:', err);
     } finally {
@@ -108,13 +112,13 @@ export default class IndexPage extends Component<{}, State> {
     navigateTo(PAGE_PATH.DETAIL, { id: productId });
   };
 
-  // 跳转分类
+  // 跳转分类页
   goToCategory = (categoryId: number) => {
-    const cat = mockCategories.find(c => c.id === categoryId);
-    showToast(`正在加载「${cat?.name || '分类'}」商品`);
-    setTimeout(() => {
-      Taro.showToast({ title: '分类页面开发中', icon: 'none' });
-    }, 800);
+    navigateTo(PAGE_PATH.CATEGORY, { id: categoryId });
+  };
+
+  goToAllCategories = () => {
+    navigateTo(PAGE_PATH.CATEGORY, { id: this.state.categories[0]?.id || 1 });
   };
 
   // 跳转秒杀
@@ -127,7 +131,7 @@ export default class IndexPage extends Component<{}, State> {
 
   // 跳转商品列表
   goToProductList = () => {
-    showToast('正在加载更多商品...');
+    this.goToAllCategories();
   };
 
   // Banner 点击
@@ -191,6 +195,17 @@ export default class IndexPage extends Component<{}, State> {
 
     return (
       <View className='index-page'>
+        {/* 优选社区品牌区 */}
+        <View className='community-brand-bar'>
+          <View className='brand-left'>
+            <Text className='brand-title'>邻选·优选社区</Text>
+            <Text className='brand-badge'>2小时达</Text>
+          </View>
+          <View className='icon-btn notify-btn' hoverClass='icon-btn--pressed' onClick={this.handleNotification}>
+            <AppIcon name='bell' size={40} />
+          </View>
+        </View>
+
         {/* 顶部定位栏 */}
         <View className='header-bar'>
           <View className='location-info' hoverClass='icon-btn--pressed' onClick={this.handleLocationTap}>
@@ -198,11 +213,7 @@ export default class IndexPage extends Component<{}, State> {
             <Text className='location-name'>{MVP_COMMUNITY.name} · {zoneName}</Text>
             <Text className='location-arrow'>▾</Text>
           </View>
-          <View className='header-right'>
-            <View className='icon-btn notify-btn' hoverClass='icon-btn--pressed' onClick={this.handleNotification}>
-              <AppIcon name='bell' size={40} />
-            </View>
-          </View>
+          <Text className='warehouse-tag'>{MVP_COMMUNITY.warehouseName}</Text>
         </View>
 
         <View className='eta-bar'>
@@ -260,24 +271,27 @@ export default class IndexPage extends Component<{}, State> {
             </View>
           </View>
 
-          {/* 分类导航 */}
+          {/* 分类导航 · 8 类常见品类 */}
           <View className='category-section'>
-            <ScrollView className='category-scroll' scrollX>
-              <View className='category-list'>
-                {categories.map(cat => (
-                  <View
-                    key={cat.id}
-                    className='category-item'
-                    onClick={() => this.goToCategory(cat.id)}
-                  >
-                    <View className='category-icon' style={{ background: cat.color }}>
-                      <Text className='icon-text'>{cat.icon}</Text>
-                    </View>
-                    <Text className='category-name'>{cat.name}</Text>
+            <View className='section-header compact'>
+              <Text className='section-title'>全部分类</Text>
+              <Text className='section-more' onClick={this.goToAllCategories}>更多 ›</Text>
+            </View>
+            <View className='category-grid'>
+              {categories.slice(0, 8).map((cat) => (
+                <View
+                  key={cat.id}
+                  className='category-item'
+                  hoverClass='btn-pressed'
+                  onClick={() => this.goToCategory(cat.id)}
+                >
+                  <View className='category-icon' style={{ background: cat.color }}>
+                    <Text className='icon-text'>{cat.icon}</Text>
                   </View>
-                ))}
-              </View>
-            </ScrollView>
+                  <Text className='category-name'>{cat.name}</Text>
+                </View>
+              ))}
+            </View>
           </View>
 
           {MVP_FEATURES.POINTS && (
@@ -395,7 +409,7 @@ export default class IndexPage extends Component<{}, State> {
             <View className='section-header'>
               <View className='section-title-wrap'>
                 <View className='title-bar' />
-                <Text className='section-title'>社区推荐</Text>
+                <Text className='section-title'>优选推荐</Text>
               </View>
               <Text className='section-more' onClick={this.goToProductList}>查看更多 ›</Text>
             </View>

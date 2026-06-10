@@ -55,19 +55,19 @@
 
   .task-top {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
     margin-bottom: 8px;
+    flex-wrap: wrap;
   }
   .order-no { font-size: 28px; font-weight: 600; }
-  .wait { font-size: 24px; color: #fa8c16; }
-  .task-addr { font-size: 26px; color: #666; margin-bottom: 16px; }
-  .task-btn {
-    background: #764ba2;
-    color: #fff;
-    text-align: center;
-    padding: 16px;
-    border-radius: 10px;
-    font-size: 28px;
-    font-weight: 600;
+  .zone-tag {
+    font-size: 22px;
+    color: #764ba2;
+    background: #f9f0ff;
+    padding: 4px 12px;
+    border-radius: 8px;
   }
+  .wait { font-size: 24px; color: #fa8c16; margin-left: auto; }
+  .task-addr { font-size: 26px; color: #666; margin-bottom: 16px; }
 }

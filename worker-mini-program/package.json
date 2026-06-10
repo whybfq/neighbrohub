@@ -11,7 +11,9 @@
     "build:weapp": "taro build --type weapp",
     "build:h5": "taro build --type h5",
     "dev:weapp": "npm run build:weapp -- --watch",
-    "dev:h5": "npm run build:h5 -- --watch"
+    "dev:h5": "npm run build:h5 -- --watch",
+    "test:icons": "node scripts/test-icons.js",
+    "test:ui": "npm run test:icons && npm run build:weapp"
   },
   "dependencies": {
     "@tarojs/components": "^3.6.0",

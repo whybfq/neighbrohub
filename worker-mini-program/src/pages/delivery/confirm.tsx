@@ -2,7 +2,9 @@ import { Component } from 'react';
 import { View, Text, Input } from '@tarojs/components';
 import Taro, { getCurrentInstance } from '@tarojs/taro';
 import { workerApi } from '../../services/api';
-import { checkWorkerLogin, showToast } from '../../utils';
+import { checkWorkerLogin, showToast, PAGE_PATH } from '../../utils';
+import AppButton from '../../components/app-button';
+import EmptyState from '../../components/empty-state';
 import './confirm.scss';
 
 interface State {
@@ -14,6 +16,7 @@ interface State {
     signCode: string;
   } | null;
   loading: boolean;
+  submitting: boolean;
 }
 
 export default class DeliveryConfirmPage extends Component<{}, State> {
@@ -23,6 +26,7 @@ export default class DeliveryConfirmPage extends Component<{}, State> {
     signCode: '',
     order: null,
     loading: true,
+    submitting: false,
   };
 
   componentDidMount() {
@@ -35,22 +39,20 @@ export default class DeliveryConfirmPage extends Component<{}, State> {
     try {
       const active: any = await workerApi.getActiveDelivery();
       if (active) {
-        this.setState({
-          order: active,
-          loading: false,
-        });
+        this.setState({ order: active, loading: false });
         if (!this.taskId) this.taskId = active.id;
       } else {
         this.setState({ loading: false });
-        showToast('暂无配送中订单');
       }
-    } catch {
+    } catch (err: any) {
       this.setState({ loading: false });
+      showToast(err?.message || '加载失败');
     }
   };
 
   handleConfirm = async () => {
-    const { signCode, order } = this.state;
+    const { signCode, order, submitting } = this.state;
+    if (submitting) return;
     if (!order) {
       showToast('暂无配送任务');
       return;
@@ -59,22 +61,25 @@ export default class DeliveryConfirmPage extends Component<{}, State> {
       showToast('请输入6位签收码');
       return;
     }
+    this.setState({ submitting: true });
     try {
       await workerApi.confirmDeliver(this.taskId || order.id, signCode);
       showToast('送达成功', 'success');
-      setTimeout(() => Taro.navigateBack({ delta: 2 }), 1000);
+      setTimeout(() => Taro.switchTab({ url: PAGE_PATH.DELIVERY }), 1000);
     } catch (err: any) {
       showToast(err.message || '签收失败');
+    } finally {
+      this.setState({ submitting: false });
     }
   };
 
   render() {
-    const { signCode, order, loading } = this.state;
+    const { signCode, order, loading, submitting } = this.state;
 
     if (loading) {
       return (
         <View className='confirm-page'>
-          <Text>加载中...</Text>
+          <View className='loading-tip'><Text>加载中...</Text></View>
         </View>
       );
     }
@@ -82,7 +87,12 @@ export default class DeliveryConfirmPage extends Component<{}, State> {
     if (!order) {
       return (
         <View className='confirm-page'>
-          <Text>暂无配送中订单</Text>
+          <EmptyState iconName='order' text='暂无配送中订单' subText='请先在配送页抢单' />
+          <View className='back-wrap'>
+            <AppButton type='ghost' size='md' block onClick={() => Taro.switchTab({ url: PAGE_PATH.DELIVERY })}>
+              返回配送页
+            </AppButton>
+          </View>
         </View>
       );
     }
@@ -101,9 +111,15 @@ export default class DeliveryConfirmPage extends Component<{}, State> {
             value={signCode}
             onInput={(e) => this.setState({ signCode: e.detail.value })}
           />
-          <View className='confirm-btn' onClick={this.handleConfirm}>
-            <Text>确认送达</Text>
-          </View>
+          <AppButton
+            type='primary'
+            size='lg'
+            block
+            disabled={submitting || signCode.length !== 6}
+            onClick={this.handleConfirm}
+          >
+            {submitting ? '提交中...' : '确认送达'}
+          </AppButton>
         </View>
       </View>
     );

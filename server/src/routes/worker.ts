@@ -59,7 +59,25 @@ router.get('/wms/pick/tasks', (_req, res) => {
 });
 
 router.get('/wms/pick/tasks/:id', (req, res) => {
-  sendOk(res, { ...pickDetail, taskId: req.params.id });
+  const task = store.pickTasks.find((t: any) => t.id === req.params.id);
+  if (!task) return sendFail(res, '分拣任务不存在', 404);
+  const order = store.orders.find((o: any) => o.orderNo === task.orderNo);
+  const items = order?.items?.length
+    ? order.items.map((it: any, idx: number) => ({
+        skuId: it.skuId || `SKU${idx}`,
+        name: `${it.productName || it.name || '商品'} ×${it.quantity || 1}`,
+        location: idx % 2 === 0 ? 'A-012' : 'B-003',
+        zone: idx % 2 === 0 ? 'normal' : 'cold',
+        picked: false,
+      }))
+    : pickDetail.items;
+  sendOk(res, {
+    taskId: task.id,
+    orderNo: task.orderNo,
+    address: task.address,
+    zoneId: task.zoneId,
+    items,
+  });
 });
 
 router.post('/wms/pick/tasks/:id/complete', (req, res) => {
@@ -98,13 +116,13 @@ router.post('/delivery/tasks/:id/grab', (req, res) => {
   if (!store.workerOnline) return sendFail(res, '请先上线');
   if (store.holdingCount >= 100) return sendFail(res, '已达持单上限');
   const idx = store.deliveryPool.findIndex((d: any) => d.id === req.params.id);
-  if (idx >= 0) {
-    const [task] = store.deliveryPool.splice(idx, 1);
-    store.activeDelivery = { ...task, status: 'delivering', signCode: String(Math.floor(100000 + Math.random() * 900000)) };
-    store.holdingCount += 1;
-    const order = store.orders.find((o: any) => o.orderNo === task.orderNo);
-    if (order) order.status = 'delivering';
-  }
+  if (idx < 0) return sendFail(res, '订单不存在或已被抢');
+  if (store.activeDelivery) return sendFail(res, '请先完成当前配送订单');
+  const [task] = store.deliveryPool.splice(idx, 1);
+  store.activeDelivery = { ...task, status: 'delivering', signCode: String(Math.floor(100000 + Math.random() * 900000)) };
+  store.holdingCount += 1;
+  const order = store.orders.find((o: any) => o.orderNo === task.orderNo);
+  if (order) order.status = 'delivering';
   sendOk(res, { success: true });
 });
 

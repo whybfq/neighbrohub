@@ -115,30 +115,23 @@
   margin-bottom: 16px;
 }
 
-.grab-btn, .btn-deliver {
-  background: #52c41a;
-  color: #fff;
-  text-align: center;
-  padding: 16px;
-  border-radius: 10px;
-  font-size: 28px;
-  font-weight: 600;
+.pool-addr {
+  font-size: 26px;
+  color: #666;
+  margin-bottom: 8px;
+  display: block;
 }
 
 .active-actions {
   display: flex;
   gap: 12px;
+  margin-top: 16px;
 
-  .btn-nav, .btn-deliver {
+  .app-btn {
     flex: 1;
-    text-align: center;
-    padding: 16px;
-    border-radius: 10px;
-    font-size: 28px;
   }
+}
 
-  .btn-nav {
-    background: #f5f5f5;
-    color: #666;
-  }
+.card-pressed {
+  opacity: 0.9;
 }

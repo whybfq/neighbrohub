@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro';
-import { PAGE_PATH } from '../config/constants';
+import { PAGE_PATH, MVP_ZONES } from '../config/constants';
 
 export const formatPrice = (price: number): string => price.toFixed(2);
 
@@ -22,6 +22,16 @@ export const checkWorkerLogin = (): boolean => {
     return false;
   }
   return true;
+};
+
+export const getZoneName = (zoneId?: string) =>
+  MVP_ZONES.find((z) => z.id === zoneId)?.name || '';
+
+export const copyText = (text: string, okMsg = '已复制') => {
+  Taro.setClipboardData({
+    data: text,
+    success: () => showToast(okMsg, 'success'),
+  });
 };
 
 export { PAGE_PATH };

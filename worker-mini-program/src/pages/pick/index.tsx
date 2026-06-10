@@ -1,9 +1,12 @@
 import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
+import Taro from '@tarojs/taro';
 import { workerApi } from '../../services/api';
 import { mockPickTasks } from '../../services/mockData';
-import { checkWorkerLogin, navigateTo, PAGE_PATH } from '../../utils';
+import { checkWorkerLogin, navigateTo, getZoneName, PAGE_PATH } from '../../utils';
 import { MVP_ZONES } from '../../config/constants';
+import AppButton from '../../components/app-button';
+import EmptyState from '../../components/empty-state';
 import './index.scss';
 
 type ZoneFilter = 'ALL' | 'EAST' | 'WEST';
@@ -11,6 +14,7 @@ type ZoneFilter = 'ALL' | 'EAST' | 'WEST';
 interface State {
   tasks: typeof mockPickTasks;
   zoneFilter: ZoneFilter;
+  loading: boolean;
 }
 
 const ZONE_TABS: { id: ZoneFilter; name: string }[] = [
@@ -19,19 +23,31 @@ const ZONE_TABS: { id: ZoneFilter; name: string }[] = [
 ];
 
 export default class PickListPage extends Component<{}, State> {
-  state: State = { tasks: mockPickTasks, zoneFilter: 'ALL' };
+  state: State = { tasks: mockPickTasks, zoneFilter: 'ALL', loading: false };
 
   componentDidMount() {
     checkWorkerLogin();
     this.loadTasks();
   }
 
+  onShow() {
+    if (Taro.getStorageSync('worker_token')) {
+      this.loadTasks();
+    }
+  }
+
+  onPullDownRefresh() {
+    this.loadTasks().finally(() => Taro.stopPullDownRefresh());
+  }
+
   loadTasks = async () => {
+    this.setState({ loading: true });
     try {
       const tasks = await workerApi.getPickTasks();
-      this.setState({ tasks: tasks as any });
-    } catch {
-      // mock
+      this.setState({ tasks: tasks as any, loading: false });
+    } catch (err) {
+      console.error(err);
+      this.setState({ loading: false });
     }
   };
 
@@ -46,7 +62,7 @@ export default class PickListPage extends Component<{}, State> {
   };
 
   render() {
-    const { tasks, zoneFilter } = this.state;
+    const { tasks, zoneFilter, loading } = this.state;
     const filteredTasks = this.filterByZone(tasks);
 
     return (
@@ -68,21 +84,23 @@ export default class PickListPage extends Component<{}, State> {
         </View>
 
         <ScrollView className='pick-list' scrollY>
-          {filteredTasks.length === 0 && (
-            <View className='empty-list'>
-              <Text>当前分区暂无待分拣订单</Text>
-            </View>
+          {loading && (
+            <View className='loading-tip'><Text>加载中...</Text></View>
+          )}
+          {!loading && filteredTasks.length === 0 && (
+            <EmptyState iconName='order' text='暂无待分拣订单' subText='新订单支付后会出现在这里' />
           )}
           {filteredTasks.map((task) => (
-            <View key={task.id} className='task-card' onClick={() => this.goDetail(task.id)}>
+            <View key={task.id} className='task-card'>
               <View className='task-top'>
                 <Text className='order-no'>#{task.orderNo}</Text>
+                <Text className='zone-tag'>{getZoneName(task.zoneId)}</Text>
                 <Text className='wait'>等待 {task.waitingMinutes} 分钟</Text>
               </View>
               <Text className='task-addr'>{task.address} · {task.itemCount} 件</Text>
-              <View className='task-btn'>
-                <Text>开始拣货</Text>
-              </View>
+              <AppButton type='primary' size='md' block onClick={() => this.goDetail(task.id)}>
+                开始拣货
+              </AppButton>
             </View>
           ))}
         </ScrollView>

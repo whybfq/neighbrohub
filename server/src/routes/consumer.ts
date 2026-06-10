@@ -93,8 +93,13 @@ router.get('/products/categories', (_req, res) => {
   sendOk(res, store.categories);
 });
 
-router.get('/products/list', (_req, res) => {
-  sendOk(res, store.products.filter((p: any) => p.status !== 'off'));
+router.get('/products/list', (req, res) => {
+  let list = store.products.filter((p: any) => p.status !== 'off');
+  const categoryId = req.query.categoryId;
+  if (categoryId !== undefined && categoryId !== '') {
+    list = list.filter((p: any) => String(p.categoryId) === String(categoryId));
+  }
+  sendOk(res, list);
 });
 
 router.get('/products/detail/:id', (req, res) => {
