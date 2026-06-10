@@ -9,6 +9,17 @@ export const MVP_COMMUNITY = {
   address: '北京市海淀区山屿西山著',
 };
 
+export const EMPTY_WORKER_DASHBOARD = {
+  todayInbound: 0,
+  todayPick: 0,
+  todayDelivery: 0,
+  todayEarnings: 0,
+  pendingPick: 0,
+  pendingDelivery: 0,
+  holdingCount: 0,
+  maxHold: 100,
+};
+
 export const MVP_ZONES = [
   { id: 'EAST', name: '东区', buildingCount: 21, unitsPerBuilding: 3 },
   { id: 'WEST', name: '西区', buildingCount: 17, unitsPerBuilding: 3 },

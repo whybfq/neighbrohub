@@ -2,7 +2,6 @@ import { Component } from 'react';
 import { View, Text, ScrollView, Input } from '@tarojs/components';
 import Taro, { getCurrentInstance } from '@tarojs/taro';
 import { workerApi } from '../../services/api';
-import { mockPickDetail } from '../../services/mockData';
 import { checkWorkerLogin, showToast, getZoneName } from '../../utils';
 import { STORAGE_ZONES } from '../../config/constants';
 import AppButton from '../../components/app-button';
@@ -17,8 +16,8 @@ export default class PickDetailPage extends Component<{}, State> {
   taskId = '';
 
   state: State = {
-    detail: mockPickDetail,
-    items: mockPickDetail.items.map((i) => ({ ...i })),
+    detail: null,
+    items: [],
   };
 
   componentDidMount() {
@@ -62,6 +61,15 @@ export default class PickDetailPage extends Component<{}, State> {
 
   render() {
     const { detail, items } = this.state;
+
+    if (!detail) {
+      return (
+        <View className='pick-detail-page'>
+          <View className='loading-tip'><Text>加载中...</Text></View>
+        </View>
+      );
+    }
+
     const allPicked = items.every((i) => i.picked);
     const pickedCount = items.filter((i) => i.picked).length;
 

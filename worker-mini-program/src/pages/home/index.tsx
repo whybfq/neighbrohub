@@ -2,21 +2,22 @@ import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { workerApi } from '../../services/api';
-import { mockDashboard, mockWorkerUser } from '../../services/mockData';
-import { checkWorkerLogin, navigateTo, PAGE_PATH } from '../../utils';
+import { mockWorkerUser } from '../../services/mockData';
+import { EMPTY_WORKER_DASHBOARD } from '../../config/constants';
+import { checkWorkerLogin, navigateTo, PAGE_PATH, showToast } from '../../utils';
 import { MVP_COMMUNITY, BUSINESS_RULES } from '../../config/constants';
 import AppIcon from '../../components/app-icon';
 import AppButton from '../../components/app-button';
 import './index.scss';
 
 interface State {
-  dashboard: typeof mockDashboard;
+  dashboard: typeof EMPTY_WORKER_DASHBOARD;
   user: typeof mockWorkerUser;
 }
 
 export default class HomePage extends Component<{}, State> {
   state: State = {
-    dashboard: mockDashboard,
+    dashboard: EMPTY_WORKER_DASHBOARD,
     user: mockWorkerUser,
   };
 
@@ -44,6 +45,7 @@ export default class HomePage extends Component<{}, State> {
       this.setState({ dashboard: dashboard as any, user: user as any });
     } catch (err) {
       console.error('加载工作台失败', err);
+      showToast('加载失败，请确认后端已启动');
     }
   };
 

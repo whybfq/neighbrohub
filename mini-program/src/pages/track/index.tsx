@@ -2,8 +2,10 @@ import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro, { getCurrentInstance } from '@tarojs/taro';
 import { orderApi } from '../../services/api';
-import { mockOrderTracks } from '../../services/mockData';
 import { maskPhone, showToast } from '../../utils';
+import { MVP_COMMUNITY } from '../../config/constants';
+import EmptyState from '../../components/empty-state/index';
+import AppButton from '../../components/app-button';
 import './index.scss';
 
 interface TimelineItem {
@@ -30,6 +32,7 @@ interface TrackData {
 interface State {
   track: TrackData | null;
   loading: boolean;
+  loadError: boolean;
 }
 
 export default class TrackPage extends Component<{}, State> {
@@ -38,21 +41,27 @@ export default class TrackPage extends Component<{}, State> {
   state: State = {
     track: null,
     loading: true,
+    loadError: false,
   };
 
   componentDidMount() {
     const params = getCurrentInstance().router?.params;
-    this.orderId = params?.id || 'O001';
+    this.orderId = params?.id || '';
+    if (!this.orderId) {
+      this.setState({ loading: false, loadError: true });
+      return;
+    }
     this.loadTrack();
   }
 
   loadTrack = async () => {
-    this.setState({ loading: true });
+    this.setState({ loading: true, loadError: false });
     try {
       const track = await orderApi.getOrderTrack(this.orderId);
-      this.setState({ track });
+      this.setState({ track: track as TrackData });
     } catch (err) {
-      this.setState({ track: mockOrderTracks[this.orderId] || mockOrderTracks.O001 });
+      console.error('加载配送追踪失败', err);
+      this.setState({ track: null, loadError: true });
     } finally {
       this.setState({ loading: false });
     }
@@ -67,17 +76,35 @@ export default class TrackPage extends Component<{}, State> {
   };
 
   handleContact = () => {
-    showToast('客服功能开发中');
+    const { track } = this.state;
+    if (track?.courier?.phone && !track.courier.phone.includes('*')) {
+      Taro.makePhoneCall({ phoneNumber: track.courier.phone }).catch(() => {
+        showToast('无法拨号，请稍后重试');
+      });
+      return;
+    }
+    showToast(`请联系${MVP_COMMUNITY.warehouseName}`);
   };
 
   render() {
-    const { track, loading } = this.state;
+    const { track, loading, loadError } = this.state;
 
-    if (loading || !track) {
+    if (loading) {
       return (
         <View className='track-page'>
           <View className='track-loading'>
             <Text>加载配送信息...</Text>
+          </View>
+        </View>
+      );
+    }
+
+    if (loadError || !track) {
+      return (
+        <View className='track-page'>
+          <EmptyState iconName='order' text='暂无配送信息' subText='请确认订单号或稍后重试' />
+          <View style={{ padding: '24px' }}>
+            <AppButton type='ghost' size='md' block onClick={this.loadTrack}>重新加载</AppButton>
           </View>
         </View>
       );
@@ -104,7 +131,7 @@ export default class TrackPage extends Component<{}, State> {
                 <Text className='courier-phone'>{maskPhone(track.courier.phone)}</Text>
               </View>
               <View className='courier-action' onClick={this.handleContact}>
-                <Text>联系客服</Text>
+                <Text>联系配送</Text>
               </View>
             </View>
           )}

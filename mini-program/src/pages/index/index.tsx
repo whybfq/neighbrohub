@@ -94,6 +94,7 @@ export default class IndexPage extends Component<{}, State> {
       this.setState({ products: filtered, categories });
     } catch (err) {
       console.error('加载数据失败:', err);
+      showToast('加载失败，请确认后端已启动');
     } finally {
       this.setState({ loading: false });
     }

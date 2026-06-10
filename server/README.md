@@ -44,7 +44,7 @@ cp .env.example .env   # 编辑 PORT、CORS_ORIGINS、ADMIN_PASSWORD 等
 - `GET /delivery/pool` · `POST /delivery/tasks/:id/grab` · `POST /delivery/tasks/:id/deliver`
 
 ### 管理后台 `/api/v1`
-- `POST /admin/login`（admin / admin123）
+- `POST /admin/login`（账号见 `ADMIN_USERNAME` / `ADMIN_PASSWORD`，开发默认 admin/admin123）
 - `GET /admin/dashboard` · `GET /admin/products` · `GET /admin/orders`
 - `GET /admin/couriers` · `PUT /admin/couriers/:id/approve`
 

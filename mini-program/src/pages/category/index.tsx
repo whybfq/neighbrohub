@@ -2,8 +2,7 @@ import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro, { getCurrentInstance } from '@tarojs/taro';
 import { productApi } from '../../services/api';
-import { mockCategories } from '../../services/mockData';
-import { navigateTo, PAGE_PATH } from '../../utils';
+import { navigateTo, PAGE_PATH, showToast } from '../../utils';
 import ProductCard from '../../components/product-card/index';
 import EmptyState from '../../components/empty-state/index';
 import './index.scss';
@@ -17,7 +16,7 @@ interface State {
 
 export default class CategoryPage extends Component<{}, State> {
   state: State = {
-    categories: mockCategories,
+    categories: [],
     products: [],
     activeCategoryId: 1,
     loading: true,
@@ -44,7 +43,7 @@ export default class CategoryPage extends Component<{}, State> {
       const categories = await productApi.getCategories();
       this.setState({ categories });
     } catch {
-      // mock
+      showToast('加载分类失败');
     }
   };
 
@@ -54,7 +53,8 @@ export default class CategoryPage extends Component<{}, State> {
       const products = await productApi.getProducts({ categoryId, page: 1, pageSize: 50 });
       this.setState({ products, loading: false });
     } catch {
-      this.setState({ loading: false });
+      showToast('加载商品失败');
+      this.setState({ products: [], loading: false });
     }
   };
 

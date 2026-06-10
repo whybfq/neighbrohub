@@ -32,7 +32,7 @@ export default function LoginPage({ onLogin }: Props) {
         <Typography.Text type="secondary" className="login-subtitle">
           {MVP_COMMUNITY.name} · {MVP_COMMUNITY.warehouseName}
         </Typography.Text>
-        <Form layout="vertical" onFinish={handleSubmit} initialValues={{ username: 'admin', password: 'admin123' }}>
+        <Form layout="vertical" onFinish={handleSubmit} initialValues={import.meta.env.DEV ? { username: 'admin', password: 'admin123' } : undefined}>
           <Form.Item name="username" label="账号" rules={[{ required: true }]}>
             <Input size="large" placeholder="运营管理员账号" />
           </Form.Item>
@@ -45,9 +45,11 @@ export default function LoginPage({ onLogin }: Props) {
             </Button>
           </Form.Item>
         </Form>
+        {import.meta.env.DEV && (
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          演示账号：admin / admin123
+          本地开发演示账号：admin / admin123（生产请配置 ADMIN_PASSWORD）
         </Typography.Text>
+        )}
       </div>
     </div>
   );

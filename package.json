@@ -1,0 +1,15 @@
+{
+  "name": "neighbrohub",
+  "private": true,
+  "description": "NeighbroHub 邻选社区 · 四端 monorepo",
+  "scripts": {
+    "dev:server": "npm run dev --prefix server",
+    "dev:consumer": "npm run dev:h5 --prefix mini-program",
+    "dev:worker": "npm run dev:h5 --prefix worker-mini-program",
+    "dev:admin": "npm run dev --prefix admin-web",
+    "build:server": "npm run build --prefix server",
+    "test:consumer": "npm run test:ui --prefix mini-program",
+    "test:worker": "npm run test:ui --prefix worker-mini-program",
+    "test:all": "npm run build:server && npm run test:consumer && npm run test:worker && npm run build --prefix admin-web"
+  }
+}

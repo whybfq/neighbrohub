@@ -2,7 +2,6 @@ import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { workerApi } from '../../services/api';
-import { mockDashboard, mockDeliveryPool } from '../../services/mockData';
 import { checkWorkerLogin, navigateTo, showToast, getZoneName, copyText, PAGE_PATH } from '../../utils';
 import { BUSINESS_RULES, MVP_ZONES } from '../../config/constants';
 import AppButton from '../../components/app-button';
@@ -13,7 +12,7 @@ type ZoneFilter = 'ALL' | 'EAST' | 'WEST';
 
 interface State {
   online: boolean;
-  pool: typeof mockDeliveryPool;
+  pool: any[];
   holdingCount: number;
   active: any;
   zoneFilter: ZoneFilter;
@@ -28,8 +27,8 @@ const ZONE_TABS: { id: ZoneFilter; name: string }[] = [
 export default class DeliveryPage extends Component<{}, State> {
   state: State = {
     online: true,
-    pool: mockDeliveryPool,
-    holdingCount: mockDashboard.holdingCount,
+    pool: [],
+    holdingCount: 0,
     active: null,
     zoneFilter: 'ALL',
     loading: false,
@@ -64,6 +63,7 @@ export default class DeliveryPage extends Component<{}, State> {
       });
     } catch (err) {
       console.error(err);
+      showToast('加载抢单池失败');
       this.setState({ loading: false });
     }
   };

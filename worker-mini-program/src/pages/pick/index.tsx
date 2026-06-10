@@ -2,8 +2,7 @@ import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { workerApi } from '../../services/api';
-import { mockPickTasks } from '../../services/mockData';
-import { checkWorkerLogin, navigateTo, getZoneName, PAGE_PATH } from '../../utils';
+import { checkWorkerLogin, navigateTo, getZoneName, PAGE_PATH, showToast } from '../../utils';
 import { MVP_ZONES } from '../../config/constants';
 import AppButton from '../../components/app-button';
 import EmptyState from '../../components/empty-state';
@@ -12,7 +11,7 @@ import './index.scss';
 type ZoneFilter = 'ALL' | 'EAST' | 'WEST';
 
 interface State {
-  tasks: typeof mockPickTasks;
+  tasks: any[];
   zoneFilter: ZoneFilter;
   loading: boolean;
 }
@@ -23,7 +22,7 @@ const ZONE_TABS: { id: ZoneFilter; name: string }[] = [
 ];
 
 export default class PickListPage extends Component<{}, State> {
-  state: State = { tasks: mockPickTasks, zoneFilter: 'ALL', loading: false };
+  state: State = { tasks: [], zoneFilter: 'ALL', loading: false };
 
   componentDidMount() {
     checkWorkerLogin();
@@ -47,6 +46,7 @@ export default class PickListPage extends Component<{}, State> {
       this.setState({ tasks: tasks as any, loading: false });
     } catch (err) {
       console.error(err);
+      showToast('加载失败，请检查网络');
       this.setState({ loading: false });
     }
   };

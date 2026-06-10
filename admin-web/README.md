@@ -1,46 +1,25 @@
-# 邻选·管理
+# 邻选·管理（Web 后台）
 
-山屿西山著前置仓 **Web 管理后台**（浏览器访问，非小程序）。
-
-## 功能（MVP Mock）
-
-| 模块 | 说明 |
-|------|------|
-| 仪表盘 | 今日 GMV、订单、待分拣/配送、履约时长 |
-| 商品管理 | 商品列表、上下架 |
-| 库存管理 | 库存查询、入库记录 |
-| 订单中心 | 按状态筛选，东/西区订单 |
-| 履约监控 | 仓配各节点看板 |
-| 配送员管理 | 审核、暂停接单 |
-| 仓库设置 | 山屿西山著地下仓信息 |
+山屿西山著前置仓运营后台，浏览器访问 `:10088`。
 
 ## 本地运行
 
 ```bash
+cp .env.example .env   # 可选，默认连 localhost:8090
 npm install
-npm run dev      # http://localhost:10088
+npm run dev
 ```
 
-**演示登录**：`admin` / `admin123`
+**开发环境**登录：`admin` / `admin123`（仅 `import.meta.env.DEV` 预填）。  
+生产请设置 `server/.env` 的 `ADMIN_PASSWORD`。
 
-## 三端并行预览
+## 模块
 
-```bash
-# 消费者小程序 H5
-cd mini-program && npm run dev:h5          # :10086
+| 模块 | 当前 |
+|------|------|
+| 仪表盘 / 商品 / 订单 / 库存 / 配送员 | UI + 部分 API |
+| 深度运营联动 | 待 MySQL + 鉴权（见 [TODO](../docs/TODO.md) P1） |
 
-# 作业端 H5
-cd worker-mini-program && npm run dev:h5   # :10087
+## 文档
 
-# 管理后台 Web
-cd admin-web && npm run dev                # :10088
-```
-
-## 技术栈
-
-- React 18 + TypeScript
-- Vite 5
-- Ant Design 5
-- React Router 6
-
-后端 API 接入后，修改 `src/services/api.ts` 即可。
+[ROADMAP](../docs/ROADMAP.md) · [ENV](../docs/ENV.md)

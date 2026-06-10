@@ -3,7 +3,6 @@ import { View, Text, Image, ScrollView, Button } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useUserStore, useCartStore } from '../../store';
 import { productApi, cartApi } from '../../services/api';
-import { mockProducts } from '../../services/mockData';
 import { formatPrice, showToast, navigateTo, PAGE_PATH } from '../../utils';
 import {
   COMMISSION_RATE, DELIVERY_TYPE, POINTS_PER_YUAN, MVP_COMMUNITY, MVP_FEATURES,
@@ -54,13 +53,8 @@ export default class DetailPage extends Component<{}, State> {
         loading: false
       });
     } catch (err) {
-      // 使用模拟数据
-      const product = mockProducts.find(p => p.id === productId) || mockProducts[0];
-      this.setState({
-        product,
-        selectedSku: product.skus?.[0] || null,
-        loading: false
-      });
+      console.error('加载商品失败', err);
+      this.setState({ product: null, loading: false });
     }
   };
 
@@ -176,11 +170,24 @@ export default class DetailPage extends Component<{}, State> {
   render() {
     const { product, selectedSku, quantity, showSkuPanel, currentImageIndex, loading, isFavorite } = this.state;
 
-    if (loading || !product) {
+    if (loading) {
       return (
         <View className='detail-page'>
           <View className='loading-wrap'>
             <Text>加载中...</Text>
+          </View>
+        </View>
+      );
+    }
+
+    if (!product) {
+      return (
+        <View className='detail-page'>
+          <View className='loading-wrap'>
+            <Text>商品加载失败</Text>
+            <Text className='retry-hint' onClick={() => { this.setState({ loading: true }); this.loadProduct(); }}>
+              点击重试
+            </Text>
           </View>
         </View>
       );

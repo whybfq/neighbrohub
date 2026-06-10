@@ -1,7 +1,9 @@
 # 项目 TODO 跟踪
 
-> 详细上架步骤、买服务器、微信支付等见 **[LAUNCH-TODO.md](./LAUNCH-TODO.md)**。  
-> 测试用例见 **[TEST-CHECKLIST.md](./TEST-CHECKLIST.md)**。
+> **时间顺序与并行关系** → **[ROADMAP.md](./ROADMAP.md)**  
+> 上架步骤（含买服务器）→ **[LAUNCH-TODO.md](./LAUNCH-TODO.md)**  
+> 代码与文档一致 → **[CODE-DOC-SYNC.md](./CODE-DOC-SYNC.md)**  
+> 测试 → **[TEST-CHECKLIST.md](./TEST-CHECKLIST.md)**
 
 ---
 
@@ -38,7 +40,10 @@
 - [x] 订单列表 API 失败不再静默展示 Mock
 - [x] 个人中心去掉假订单数字，改为快捷入口
 - [x] CI：四端 build / test:ui（`.github/workflows/ci.yml`）
-- [x] 上架 / 测试 / 环境文档（`docs/LAUNCH-TODO.md` 等）
+- [x] 上架 / 测试 / 环境 / 路线图文档
+- [x] 消费者 401 登出、详情/追踪页去除 Mock 回退
+- [x] 作业端列表初始空数据（避免假任务闪现）
+- [x] 子项目 README 与 v3.0 定位对齐
 - [ ] TabBar 作业端绿色选中图标
 - [ ] 配送页 `openLocation` 导航
 - [ ] 入库扫码对接 SKU 库

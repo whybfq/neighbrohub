@@ -30,10 +30,12 @@
 |------|------|
 | [SDD 规范 v3.0](docs/SDD-SPEC.md) | 完整产品与技术方案 |
 | [MVP 详细设计](docs/MVP-DESIGN.md) | 页面、API、状态机 |
+| **[实施路线图](docs/ROADMAP.md)** | **时间顺序、并行任务、里程碑** |
 | **[上架清单](docs/LAUNCH-TODO.md)** | **买服务器、备案、微信支付、提审** |
-| **[项目 TODO](docs/TODO.md)** | 功能与工程待办跟踪 |
-| [测试清单](docs/TEST-CHECKLIST.md) | 上架前手工/自动测试 |
-| [环境变量](docs/ENV.md) | 四端 API 与密钥配置 |
+| **[项目 TODO](docs/TODO.md)** | 待办跟踪 |
+| [代码文档一致](docs/CODE-DOC-SYNC.md) | 文档与代码同步规范 |
+| [测试清单](docs/TEST-CHECKLIST.md) | 上架前测试 |
+| [环境变量](docs/ENV.md) | 四端配置 |
 | [设计稿](docs/design/) | HTML 原型 |
 
 ## 技术栈

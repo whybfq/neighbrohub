@@ -48,5 +48,10 @@ app.listen(PORT, () => {
   console.log(`\n🚀 NeighbroHub API  http://localhost:${PORT}/api/v1`);
   console.log(`   健康检查          http://localhost:${PORT}/api/v1/health`);
   console.log(`   CORS 允许         ${corsOrigins.join(', ')}`);
-  console.log(`   环境变量模板      server/.env.example\n`);
+  console.log(`   环境变量模板      server/.env.example`);
+  if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD === 'admin123') {
+    console.warn('\n⚠️  生产环境请设置 ADMIN_PASSWORD，勿使用默认密码\n');
+  } else {
+    console.log('');
+  }
 });
