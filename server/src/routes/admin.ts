@@ -7,7 +7,9 @@ const router = Router();
 
 router.post('/admin/login', (req, res) => {
   const { username, password } = req.body || {};
-  if (username === 'admin' && password === 'admin123') {
+  const adminUser = process.env.ADMIN_USERNAME || 'admin';
+  const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
+  if (username === adminUser && password === adminPass) {
     sendOk(res, { token: `admin_${Date.now()}`, name: '运营管理员' });
     return;
   }

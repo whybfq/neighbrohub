@@ -14,8 +14,9 @@ dist/
 
 # Env & secrets
 .env
-.env.*
-*.local
+.env.local
+.env.*.local
+!.env.example
 
 # WeChat devtools private config (may contain appid secrets)
 project.private.config.json

@@ -20,21 +20,27 @@
 ## 服务范围（MVP）
 
 - **社区**：山屿西山著
-- **分区**：东区、西区
+- **分区**：东区（1–21 栋）、西区（1–17 栋），每栋 3 单元
 - **前置仓**：山屿西山著地下仓（单仓覆盖两个分区）
 - **起送价**：¥1 · **配送员持单上限**：100 单
 
 ## 文档
 
-- [SDD 规范文档 v3.0](docs/SDD-SPEC.md) — 完整产品与技术方案
-- [MVP 详细设计](docs/MVP-DESIGN.md) — 单仓双分区：页面、API、状态机、排期
-- [设计稿](docs/design/) — HTML 原型与总结报告
+| 文档 | 说明 |
+|------|------|
+| [SDD 规范 v3.0](docs/SDD-SPEC.md) | 完整产品与技术方案 |
+| [MVP 详细设计](docs/MVP-DESIGN.md) | 页面、API、状态机 |
+| **[上架清单](docs/LAUNCH-TODO.md)** | **买服务器、备案、微信支付、提审** |
+| **[项目 TODO](docs/TODO.md)** | 功能与工程待办跟踪 |
+| [测试清单](docs/TEST-CHECKLIST.md) | 上架前手工/自动测试 |
+| [环境变量](docs/ENV.md) | 四端 API 与密钥配置 |
+| [设计稿](docs/design/) | HTML 原型 |
 
 ## 技术栈
 
 - 小程序：Taro 3 + React + TypeScript
-- 管理后台：React + Ant Design Pro（规划）
-- 后端：Node.js Express（MVP 骨架）→ Spring Boot 3 + MySQL（规划）
+- 管理后台：React + Ant Design + Vite
+- 后端：Node.js Express（MVP 内存存储）→ MySQL（规划）
 
 ## 本地预览
 
@@ -43,22 +49,39 @@
 cd server && npm install && npm run dev              # http://localhost:8090/api/v1
 
 # ② 消费者端
-cd mini-program && npm install && npm run dev:h5    # http://localhost:10086
+cd mini-program && npm install && npm run dev:h5       # http://localhost:10086
 
 # ③ 作业端
 cd worker-mini-program && npm install && npm run dev:h5   # http://localhost:10087
 
-# ④ 管理后台（Web 网页）
-cd admin-web && npm install && npm run dev                # http://localhost:10088
-
-# 静态原型
-open docs/design/prototype.html
+# ④ 管理后台
+cd admin-web && npm install && npm run dev             # http://localhost:10088
 ```
+
+生产环境配置见 [docs/ENV.md](docs/ENV.md)。
 
 ## 开发状态
 
-- [x] 消费者小程序 UI（Mock · 配送追踪 · 东/西区绑定/切换 · 地址管理 · 下单联动）
-- [x] 作业端小程序 UI（Mock · 入库/分拣/抢单 · 分区筛选）
-- [x] 管理后台 Web UI（Mock · 商品/订单/库存/配送员）
-- [x] 统一 API 骨架（Node.js · 内存存储 · 三端联调）
-- [ ] Spring Boot + MySQL 生产后端
+- [x] 消费者小程序（分类 / 下单 / 订单 / 积分 / 绑楼栋）
+- [x] 作业端 TabBar（入库 / 分拣 / 配送 / 我的）
+- [x] 管理后台 Web UI
+- [x] 统一 API + 三端联调
+- [x] CI 编译检查（`.github/workflows/ci.yml`）
+- [ ] **正式上架** → 见 [docs/LAUNCH-TODO.md](docs/LAUNCH-TODO.md)
+
+### 上架前必做（摘要）
+
+1. 云服务器 + 域名备案 + HTTPS  
+2. MySQL 持久化  
+3. 两个小程序 AppID + 合法域名  
+4. 微信登录 + **微信支付**（当前为模拟支付）  
+5. 商品真实图片 + 隐私协议 + 提审  
+
+## 测试
+
+```bash
+cd mini-program && npm run test:ui
+cd worker-mini-program && npm run test:ui
+cd server && npm run build
+cd admin-web && npm run build
+```

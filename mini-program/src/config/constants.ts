@@ -1,17 +1,21 @@
-// API 基础地址（本地统一后端；生产环境请改为实际域名）
-export const API_BASE_URL = 'http://localhost:8090/api/v1';
+// API 基础地址（开发见 config/dev.js，生产见 config/prod.js 的 TARO_APP_API）
+export const API_BASE_URL = process.env.TARO_APP_API || 'http://localhost:8090/api/v1';
 
 /** 设为 true 时走本地 Mock，不请求后端 */
 export const USE_MOCK_API = false;
 
-// 图片资源基础地址
-export const IMG_BASE_URL = 'https://cdn.linshe.com';
+// 图片资源基础地址（生产请改为 OSS/CDN）
+export const IMG_BASE_URL = process.env.TARO_APP_CDN || 'https://cdn.linshe.com';
 
 // MVP 功能开关
 export const MVP_FEATURES = {
   DISTRIBUTION: false,
   POINTS: true,
   COUPONS: false,
+  /** 消息 / 设置 / 帮助等未完成二级菜单 */
+  SECONDARY_MENU: false,
+  /** 首页限时秒杀区块 */
+  FLASH_SALE: true,
 };
 
 // 服务范围（MVP 单仓 · 山屿西山著东/西区）

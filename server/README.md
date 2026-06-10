@@ -18,6 +18,14 @@ npm run dev        # http://localhost:8090/api/v1
 
 健康检查：`GET http://localhost:8090/api/v1/health`
 
+## 环境变量
+
+```bash
+cp .env.example .env   # 编辑 PORT、CORS_ORIGINS、ADMIN_PASSWORD 等
+```
+
+详见 [docs/ENV.md](../docs/ENV.md) 与 [docs/LAUNCH-TODO.md](../docs/LAUNCH-TODO.md)。
+
 ## 响应格式
 
 ```json

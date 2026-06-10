@@ -121,20 +121,24 @@ export default class IndexPage extends Component<{}, State> {
     navigateTo(PAGE_PATH.CATEGORY, { id: this.state.categories[0]?.id || 1 });
   };
 
-  // 跳转秒杀
+  // 跳转秒杀 → 分类页精选
   goToFlashSale = () => {
-    showToast('秒杀专区加载中...');
-    setTimeout(() => {
-      Taro.showToast({ title: '秒杀页面开发中', icon: 'none' });
-    }, 800);
+    this.goToAllCategories();
   };
 
-  // 跳转商品列表
+  // 通知中心
+  handleNotification = () => {
+    if (MVP_FEATURES.SECONDARY_MENU) {
+      showToast('消息通知即将上线');
+      return;
+    }
+    showToast('订单状态请在「订单」页查看');
+  };
+
   goToProductList = () => {
     this.goToAllCategories();
   };
 
-  // Banner 点击
   handleBannerClick = (banner: any) => {
     if (banner.link) {
       Taro.navigateTo({ url: banner.link });
@@ -143,12 +147,10 @@ export default class IndexPage extends Component<{}, State> {
     }
   };
 
-  // Banner 切换
   handleBannerChange = (index: number) => {
     this.setState({ currentBanner: index });
   };
 
-  // 切换东/西区（MVP 仅服务山屿西山著）
   handleLocationTap = () => {
     Taro.showActionSheet({
       itemList: MVP_ZONES.map((z) => z.name),
@@ -163,14 +165,6 @@ export default class IndexPage extends Component<{}, State> {
         showToast(`已切换至${MVP_COMMUNITY.name}${zone.name}`);
       },
     });
-  };
-
-  // 通知中心
-  handleNotification = () => {
-    showToast('消息通知');
-    setTimeout(() => {
-      Taro.showToast({ title: '通知页面开发中', icon: 'none' });
-    }, 800);
   };
 
   // 分享配置
@@ -355,8 +349,7 @@ export default class IndexPage extends Component<{}, State> {
             </View>
           )}
 
-          {/* 限时秒杀 */}
-          {flashSales.length > 0 && (
+          {MVP_FEATURES.FLASH_SALE && flashSales.length > 0 && (
             <View className='flash-sale-section'>
               <View className='section-header'>
                 <View className='section-title-wrap'>

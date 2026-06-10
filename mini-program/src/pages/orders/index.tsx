@@ -2,7 +2,6 @@ import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { orderApi, pointsApi } from '../../services/api';
-import { mockOrders } from '../../services/mockData';
 import { usePointsStore } from '../../store';
 import {
   formatPrice,
@@ -28,7 +27,7 @@ interface State {
 
 export default class OrdersPage extends Component<{}, State> {
   state: State = {
-    orders: mockOrders,
+    orders: [],
     activeTab: 'all',
     loading: false,
   };
@@ -45,9 +44,10 @@ export default class OrdersPage extends Component<{}, State> {
     this.setState({ loading: true });
     try {
       const orders = await orderApi.getOrders({ page: 1, pageSize: 20 });
-      this.setState({ orders });
-    } catch (err) {
-      // 使用模拟数据
+      this.setState({ orders: orders as any[] });
+    } catch {
+      showToast('加载订单失败，请检查网络或后端服务');
+      this.setState({ orders: [] });
     } finally {
       this.setState({ loading: false });
     }

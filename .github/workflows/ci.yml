@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - server
+          - mini-program
+          - worker-mini-program
+          - admin-web
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: ${{ matrix.project }}/package-lock.json
+
+      - name: Install & build (${{ matrix.project }})
+        working-directory: ${{ matrix.project }}
+        run: |
+          npm ci
+          if [ "${{ matrix.project }}" = "server" ]; then
+            npm run build
+          elif [ "${{ matrix.project }}" = "mini-program" ] || [ "${{ matrix.project }}" = "worker-mini-program" ]; then
+            npm run test:ui
+          else
+            npm run build
+          fi

@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://localhost:8090/api/v1';
+export const API_BASE_URL = process.env.TARO_APP_API || 'http://localhost:8090/api/v1';
 export const USE_MOCK_API = false;
 
 export const MVP_COMMUNITY = {

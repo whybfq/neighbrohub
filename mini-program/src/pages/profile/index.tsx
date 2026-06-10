@@ -29,16 +29,8 @@ export default class ProfilePage extends Component {
   };
 
   // 跳转订单
-  goToOrders = (status?: string) => {
+  goToOrders = () => {
     Taro.switchTab({ url: PAGE_PATH.ORDERS });
-  };
-
-  // 设置
-  goToSettings = () => {
-    showToast('加载设置中...');
-    setTimeout(() => {
-      Taro.showToast({ title: '设置页面开发中', icon: 'none' });
-    }, 800);
   };
 
   // 积分中心
@@ -51,57 +43,16 @@ export default class ProfilePage extends Component {
     navigateTo(PAGE_PATH.ADDRESS);
   };
 
-  // 优惠券
-  goToCoupons = () => {
-    showToast('我的优惠券');
-    setTimeout(() => {
-      Taro.showToast({ title: '优惠券页面开发中', icon: 'none' });
-    }, 800);
+  showComingSoon = (name: string) => {
+    showToast(`${name}即将上线，敬请期待`);
   };
 
-  // 收藏
-  goToFavorites = () => {
-    showToast('我的收藏');
-    setTimeout(() => {
-      Taro.showToast({ title: '收藏页面开发中', icon: 'none' });
-    }, 800);
-  };
-
-  // 消息通知
-  goToNotifications = () => {
-    showToast('消息通知');
-    setTimeout(() => {
-      Taro.showToast({ title: '消息页面开发中', icon: 'none' });
-    }, 800);
-  };
-
-  // 帮助与反馈
-  goToHelp = () => {
-    showToast('帮助中心');
-    setTimeout(() => {
-      Taro.showToast({ title: '帮助页面开发中', icon: 'none' });
-    }, 800);
-  };
-
-  // 申请成为楼长
   applyToBeLeader = () => {
     Taro.showModal({
       title: '申请成为楼长',
-      content: '申请成为楼长后，您可以分享商品给邻居并获得佣金收益。确认申请？',
-      success: (res) => {
-        if (res.confirm) {
-          showToast('申请已提交，等待审核', 'success');
-        }
-      }
+      content: '分销功能即将上线，敬请期待。',
+      showCancel: false,
     });
-  };
-
-  // 编辑个人资料
-  goToEditProfile = () => {
-    showToast('个人资料');
-    setTimeout(() => {
-      Taro.showToast({ title: '资料编辑页面开发中', icon: 'none' });
-    }, 800);
   };
 
   render() {
@@ -116,7 +67,7 @@ export default class ProfilePage extends Component {
         <ScrollView className='profile-body' scrollY>
           {/* 个人信息头部 */}
           <View className='profile-header'>
-            <View className='user-info' onClick={this.goToEditProfile}>
+            <View className='user-info'>
               <View className='avatar'>
                 <Text>{userInfo?.avatar || '😊'}</Text>
               </View>
@@ -179,28 +130,22 @@ export default class ProfilePage extends Component {
             </View>
           )}
 
-          {/* 订单统计 */}
-          <View className='order-stats'>
-            <View className='stat-item' onClick={() => this.goToOrders()}>
-              <Text className='stat-num'>1</Text>
-              <Text className='stat-label'>待付款</Text>
+          {/* 订单快捷入口 */}
+          <View className='order-stats order-stats--simple'>
+            <View className='stat-item' onClick={this.goToOrders}>
+              <AppIcon name='order' size={44} />
+              <Text className='stat-label'>我的订单</Text>
             </View>
-            <View className='stat-item' onClick={() => this.goToOrders()}>
-              <Text className='stat-num'>1</Text>
-              <Text className='stat-label'>备货中</Text>
+            <View className='stat-item' onClick={this.goToAddress}>
+              <AppIcon name='location' size={44} />
+              <Text className='stat-label'>收货地址</Text>
             </View>
-            <View className='stat-item' onClick={() => this.goToOrders()}>
-              <Text className='stat-num'>1</Text>
-              <Text className='stat-label'>配送中</Text>
-            </View>
-            <View className='stat-item' onClick={() => this.goToOrders()}>
-              <Text className='stat-num'>5</Text>
-              <Text className='stat-label'>已完成</Text>
-            </View>
-            <View className='stat-item' onClick={() => this.goToOrders()}>
-              <Text className='stat-num'>0</Text>
-              <Text className='stat-label'>售后</Text>
-            </View>
+            {MVP_FEATURES.POINTS && (
+              <View className='stat-item' onClick={this.goToPoints}>
+                <AppIcon name='star-active' size={44} />
+                <Text className='stat-label'>积分商城</Text>
+              </View>
+            )}
           </View>
 
           {/* 功能菜单 */}
@@ -211,7 +156,7 @@ export default class ProfilePage extends Component {
               <Text className='menu-arrow'>›</Text>
             </View>
             {MVP_FEATURES.COUPONS && (
-              <View className='menu-item' hoverClass='btn-pressed' onClick={this.goToCoupons}>
+              <View className='menu-item' hoverClass='btn-pressed' onClick={() => this.showComingSoon('优惠券')}>
                 <AppIcon name='gift' size={40} className='menu-icon-img' />
                 <Text className='menu-text'>优惠券</Text>
                 <Text className='menu-badge'>3张可用</Text>
@@ -255,25 +200,25 @@ export default class ProfilePage extends Component {
             </View>
           )}
 
-          {/* 其他 */}
+          {MVP_FEATURES.SECONDARY_MENU && (
           <View className='menu-section'>
-            <View className='menu-item' hoverClass='btn-pressed' onClick={this.goToNotifications}>
+            <View className='menu-item' hoverClass='btn-pressed' onClick={() => this.showComingSoon('消息通知')}>
               <AppIcon name='bell' size={40} className='menu-icon-img' />
               <Text className='menu-text'>消息通知</Text>
-              <Text className='menu-badge red'>5</Text>
               <Text className='menu-arrow'>›</Text>
             </View>
-            <View className='menu-item' hoverClass='btn-pressed' onClick={this.goToSettings}>
+            <View className='menu-item' hoverClass='btn-pressed' onClick={() => this.showComingSoon('设置')}>
               <AppIcon name='settings' size={40} className='menu-icon-img' />
               <Text className='menu-text'>设置</Text>
               <Text className='menu-arrow'>›</Text>
             </View>
-            <View className='menu-item' hoverClass='btn-pressed' onClick={this.goToHelp}>
+            <View className='menu-item' hoverClass='btn-pressed' onClick={() => this.showComingSoon('帮助与反馈')}>
               <AppIcon name='help' size={40} className='menu-icon-img' />
               <Text className='menu-text'>帮助与反馈</Text>
               <Text className='menu-arrow'>›</Text>
             </View>
           </View>
+          )}
 
           {/* 申请成为楼长入口（普通用户可见） */}
           {MVP_FEATURES.DISTRIBUTION && !isBuildingLeader && !isCommunityLeader && (
