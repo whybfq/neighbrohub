@@ -3,7 +3,7 @@ import './app.scss';
 
 class App extends Component<PropsWithChildren> {
   componentDidMount() {
-    console.log('邻选·作业 - 小程序启动');
+    console.log('邻选·履约 - 小程序启动');
   }
 
   render() {

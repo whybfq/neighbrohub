@@ -7,7 +7,7 @@
 | 端 | 目录 | 说明 |
 |----|------|------|
 | 邻选·购 | `mini-program/` | 消费者小程序（H5: `:10086`） |
-| 邻选·作业 | `worker-mini-program/` | 仓配小程序（H5: `:10087`） |
+| 邻选·履约 | `worker-mini-program/` | 仓配履约小程序（H5: `:10087`） |
 | 邻选·管理 | `admin-web/` | **Web 管理后台**（浏览器: `:10088`） |
 | 统一 API | `server/` | **后端服务**（`:8090/api/v1`） |
 
@@ -36,7 +36,7 @@
 | [代码文档一致](docs/CODE-DOC-SYNC.md) | 文档与代码同步规范 |
 | [测试清单](docs/TEST-CHECKLIST.md) | 上架前测试 |
 | [环境变量](docs/ENV.md) | 四端配置 |
-| [设计稿](docs/design/) | HTML 原型 |
+| [设计稿索引](docs/design/README.md) | HTML 原型（含归档说明） |
 
 ## 技术栈
 
@@ -53,7 +53,7 @@ cd server && npm install && npm run dev              # http://localhost:8090/api
 # ② 消费者端
 cd mini-program && npm install && npm run dev:h5       # http://localhost:10086
 
-# ③ 作业端
+# ③ 履约端
 cd worker-mini-program && npm install && npm run dev:h5   # http://localhost:10087
 
 # ④ 管理后台
@@ -65,7 +65,7 @@ cd admin-web && npm install && npm run dev             # http://localhost:10088
 ## 开发状态
 
 - [x] 消费者小程序（分类 / 下单 / 订单 / 积分 / 绑楼栋）
-- [x] 作业端 TabBar（入库 / 分拣 / 配送 / 我的）
+- [x] 履约端 TabBar（入库 / 分拣 / 配送 / 我的）
 - [x] 管理后台 Web UI
 - [x] 统一 API + 三端联调
 - [x] CI 编译检查（`.github/workflows/ci.yml`）

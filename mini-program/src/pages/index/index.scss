@@ -1,8 +1,9 @@
 .index-page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+  min-height: 100vh;
   background: #f5f5f5;
+  box-sizing: border-box;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .community-brand-bar {
@@ -31,6 +32,10 @@
     padding: 4px 14px;
     border-radius: 20px;
     font-weight: 600;
+  }
+
+  .notify-btn {
+    position: relative;
   }
 
   .notify-btn::after {
@@ -179,8 +184,7 @@
 }
 
 .page-content {
-  flex: 1;
-  overflow-y: auto;
+  width: 100%;
 }
 
 // Banner
@@ -724,10 +728,16 @@
   }
 
   .product-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
     gap: 16px;
     padding: 0 24px;
+  }
+
+  .product-grid .product-card {
+    width: calc(50% - 8px);
+    box-sizing: border-box;
   }
 }
 

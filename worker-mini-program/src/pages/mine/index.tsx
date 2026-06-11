@@ -52,7 +52,7 @@ export default class MinePage extends Component<{}, State> {
   handleLogout = () => {
     Taro.showModal({
       title: '退出登录',
-      content: '确定退出作业台？',
+      content: '确定退出履约台？',
       success: (res) => {
         if (res.confirm) {
           Taro.removeStorageSync('worker_token');

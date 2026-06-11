@@ -41,7 +41,7 @@ env: {
 
 代码中通过 `process.env.TARO_APP_API` 读取（见 `src/config/constants.ts`）。
 
-## 作业端 `worker-mini-program/`
+## 履约端 `worker-mini-program/`
 
 同消费者端，修改 `config/dev.js` / `config/prod.js` 的 `TARO_APP_API`。
 

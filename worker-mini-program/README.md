@@ -1,4 +1,4 @@
-# 邻选·作业（仓配小程序）
+# 邻选·履约（仓配履约小程序）
 
 山屿西山著地下仓 · 入库 / 分拣 / 抢单配送。独立 AppID，与消费者端共用 API。
 
@@ -21,7 +21,7 @@ npm run test:ui
 | 配送 | 抢单池、签收 |
 | 我的 | 收入、退出 |
 
-登录：本地 `Taro.login` + 后端；**生产需作业员账号体系**（见 [LAUNCH-TODO](../docs/LAUNCH-TODO.md)）。
+登录：本地 `Taro.login` + 后端；**生产需履约员账号体系**（见 [LAUNCH-TODO](../docs/LAUNCH-TODO.md)）。
 
 生产 API：`config/prod.js` → `TARO_APP_API`。
 

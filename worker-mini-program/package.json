@@ -1,7 +1,7 @@
 {
   "name": "neighbrohub-worker",
   "version": "1.0.0",
-  "description": "NeighbroHub 邻选·作业 - 仓配作业小程序",
+  "description": "NeighbroHub 邻选·履约 - 仓配履约小程序",
   "templateInfo": {
     "name": "default",
     "typescript": true,

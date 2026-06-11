@@ -25,7 +25,7 @@
 
 - [ ] 微信 **订阅消息**（备货/配送/送达）
 - [ ] 手机号授权与解密
-- [ ] 作业端 **真实作业员登录**（非演示 token）
+- [ ] 履约端 **真实履约员登录**（非演示 token）
 - [ ] 管理后台与 API **深度联动**（非 Mock 表格）
 - [ ] 地址数据 **以服务端为准**（减少纯本地 Storage）
 - [ ] 订单列表 / 个人中心 **订单统计** 接真实 API
@@ -42,14 +42,14 @@
 - [x] CI：四端 build / test:ui（`.github/workflows/ci.yml`）
 - [x] 上架 / 测试 / 环境 / 路线图文档
 - [x] 消费者 401 登出、详情/追踪页去除 Mock 回退
-- [x] 作业端列表初始空数据（避免假任务闪现）
+- [x] 履约端列表初始空数据（避免假任务闪现）
 - [x] 子项目 README 与 v3.0 定位对齐
 - [x] **开放骑手注册** + 配送费 ¥1 + 自配免配送费（三端 + API）
 - [x] 启动恢复登录态、订单状态机校验、配送追踪同步
 - [x] 订单列表仅「已送达」可确认收货；首页秒杀接 API
-- [x] 作业端/管理端 API 统一错误处理
+- [x] 履约端/管理端 API 统一错误处理
 - [x] 核心代码模块注释（server / 三端 pages 与 api）
-- [ ] TabBar 作业端绿色选中图标
+- [ ] TabBar 履约端绿色选中图标
 - [ ] 配送页 `openLocation` 导航
 - [ ] 入库扫码对接 SKU 库
 - [ ] 合并 `buildings.ts` 为 monorepo 共享包（防双端漂移）
@@ -81,14 +81,9 @@
 
 ---
 
-## 本地开发速查
+## 本地开发
 
-```bash
-cd server && npm run dev                    # :8090
-cd mini-program && npm run dev:weapp        # 消费者
-cd worker-mini-program && npm run dev:weapp # 作业
-cd admin-web && npm run dev                 # :10088
-```
+见根目录 [README.md](../README.md) §本地预览。
 
 ---
 

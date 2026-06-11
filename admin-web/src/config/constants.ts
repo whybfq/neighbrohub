@@ -33,5 +33,3 @@ export const ORDER_STATUS_COLOR: Record<string, string> = {
   completed: 'default',
   cancelled: 'default',
 };
-
-export const API_BASE = '/api/v1';

@@ -27,7 +27,7 @@
 
   .legend { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin: 20px 0; }
   .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
-  .legend-color { width: 14px; height: 14px; border-radius: 3px; }
+  .archived-banner { background: #3d1f1f; border: 1px solid #f85149; color: #ffa198; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; line-height: 1.6; text-align: center; }
 
   .desc-panel { background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 30px; margin-top: 20px; }
   .desc-panel h3 { color: #58a6ff; font-size: 18px; margin-bottom: 16px; }
@@ -50,6 +50,9 @@
 <body>
 
 <div class="container">
+  <div class="archived-banner">
+    ⚠️ <strong>已归档 v1.0</strong>：本文档描述 Spring Boot 微服务 + 团长分销方案，与当前 MVP（Node Express 四端）不符。请以 <code>docs/SDD-SPEC.md</code> 与 <code>docs/design/README.md</code> 为准。
+  </div>
   <header>
     <h1>🏗️ 社区私域购物平台 - 系统架构设计</h1>
     <p>邻选社区 · 技术架构全景图 | v1.0</p>

@@ -1,7 +1,7 @@
 {
   "miniprogramRoot": "dist/",
   "projectname": "neighbrohub-worker",
-  "description": "邻选·作业 - 仓配作业小程序",
+  "description": "邻选·履约 - 仓配履约小程序",
   "appid": "wx4a1d84af09a13c56",
   "setting": {
     "urlCheck": false,
@@ -35,5 +35,6 @@
     "ignore": [],
     "include": []
   },
-  "editorSetting": {}
+  "editorSetting": {},
+  "libVersion": "3.16.1"
 }

@@ -4,7 +4,7 @@
  * 启动时从 seed.ts 深拷贝种子数据；所有路由读写此单例。
  * 字段说明：
  * - orders / orderTracks：消费者订单与配送追踪时间轴
- * - pickTasks / deliveryPool / activeDelivery：作业端分拣与抢单池
+ * - pickTasks / deliveryPool / activeDelivery：履约端分拣与抢单池
  * - workerUser / couriers：骑手账号与审核列表
  * - adminProducts / products：后台与消费者端商品（上下架需同步）
  */

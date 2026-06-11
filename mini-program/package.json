@@ -1,7 +1,7 @@
 {
   "name": "neighbrohub",
   "version": "2.0.0",
-  "description": "NeighbroHub - 社区私域购物平台 (积分系统+团长+楼长双级分销)",
+  "description": "NeighbroHub 邻选·购 - 社区前置仓即时配送（消费者小程序）",
   "templateInfo": {
     "name": "default",
     "typescript": true,

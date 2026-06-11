@@ -6,7 +6,7 @@ import { View, Text, Image, Input, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useUserStore, usePointsStore } from '../../store';
 import { productApi, pointsApi } from '../../services/api';
-import { mockCategories, mockFlashSales, mockBanners } from '../../services/mockData';
+import { mockCategories, mockFlashSales, mockBanners, mockProducts } from '../../services/mockData';
 import { navigateTo, formatPrice, PAGE_PATH, showToast, formatEtaText } from '../../utils';
 import { MVP_COMMUNITY, MVP_FEATURES, MVP_ZONES } from '../../config/constants';
 import ProductCard from '../../components/product-card/index';
@@ -93,22 +93,50 @@ export default class IndexPage extends Component<{}, State> {
       const results = await Promise.all(requests);
       const products = results[0];
       const categories = results[1];
-      const flashSales = MVP_FEATURES.FLASH_SALE ? (results[2] || []) : [];
+      const flashSales = MVP_FEATURES.FLASH_SALE
+        ? this.normalizeFlashSales(results[2] || [])
+        : [];
 
-      let filtered = products;
+      let filtered = Array.isArray(products) ? products : mockProducts;
       if (keyword) {
         const kw = keyword.toLowerCase();
-        filtered = products.filter((p: any) =>
+        filtered = filtered.filter((p: any) =>
           p.name?.toLowerCase().includes(kw) || p.tags?.some((t: string) => t.includes(keyword))
         );
       }
-      this.setState({ products: filtered, categories, flashSales });
+      this.setState({
+        products: filtered,
+        categories: Array.isArray(categories) ? categories : mockCategories,
+        flashSales,
+      });
     } catch (err) {
       console.error('加载数据失败:', err);
-      showToast('加载失败，请确认后端已启动');
+      showToast('网络异常，已展示本地示例数据');
+      let filtered = mockProducts;
+      if (keyword) {
+        const kw = keyword.toLowerCase();
+        filtered = mockProducts.filter((p: any) =>
+          p.name?.toLowerCase().includes(kw) || p.tags?.some((t: string) => t.includes(keyword))
+        );
+      }
+      this.setState({ products: filtered, categories: mockCategories, flashSales: mockFlashSales });
     } finally {
       this.setState({ loading: false });
     }
+  };
+
+  /** 兼容后端 /products/flash-sale 与 mock 结构差异 */
+  normalizeFlashSales = (items: any[]) => {
+    if (!Array.isArray(items) || items.length === 0) return mockFlashSales;
+    return items.map((item) => ({
+      productId: item.productId || item.id,
+      name: item.name,
+      icon: item.icon || item.coverImage || '📦',
+      flashPrice: item.flashPrice ?? item.price,
+      originalPrice: item.originalPrice ?? item.marketPrice ?? item.price,
+      stock: item.stock ?? 100,
+      sold: item.sold ?? item.sales ?? 0,
+    }));
   };
 
   // 搜索（MVP：首页商品列表内过滤）
@@ -190,6 +218,10 @@ export default class IndexPage extends Component<{}, State> {
     };
   }
 
+  onPullDownRefresh() {
+    this.loadData().finally(() => Taro.stopPullDownRefresh());
+  }
+
   render() {
     const { categories, flashSales, banners, products, searchKeyword, currentBanner, countdown, loading } = this.state;
     const pointsStore = usePointsStore.getState();
@@ -247,7 +279,7 @@ export default class IndexPage extends Component<{}, State> {
           </View>
         </View>
 
-        <ScrollView className='page-content' scrollY>
+        <View className='page-content'>
           {/* Banner轮播 */}
           <View className='banner-wrap'>
             <View className='banner-swiper'>
@@ -438,7 +470,7 @@ export default class IndexPage extends Component<{}, State> {
 
           {/* 底部安全区域 */}
           <View className='safe-bottom' />
-        </ScrollView>
+        </View>
       </View>
     );
   }

@@ -4,6 +4,7 @@ node_modules/
 # Build
 dist/
 .swc/
+*.tsbuildinfo
 
 # IDE
 .idea/

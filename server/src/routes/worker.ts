@@ -1,5 +1,5 @@
 /**
- * 作业端 API（邻选·作业 · worker-mini-program）
+ * 履约端 API（邻选·履约 · worker-mini-program）
  *
  * 模块：骑手登录/注册、入库 WMS、分拣、抢单配送。
  * 自配规则：order.customerId === workerUser.consumerUserId 且 order.selfDelivery

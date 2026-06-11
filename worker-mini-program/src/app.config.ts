@@ -12,7 +12,7 @@ export default defineAppConfig({
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#52c41a',
-    navigationBarTitleText: '邻选·作业',
+    navigationBarTitleText: '邻选·履约',
     navigationBarTextStyle: 'white',
   },
   tabBar: {

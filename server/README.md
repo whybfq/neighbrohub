@@ -5,7 +5,7 @@
 | 客户端 | Header | 说明 |
 |--------|--------|------|
 | 邻选·购 | `X-Client-Type: consumer` | 消费者小程序 |
-| 邻选·作业 | `X-Client-Type: worker` | 仓配作业小程序 |
+| 邻选·履约 | `X-Client-Type: worker` | 仓配履约小程序 |
 | 邻选·管理 | `X-Client-Type: admin` | Web 管理后台 |
 
 ## 快速启动
@@ -39,7 +39,7 @@ cp .env.example .env   # 编辑 PORT、CORS_ORIGINS、ADMIN_PASSWORD 等
 - `GET /address/list` · `POST /address/add`
 - `GET /community/info` · `POST /user/login`
 
-### 作业端 `/api/v1`
+### 履约端 `/api/v1`
 - `GET /worker/dashboard` · `GET /wms/pick/tasks` · `POST /wms/pick/tasks/:id/complete`
 - `GET /delivery/pool` · `POST /delivery/tasks/:id/grab` · `POST /delivery/tasks/:id/deliver`
 
@@ -57,7 +57,7 @@ cd server && npm run dev
 # 终端 2 - 消费者
 cd mini-program && npm run dev:h5      # :10086
 
-# 终端 3 - 作业端
+# 终端 3 - 履约端
 cd worker-mini-program && npm run dev:h5   # :10087
 
 # 终端 4 - 管理后台

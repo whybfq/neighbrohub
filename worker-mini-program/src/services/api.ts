@@ -1,5 +1,5 @@
 /**
- * 作业端 API 封装（邻选·作业）
+ * 履约端 API 封装（邻选·履约）
  *
  * Header: X-Client-Type: worker, Authorization: Bearer worker_*
  * 覆盖：登录/注册、入库、分拣、抢单池、送达确认

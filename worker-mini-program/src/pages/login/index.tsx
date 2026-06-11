@@ -1,5 +1,5 @@
 /**
- * 作业端登录 / 骑手开放注册
+ * 履约端登录 / 骑手开放注册
  *
  * MVP 演示：login/register 可传 consumerUserId 关联消费者账号以支持自配。
  * 生产需改为真实微信 code → openid。
@@ -60,9 +60,9 @@ export default class LoginPage extends Component {
     return (
       <View className='login-page'>
         <Text className='logo'>🏗️</Text>
-        <Text className='title'>邻选·作业</Text>
+        <Text className='title'>邻选·履约</Text>
         <Text className='subtitle'>{MVP_COMMUNITY.warehouseName}</Text>
-        <Text className='subtitle2'>山屿西山著 · 仓配工作台</Text>
+        <Text className='subtitle2'>山屿西山著 · 入库·分拣·配送</Text>
         <View className='features'>
           <View className='feat-item'><AppIcon name='plus' size={36} /><Text>入库</Text></View>
           <View className='feat-item'><AppIcon name='order' size={36} /><Text>分拣</Text></View>

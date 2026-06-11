@@ -2,7 +2,7 @@
   "name": "neighbrohub-api",
   "version": "0.1.0",
   "private": true,
-  "description": "NeighbroHub 统一 API 服务（消费者 / 作业端 / 管理后台）",
+  "description": "NeighbroHub 统一 API 服务（消费者 / 履约端 / 管理后台）",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",

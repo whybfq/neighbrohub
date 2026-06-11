@@ -2,7 +2,7 @@
  * MVP 鉴权与用户关联工具
  *
  * 当前为演示级实现：consumer_* token 一律映射到 seed 中的单一用户。
- * 作业端通过 consumerUserId 与消费者账号关联，用于「自配自己的单」判断。
+ * 履约端通过 consumerUserId 与消费者账号关联，用于「自配自己的单」判断。
  * 正式上架需改为 JWT + openid，见 docs/TODO.md P0。
  */
 import { store } from '../store/index.js';

@@ -2,7 +2,7 @@
  * 配送追踪页
  *
  * 展示 GET /orders/track/:id 返回的时间轴、签收码、骑手信息。
- * onShow 与下拉刷新会重新拉取，与作业端履约进度同步。
+ * onShow 与下拉刷新会重新拉取，与履约端进度同步。
  */
 import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';

@@ -326,7 +326,7 @@ export default class OrderPage extends Component<{}, State> {
               <View className='section-row'>
                 <View className='self-delivery-label'>
                   <Text className='row-label'>自配送</Text>
-                  <Text className='self-delivery-desc'>作业端接单，免 ¥{BUSINESS_RULES.deliveryFee} 配送费</Text>
+                  <Text className='self-delivery-desc'>履约端接单，免 ¥{BUSINESS_RULES.deliveryFee} 配送费</Text>
                 </View>
                 <Switch
                   checked={selfDelivery}

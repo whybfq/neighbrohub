@@ -63,7 +63,7 @@ export default class HomePage extends Component<{}, State> {
       <View className='home-page'>
         <View className='home-header'>
           <View className='header-top'>
-            <Text className='brand'>邻选·作业台</Text>
+            <Text className='brand'>邻选·履约台</Text>
             <Text className='warehouse-tag'>{MVP_COMMUNITY.warehouseName}</Text>
           </View>
           <Text className='welcome'>{user.nickname}，今日加油</Text>

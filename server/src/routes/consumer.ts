@@ -190,7 +190,7 @@ router.post('/orders/create', (req, res) => {
       store.workerUser.courierStatus !== 'active' ||
       store.workerUser.consumerUserId !== consumerId
     ) {
-      return sendFail(res, '请先在「邻选·作业」注册成为骑手后再选择自配送', 403);
+      return sendFail(res, '请先在「邻选·履约」注册成为骑手后再选择自配送', 403);
     }
   }
 
@@ -347,7 +347,7 @@ router.get('/courier/status', (_req, res) => {
     courierRewardPerOrder: DELIVERY_BUSINESS.courierRewardPerOrder,
     hint: canSelfDeliver
       ? '您已注册骑手，下单可勾选自配送（免配送费）'
-      : '在「邻选·作业」小程序注册骑手后，可自配自己的订单并免配送费',
+      : '在「邻选·履约」小程序注册骑手后，可自配自己的订单并免配送费',
   });
 });
 

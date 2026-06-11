@@ -1,7 +1,7 @@
 {
   "miniprogramRoot": "dist/",
   "projectname": "linshe-community-mall",
-  "description": "邻选社区 - 社区私域购物平台",
+  "description": "邻选·购 - 社区前置仓即时配送",
   "appid": "wx4a1d84af09a13c56",
   "setting": {
     "urlCheck": false,
@@ -53,5 +53,6 @@
     "ignore": [],
     "include": []
   },
-  "editorSetting": {}
+  "editorSetting": {},
+  "libVersion": "3.16.1"
 }
