@@ -6,104 +6,15 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-.community-brand-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 24px 0;
-  background: linear-gradient(180deg, #667eea 0%, #7b6fd6 100%);
-
-  .brand-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .brand-title {
-    font-size: 34px;
-    font-weight: 700;
-    color: #fff;
-  }
-
-  .brand-badge {
-    font-size: 20px;
-    color: #667eea;
-    background: #fff;
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-weight: 600;
-  }
-
-  .notify-btn {
-    position: relative;
-  }
-
-  .notify-btn::after {
-    content: '';
-    position: absolute;
-    top: 6rpx;
-    right: 6rpx;
-    width: 12rpx;
-    height: 12rpx;
-    background: #ff4d4f;
-    border-radius: 50%;
-    border: 2rpx solid #fff;
-  }
-}
-
-.eta-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 24px 16px;
-  padding: 16px 20px;
-  background: linear-gradient(135deg, #e8f4fd, #f0f8ff);
-  border-radius: 16px;
-  border: 1px solid #d6ebff;
-
-  .eta-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .eta-text {
-    font-size: 26px;
-    color: #1890ff;
-    font-weight: 600;
-  }
-
-  .eta-badge {
-    font-size: 22px;
-    color: #52c41a;
-    background: #f6ffed;
-    padding: 4px 16px;
-    border-radius: 20px;
-  }
-}
-
 .header-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 24px 16px;
-  background: linear-gradient(180deg, #7b6fd6 0%, #fff 85%);
+  padding: 16px 24px;
+  background: #fff;
   position: sticky;
   top: 0;
   z-index: 100;
-
-  .warehouse-tag {
-    font-size: 22px;
-    color: #888;
-    background: rgba(255, 255, 255, 0.85);
-    padding: 6px 14px;
-    border-radius: 20px;
-    flex-shrink: 0;
-    max-width: 240px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
 
   .location-info {
     display: flex;
@@ -153,6 +64,37 @@
         border: 2rpx solid #fff;
       }
     }
+  }
+}
+
+.eta-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 24px 16px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #e8f4fd, #f0f8ff);
+  border-radius: 16px;
+  border: 1px solid #d6ebff;
+
+  .eta-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .eta-text {
+    font-size: 26px;
+    color: #1890ff;
+    font-weight: 600;
+  }
+
+  .eta-badge {
+    font-size: 22px;
+    color: #52c41a;
+    background: #f6ffed;
+    padding: 4px 16px;
+    border-radius: 20px;
   }
 }
 

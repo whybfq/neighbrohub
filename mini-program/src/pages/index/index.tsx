@@ -233,25 +233,18 @@ export default class IndexPage extends Component<{}, State> {
 
     return (
       <View className='index-page'>
-        {/* 优选社区品牌区 */}
-        <View className='community-brand-bar'>
-          <View className='brand-left'>
-            <Text className='brand-title'>邻选·优选社区</Text>
-            <Text className='brand-badge'>2小时达</Text>
-          </View>
-          <View className='icon-btn notify-btn' hoverClass='icon-btn--pressed' onClick={this.handleNotification}>
-            <AppIcon name='bell' size={40} />
-          </View>
-        </View>
-
-        {/* 顶部定位栏 */}
+        {/* 顶部定位栏（对齐 8bae3e4 / prototype 结构，通知在右侧） */}
         <View className='header-bar'>
           <View className='location-info' hoverClass='icon-btn--pressed' onClick={this.handleLocationTap}>
             <AppIcon name='location' size={36} className='location-icon-img' />
             <Text className='location-name'>{MVP_COMMUNITY.name} · {zoneName}</Text>
             <Text className='location-arrow'>▾</Text>
           </View>
-          <Text className='warehouse-tag'>{MVP_COMMUNITY.warehouseName}</Text>
+          <View className='header-right'>
+            <View className='icon-btn notify-btn' hoverClass='icon-btn--pressed' onClick={this.handleNotification}>
+              <AppIcon name='bell' size={40} />
+            </View>
+          </View>
         </View>
 
         <View className='eta-bar'>
