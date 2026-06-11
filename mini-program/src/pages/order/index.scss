@@ -275,6 +275,48 @@
   }
 }
 
+// 自配送
+.self-delivery-section,
+.courier-hint-section {
+  background: #fff;
+  padding: 0 24px;
+  margin-bottom: 16px;
+
+  .section-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 0;
+  }
+
+  .self-delivery-label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .row-label {
+      font-size: 28px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .self-delivery-desc {
+      font-size: 22px;
+      color: #999;
+    }
+  }
+}
+
+.courier-hint-section {
+  padding: 16px 24px;
+
+  .courier-hint-text {
+    font-size: 24px;
+    color: #999;
+    line-height: 1.5;
+  }
+}
+
 // 优惠券
 .coupon-section {
   background: #fff;

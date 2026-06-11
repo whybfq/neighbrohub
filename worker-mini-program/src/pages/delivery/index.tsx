@@ -89,8 +89,8 @@ export default class DeliveryPage extends Component<{}, State> {
       return;
     }
     try {
-      await workerApi.grabOrder(id);
-      showToast('抢单成功', 'success');
+      const res: any = await workerApi.grabOrder(id);
+      showToast(res?.message || '抢单成功', 'success');
       this.loadPool();
     } catch (err: any) {
       showToast(err?.message || '抢单失败');
@@ -159,11 +159,21 @@ export default class DeliveryPage extends Component<{}, State> {
             <EmptyState iconName='cart' text='暂无待配送订单' subText='分拣完成后订单会进入抢单池' />
           )}
           {filteredPool.map((order) => (
-            <View key={order.id} className='pool-card'>
+            <View key={order.id} className={`pool-card ${order.isOwnOrder ? 'own-order' : ''}`}>
               <View className='pool-top'>
-                <Text className='order-no'>#{order.orderNo} · {getZoneName(order.zoneId)}</Text>
-                <Text className='fee'>¥{order.fee}</Text>
+                <View className='pool-title-row'>
+                  <Text className='order-no'>#{order.orderNo} · {getZoneName(order.zoneId)}</Text>
+                  {order.isOwnOrder && (
+                    <Text className='own-tag'>我的订单 · 免配送费</Text>
+                  )}
+                </View>
+                <Text className={`fee ${order.isOwnOrder ? 'free' : ''}`}>
+                  {order.isOwnOrder ? '¥0' : `¥${order.fee}`}
+                </Text>
               </View>
+              {order.selfDeliveryHint ? (
+                <Text className='self-hint'>{order.selfDeliveryHint}</Text>
+              ) : null}
               <Text className='pool-addr'>{order.address}</Text>
               <Text className='pool-meta'>{order.itemCount} 件 · 等待 {order.waitingMinutes} 分钟</Text>
               <AppButton

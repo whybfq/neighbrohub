@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { sendFail, sendOk } from '../common/response.js';
+import { DELIVERY_BUSINESS, calcConsumerDeliveryFee } from '../config/delivery.js';
 import { genSignCode, nextOrderNo, store } from '../store/index.js';
 
 const router = Router();
@@ -164,16 +165,27 @@ router.get('/orders/track/:id', (req, res) => {
 });
 
 router.post('/orders/create', (req, res) => {
-  const { items = [], addressId, remark } = req.body || {};
+  const { items = [], addressId, remark, selfDelivery: selfDeliveryRaw } = req.body || {};
+  const selfDelivery = !!selfDeliveryRaw;
   const address = store.addresses.find((a: any) => a.id === addressId);
   if (!address) return sendFail(res, '请选择收货地址');
 
-  let amount = 0;
+  if (selfDelivery) {
+    const consumerId = store.user.id;
+    if (
+      store.workerUser.courierStatus !== 'active' ||
+      store.workerUser.consumerUserId !== consumerId
+    ) {
+      return sendFail(res, '请先在「邻选·作业」注册成为骑手后再选择自配送', 403);
+    }
+  }
+
+  let goodsAmount = 0;
   const orderItems = items.map((it: any) => {
     const product = store.products.find((p: any) => p.id === it.productId);
     const sku = product?.skus?.find((s: any) => s.id === it.skuId);
     const price = sku?.price || 0;
-    amount += price * (it.quantity || 1);
+    goodsAmount += price * (it.quantity || 1);
     return {
       productId: it.productId,
       skuId: it.skuId,
@@ -184,6 +196,9 @@ router.post('/orders/create', (req, res) => {
       quantity: it.quantity,
     };
   });
+
+  const deliveryFee = calcConsumerDeliveryFee(selfDelivery);
+  const payAmount = goodsAmount + deliveryFee;
 
   const id = `O${Date.now()}`;
   const orderNo = nextOrderNo();
@@ -198,8 +213,12 @@ router.post('/orders/create', (req, res) => {
     customer: address.name,
     contactName: address.name,
     contactPhone: address.phone,
-    amount,
-    payAmount: amount,
+    customerId: store.user.id,
+    goodsAmount,
+    deliveryFee,
+    selfDelivery,
+    amount: goodsAmount,
+    payAmount,
     itemCount: orderItems.reduce((s: number, i: any) => s + i.quantity, 0),
     items: orderItems,
     remark,
@@ -208,7 +227,7 @@ router.post('/orders/create', (req, res) => {
     signCode,
     createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
   };
-  store.orders.unshift(order);
+  store.orders.unshift(order as any);
   store.orderTracks[id] = {
     orderNo,
     status: 'pending_pay',
@@ -223,7 +242,15 @@ router.post('/orders/create', (req, res) => {
       { step: 'paid', text: '订单已支付', time: null, done: false, current: true },
     ],
   };
-  sendOk(res, { orderId: id, orderNo, payAmount: amount, signCode });
+  sendOk(res, {
+    orderId: id,
+    orderNo,
+    payAmount,
+    goodsAmount,
+    deliveryFee,
+    selfDelivery,
+    signCode,
+  });
 });
 
 router.post('/orders/:id/pay', (req, res) => {
@@ -282,6 +309,22 @@ router.put('/orders/:id/receive', (req, res) => {
   }
 
   sendOk(res, { success: true, pointsEarned });
+});
+
+// ---------- 骑手 / 自配送 ----------
+router.get('/courier/status', (_req, res) => {
+  const consumerId = store.user.id;
+  const canSelfDeliver =
+    store.workerUser.courierStatus === 'active' &&
+    store.workerUser.consumerUserId === consumerId;
+  sendOk(res, {
+    canSelfDeliver,
+    consumerDeliveryFee: DELIVERY_BUSINESS.consumerDeliveryFee,
+    courierRewardPerOrder: DELIVERY_BUSINESS.courierRewardPerOrder,
+    hint: canSelfDeliver
+      ? '您已注册骑手，下单可勾选自配送（免配送费）'
+      : '在「邻选·作业」小程序注册骑手后，可自配自己的订单并免配送费',
+  });
 });
 
 // ---------- 积分商城 ----------

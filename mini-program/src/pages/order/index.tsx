@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { View, Text, Input, ScrollView } from '@tarojs/components';
+import { View, Text, Input, ScrollView, Switch } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useUserStore } from '../../store';
 import { orderApi, userApi } from '../../services/api';
@@ -18,6 +18,10 @@ interface State {
   remark: string;
   totalAmount: number;
   discount: number;
+  deliveryFee: number;
+  selfDelivery: boolean;
+  canSelfDeliver: boolean;
+  courierHint: string;
   payAmount: number;
   submitting: boolean;
   showAddressPicker: boolean;
@@ -36,6 +40,10 @@ export default class OrderPage extends Component<{}, State> {
     remark: '',
     totalAmount: 0,
     discount: 0,
+    deliveryFee: BUSINESS_RULES.deliveryFee,
+    selfDelivery: false,
+    canSelfDeliver: false,
+    courierHint: '',
     payAmount: 0,
     submitting: false,
     showAddressPicker: false,
@@ -46,11 +54,43 @@ export default class OrderPage extends Component<{}, State> {
   componentDidMount() {
     this.initOrderFromStorage();
     this.loadAddresses();
+    this.loadCourierStatus();
   }
 
   onShow() {
     this.loadAddresses();
+    this.loadCourierStatus();
   }
+
+  calcPayAmount = (totalAmount: number, discount: number, selfDelivery: boolean) => {
+    const deliveryFee = selfDelivery ? 0 : BUSINESS_RULES.deliveryFee;
+    return Math.max(0, totalAmount - discount + deliveryFee);
+  };
+
+  loadCourierStatus = async () => {
+    try {
+      const status: any = await orderApi.getCourierStatus();
+      this.setState(
+        (prev) => ({
+          canSelfDeliver: !!status.canSelfDeliver,
+          courierHint: status.hint || '',
+          selfDelivery: status.canSelfDeliver ? prev.selfDelivery : false,
+        }),
+        () => this.syncPayAmount()
+      );
+    } catch {
+      // 忽略，默认不可自配
+    }
+  };
+
+  syncPayAmount = () => {
+    const { totalAmount, discount, selfDelivery } = this.state;
+    const deliveryFee = selfDelivery ? 0 : BUSINESS_RULES.deliveryFee;
+    this.setState({
+      deliveryFee,
+      payAmount: this.calcPayAmount(totalAmount, discount, selfDelivery),
+    });
+  };
 
   initOrderFromStorage = () => {
     if (this.state.orderInitialized) return;
@@ -64,11 +104,13 @@ export default class OrderPage extends Component<{}, State> {
 
     const { items } = tempOrder;
     const totalAmount = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+    const deliveryFee = BUSINESS_RULES.deliveryFee;
 
     this.setState({
       orderItems: items,
       totalAmount,
-      payAmount: totalAmount,
+      deliveryFee,
+      payAmount: totalAmount + deliveryFee,
       orderInitialized: true,
     });
 
@@ -103,20 +145,28 @@ export default class OrderPage extends Component<{}, State> {
     return addresses.find((a) => a.isDefault) || addresses[0];
   };
 
+  handleToggleSelfDelivery = (checked: boolean) => {
+    this.setState({ selfDelivery: checked }, this.syncPayAmount);
+  };
+
   handleSelectCoupon = (coupon: any) => {
     if (this.state.coupon?.id === coupon?.id) {
-      this.setState({ coupon: null, discount: 0, payAmount: this.state.totalAmount });
+      this.setState(
+        { coupon: null, discount: 0, showCouponPicker: false },
+        this.syncPayAmount
+      );
     } else if (coupon) {
       const discount = coupon.value;
-      this.setState({
-        coupon,
-        discount,
-        payAmount: Math.max(0, this.state.totalAmount - discount),
-      });
+      this.setState(
+        { coupon, discount, showCouponPicker: false },
+        this.syncPayAmount
+      );
     } else {
-      this.setState({ coupon: null, discount: 0, payAmount: this.state.totalAmount });
+      this.setState(
+        { coupon: null, discount: 0, showCouponPicker: false },
+        this.syncPayAmount
+      );
     }
-    this.setState({ showCouponPicker: false });
   };
 
   handleSelectAddress = (address: any) => {
@@ -134,7 +184,7 @@ export default class OrderPage extends Component<{}, State> {
   };
 
   handleSubmit = async () => {
-    const { orderItems, address, deliveryType, coupon, remark, payAmount, totalAmount } = this.state;
+    const { orderItems, address, deliveryType, coupon, remark, payAmount, totalAmount, selfDelivery } = this.state;
 
     if (!address) {
       showToast('请选择收货地址');
@@ -158,18 +208,20 @@ export default class OrderPage extends Component<{}, State> {
         addressId: address.id,
         couponId: coupon?.id,
         deliveryType,
+        selfDelivery,
         remark,
       };
 
       const result = await orderApi.createOrder(orderData);
       const orderId = (result as any)?.orderId || 'O001';
+      const actualPay = (result as any)?.payAmount ?? payAmount;
 
       Taro.showToast({ title: '下单成功', icon: 'success' });
 
       setTimeout(() => {
         Taro.showModal({
           title: '确认支付',
-          content: `配送至 ${address.zone} · 需支付 ¥${formatPrice(payAmount)}`,
+          content: `配送至 ${address.zone} · 需支付 ¥${formatPrice(actualPay)}${selfDelivery ? '（自配免配送费）' : ''}`,
           success: async (res) => {
             if (res.confirm) {
               try {
@@ -197,8 +249,8 @@ export default class OrderPage extends Component<{}, State> {
   render() {
     const {
       orderItems, address, addresses, coupon, coupons,
-      remark, totalAmount, discount, payAmount,
-      submitting, showAddressPicker, showCouponPicker,
+      remark, totalAmount, discount, deliveryFee, selfDelivery, canSelfDeliver, courierHint,
+      payAmount, submitting, showAddressPicker, showCouponPicker,
     } = this.state;
 
     const etaText = formatEtaText(MVP_COMMUNITY.etaMinutes);
@@ -262,6 +314,28 @@ export default class OrderPage extends Component<{}, State> {
             ))}
           </View>
 
+          {canSelfDeliver && (
+            <View className='self-delivery-section'>
+              <View className='section-row'>
+                <View className='self-delivery-label'>
+                  <Text className='row-label'>自配送</Text>
+                  <Text className='self-delivery-desc'>作业端接单，免 ¥{BUSINESS_RULES.deliveryFee} 配送费</Text>
+                </View>
+                <Switch
+                  checked={selfDelivery}
+                  color='#ff4d4f'
+                  onChange={(e: any) => this.handleToggleSelfDelivery(!!e.detail.value)}
+                />
+              </View>
+            </View>
+          )}
+
+          {!canSelfDeliver && courierHint ? (
+            <View className='courier-hint-section'>
+              <Text className='courier-hint-text'>{courierHint}</Text>
+            </View>
+          ) : null}
+
           {MVP_FEATURES.COUPONS && (
             <View className='coupon-section' onClick={() => this.setState({ showCouponPicker: true })}>
               <View className='section-row'>
@@ -309,7 +383,11 @@ export default class OrderPage extends Component<{}, State> {
             )}
             <View className='price-row'>
               <Text>配送费</Text>
-              <Text className='free'>免费</Text>
+              {selfDelivery ? (
+                <Text className='free'>自配免配送费</Text>
+              ) : (
+                <Text>¥{formatPrice(deliveryFee)}</Text>
+              )}
             </View>
             {belowMinOrder && (
               <View className='min-order-tip'>

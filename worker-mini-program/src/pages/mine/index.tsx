@@ -89,7 +89,7 @@ export default class MinePage extends Component<{}, State> {
             <Text className='earn-label'>今日配送收入</Text>
             <Text className='earn-value'>¥{formatPrice(earnings)}</Text>
             <Text className='earn-rule'>
-              ¥{BUSINESS_RULES.deliveryFeePerOrder}/单 · 持单上限 {BUSINESS_RULES.maxConcurrentOrders}
+              接他人单 ¥{BUSINESS_RULES.deliveryFeePerOrder}/单 · 自配免配送费 · 持单上限 {BUSINESS_RULES.maxConcurrentOrders}
             </Text>
           </View>
 

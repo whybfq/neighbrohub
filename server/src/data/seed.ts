@@ -192,6 +192,10 @@ export const orders = [
     contactName: '李明',
     contactPhone: '138****5678',
     amount: 45.8,
+    goodsAmount: 44.8,
+    deliveryFee: 1,
+    selfDelivery: false,
+    customerId: 'U10001',
     payAmount: 45.8,
     itemCount: 3,
     items: [
@@ -199,7 +203,7 @@ export const orders = [
       { productId: 'P002', skuId: 'SKU009', productName: '西红柿', productIcon: '🍅', skuName: '500g', price: 5.9, quantity: 2 },
     ],
     picker: '王芳',
-    courier: null,
+    courier: null as { name: string; phone: string; selfDelivery?: boolean } | null,
     signCode: '836291',
     createdAt: '2026-06-08 14:02:00',
   },
@@ -281,6 +285,8 @@ export const workerUser = {
   phone: '138****8888',
   roles: ['inbound', 'pick', 'delivery'],
   courierStatus: 'active',
+  consumerUserId: 'U10001',
+  openRegistered: true,
   warehouse: community.warehouse.name,
 };
 
@@ -301,8 +307,8 @@ export const pickDetail = {
 };
 
 export const deliveryPool = [
-  { id: 'DT001', orderNo: '20260608004', address: '东区8栋602', zoneId: 'EAST', itemCount: 1, fee: 5, waitingMinutes: 4 },
-  { id: 'DT002', orderNo: '20260607008', address: '西区7栋1202', zoneId: 'WEST', itemCount: 2, fee: 5, waitingMinutes: 10 },
+  { id: 'DT001', orderNo: '20260608004', address: '东区8栋602', zoneId: 'EAST', itemCount: 1, fee: 5, waitingMinutes: 4, customerId: 'U10002' as string | undefined },
+  { id: 'DT002', orderNo: '20260607008', address: '西区7栋1202', zoneId: 'WEST', itemCount: 2, fee: 5, waitingMinutes: 10, customerId: 'U10003' as string | undefined },
 ];
 
 export const activeDelivery = {
@@ -312,10 +318,12 @@ export const activeDelivery = {
   zoneId: 'EAST',
   status: 'delivering',
   signCode: '836291',
+  isSelfDelivery: false,
+  fee: 5,
 };
 
 export const couriers = [
-  { id: 'W001', name: '王芳', phone: '138****8888', roles: ['inbound', 'pick', 'delivery'], status: 'active', holdingCount: 1, todayDelivery: 6, appliedAt: '2026-05-01' },
+  { id: 'W001', name: '王芳', phone: '138****8888', roles: ['inbound', 'pick', 'delivery'], status: 'active', holdingCount: 1, todayDelivery: 6, appliedAt: '2026-05-01', openRegister: true },
   { id: 'W002', name: '张师傅', phone: '139****6666', roles: ['delivery'], status: 'active', holdingCount: 2, todayDelivery: 8, appliedAt: '2026-05-10' },
   { id: 'W003', name: '李强', phone: '137****1234', roles: ['delivery'], status: 'pending', holdingCount: 0, todayDelivery: 0, appliedAt: '2026-06-07' },
 ];

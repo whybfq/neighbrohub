@@ -194,12 +194,16 @@ export const orderApi = {
   // 配送追踪
   getOrderTrack: (id: string) => request(`/orders/track/${id}`),
 
+  // 骑手自配资格
+  getCourierStatus: () => request('/courier/status'),
+
   // 创建订单
   createOrder: (data: {
     items: Array<{ productId: string; skuId: string; quantity: number }>;
     addressId: string;
     couponId?: string;
     deliveryType: string;
+    selfDelivery?: boolean;
     distributorCode?: string;
     remark?: string;
   }) => request('/orders/create', { method: 'POST', data }),

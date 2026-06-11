@@ -55,7 +55,10 @@ const mockRequest = (url: string, _options: any): Promise<any> => {
 };
 
 export const workerApi = {
-  login: (code: string) => request('/worker/login', { method: 'POST', data: { code } }),
+  login: (data: { code?: string; phone?: string; consumerUserId?: string; nickname?: string }) =>
+    request('/worker/login', { method: 'POST', data }),
+  register: (data?: { nickname?: string; phone?: string; consumerUserId?: string }) =>
+    request('/worker/register', { method: 'POST', data: data || {} }),
   getProfile: () => request('/worker/profile'),
   getDashboard: () => request('/worker/dashboard'),
   getInboundRecent: () => request('/wms/inbound/recent'),

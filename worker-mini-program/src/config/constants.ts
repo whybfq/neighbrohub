@@ -28,6 +28,8 @@ export const MVP_ZONES = [
 export const BUSINESS_RULES = {
   minOrderAmount: 1,
   deliveryFeePerOrder: 5,
+  consumerDeliveryFee: 1,
+  selfDeliveryCourierReward: 0,
   maxConcurrentOrders: 100,
   pickupTimeoutMinutes: 20,
 };

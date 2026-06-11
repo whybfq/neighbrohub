@@ -1,16 +1,73 @@
 import { Router } from 'express';
 import { sendFail, sendOk } from '../common/response.js';
+import { DELIVERY_BUSINESS, calcCourierFee } from '../config/delivery.js';
 import { pickDetail } from '../data/seed.js';
 import { store } from '../store/index.js';
+import {
+  ensureWorkerCourierActive,
+  getConsumerUserId,
+  getWorkerConsumerLink,
+  linkWorkerToConsumer,
+} from '../utils/auth.js';
 
 const router = Router();
 
-router.post('/worker/login', (_req, res) => {
-  sendOk(res, { token: `worker_${Date.now()}`, user: store.workerUser });
+function enrichPoolItem(task: any) {
+  const order = store.orders.find((o: any) => o.orderNo === task.orderNo);
+  const linkId = getWorkerConsumerLink();
+  const isOwnOrder = !!(order && linkId && order.customerId === linkId);
+  return {
+    ...task,
+    isOwnOrder,
+    selfDeliveryHint: isOwnOrder ? '自配单 · 已免配送费' : undefined,
+    fee: calcCourierFee(isOwnOrder),
+  };
+}
+
+router.post('/worker/login', (req, res) => {
+  const { consumerUserId, nickname, phone } = req.body || {};
+  if (consumerUserId) {
+    linkWorkerToConsumer(String(consumerUserId));
+  } else if (phone && phone === store.user.phone) {
+    linkWorkerToConsumer(store.user.id);
+  }
+  if (nickname) store.workerUser.nickname = nickname;
+  if (phone) store.workerUser.phone = phone;
+  ensureWorkerCourierActive();
+  store.workerUser.openRegistered = true;
+  sendOk(res, {
+    token: `worker_${Date.now()}`,
+    user: store.workerUser,
+    deliveryRules: DELIVERY_BUSINESS,
+  });
+});
+
+/** 开放注册：任何人可成为骑手（MVP 即时生效） */
+router.post('/worker/register', (req, res) => {
+  const { nickname, phone, consumerUserId } = req.body || {};
+  if (nickname) store.workerUser.nickname = nickname;
+  if (phone) store.workerUser.phone = phone;
+  if (consumerUserId) {
+    linkWorkerToConsumer(String(consumerUserId));
+  } else {
+    const cid = getConsumerUserId(req);
+    if (cid) linkWorkerToConsumer(cid);
+    else if (phone && phone === store.user.phone) linkWorkerToConsumer(store.user.id);
+  }
+  ensureWorkerCourierActive();
+  store.workerUser.openRegistered = true;
+  sendOk(res, {
+    user: store.workerUser,
+    message: '骑手注册成功，可上线接单。自配自己的订单不收配送费。',
+    deliveryRules: DELIVERY_BUSINESS,
+  });
 });
 
 router.get('/worker/profile', (_req, res) => {
-  sendOk(res, store.workerUser);
+  sendOk(res, {
+    ...store.workerUser,
+    deliveryRules: DELIVERY_BUSINESS,
+  });
 });
 
 router.get('/worker/dashboard', (_req, res) => {
@@ -23,10 +80,14 @@ router.get('/worker/dashboard', (_req, res) => {
     pendingDelivery: store.deliveryPool.length,
     holdingCount: store.holdingCount,
     maxHold: 100,
+    courierRegistered: store.workerUser.courierStatus === 'active',
   });
 });
 
 router.put('/worker/online', (req, res) => {
+  if (store.workerUser.courierStatus !== 'active') {
+    return sendFail(res, '请先注册成为骑手', 403);
+  }
   store.workerOnline = req.body?.online !== false;
   sendOk(res, { online: store.workerOnline });
 });
@@ -86,15 +147,18 @@ router.post('/wms/pick/tasks/:id/complete', (req, res) => {
     store.pickTasks = store.pickTasks.filter((t: any) => t.id !== req.params.id);
     const order = store.orders.find((o: any) => o.orderNo === task.orderNo);
     if (order) order.status = 'packed';
+    const linkId = getWorkerConsumerLink();
+    const isOwnOrder = !!(order && linkId && order.customerId === linkId);
     store.deliveryPool.unshift({
       id: `DT${Date.now()}`,
       orderNo: task.orderNo,
       address: task.address,
       zoneId: task.zoneId,
       itemCount: task.itemCount,
-      fee: 5,
+      fee: calcCourierFee(false),
       waitingMinutes: 0,
-    });
+      ...(order ? { customerId: order.customerId, orderId: order.id } : {}),
+    } as any);
   }
   sendOk(res, { pickupCode: `PICK:${req.params.id}`, orderStatus: 'packed' });
 });
@@ -102,28 +166,69 @@ router.post('/wms/pick/tasks/:id/complete', (req, res) => {
 router.get('/delivery/pool', (_req, res) => {
   sendOk(res, {
     online: store.workerOnline,
-    list: store.deliveryPool,
+    list: store.deliveryPool.map(enrichPoolItem),
     holdingCount: store.holdingCount,
     maxHold: 100,
+    consumerUserId: getWorkerConsumerLink(),
+    deliveryRules: DELIVERY_BUSINESS,
   });
 });
 
 router.get('/delivery/active', (_req, res) => {
-  sendOk(res, store.activeDelivery);
+  const active = store.activeDelivery;
+  if (!active) return sendOk(res, null);
+  const order = store.orders.find((o: any) => o.orderNo === active.orderNo);
+  sendOk(res, {
+    ...active,
+    orderId: order?.id,
+    isSelfDelivery: !!(active as any).isSelfDelivery,
+  });
 });
 
 router.post('/delivery/tasks/:id/grab', (req, res) => {
+  if (store.workerUser.courierStatus !== 'active') {
+    return sendFail(res, '请先注册成为骑手', 403);
+  }
   if (!store.workerOnline) return sendFail(res, '请先上线');
   if (store.holdingCount >= 100) return sendFail(res, '已达持单上限');
   const idx = store.deliveryPool.findIndex((d: any) => d.id === req.params.id);
   if (idx < 0) return sendFail(res, '订单不存在或已被抢');
   if (store.activeDelivery) return sendFail(res, '请先完成当前配送订单');
   const [task] = store.deliveryPool.splice(idx, 1);
-  store.activeDelivery = { ...task, status: 'delivering', signCode: String(Math.floor(100000 + Math.random() * 900000)) };
-  store.holdingCount += 1;
   const order = store.orders.find((o: any) => o.orderNo === task.orderNo);
-  if (order) order.status = 'delivering';
-  sendOk(res, { success: true });
+  const linkId = getWorkerConsumerLink();
+  const isOwnOrder = !!(order && linkId && order.customerId === linkId);
+
+  if (isOwnOrder) {
+    if (!order.selfDelivery) {
+      return sendFail(res, '该订单未选择自配送，无法接自己的单');
+    }
+  }
+
+  store.activeDelivery = {
+    ...task,
+    status: 'delivering',
+    signCode: order?.signCode || String(Math.floor(100000 + Math.random() * 900000)),
+    isSelfDelivery: isOwnOrder,
+    fee: calcCourierFee(isOwnOrder),
+  } as any;
+  store.holdingCount += 1;
+  if (order) {
+    order.status = 'delivering';
+    order.courier = {
+      name: store.workerUser.nickname,
+      phone: store.workerUser.phone,
+      selfDelivery: isOwnOrder,
+    } as any;
+    if (store.orderTracks[order.id]) {
+      (store.orderTracks[order.id] as any).courier = order.courier;
+    }
+  }
+  sendOk(res, {
+    success: true,
+    isSelfDelivery: isOwnOrder,
+    message: isOwnOrder ? '自配单抢单成功，配送费已免除' : '抢单成功',
+  });
 });
 
 router.post('/delivery/tasks/:id/deliver', (req, res) => {

@@ -52,7 +52,7 @@ export const MVP_LOCATION_LABEL = `${MVP_COMMUNITY.name}（${MVP_ZONES.map((z) =
 // 业务规则（MVP 可后台配置）
 export const BUSINESS_RULES = {
   minOrderAmount: 1,              // 起送价 ¥1
-  deliveryFee: 0,                 // 内测免配送费
+  deliveryFee: 1,                 // 配送费 ¥1（自配免）
   courierFeePerOrder: 5,          // 配送员每单收入
   maxConcurrentOrders: 100,       // 配送员同时持单上限
   unpaidTimeoutMinutes: 15,

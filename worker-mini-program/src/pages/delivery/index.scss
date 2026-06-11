@@ -90,6 +90,33 @@
 
 .pool-card {
   border-left: 6px solid #52c41a;
+
+  &.own-order {
+    border-left-color: #1890ff;
+    background: linear-gradient(135deg, #fff, #f0f9ff);
+  }
+}
+
+.pool-title-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.own-tag {
+  font-size: 22px;
+  color: #1890ff;
+  background: #e6f7ff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  align-self: flex-start;
+}
+
+.self-hint {
+  display: block;
+  font-size: 22px;
+  color: #1890ff;
+  margin-bottom: 8px;
 }
 
 .order-no {
@@ -107,6 +134,11 @@
   color: #ff4d4f;
   font-size: 30px;
   font-weight: 700;
+
+  &.free {
+    color: #52c41a;
+    font-size: 26px;
+  }
 }
 
 .pool-meta, .status {
