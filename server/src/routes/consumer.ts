@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import { sendFail, sendOk } from '../common/response.js';
-import { DELIVERY_BUSINESS, calcConsumerDeliveryFee } from '../config/delivery.js';
+import { calcConsumerDeliveryFee, DELIVERY_BUSINESS } from '../config/delivery.js';
 import { genSignCode, nextOrderNo, store } from '../store/index.js';
+import { advanceOrderTrack } from '../utils/orderTrack.js';
 
 const router = Router();
+const MIN_ORDER_AMOUNT = 1;
 
 router.get('/health', (_req, res) => {
   sendOk(res, { status: 'up', service: 'neighbrohub-api', version: '0.1.0' });
@@ -169,6 +171,7 @@ router.post('/orders/create', (req, res) => {
   const selfDelivery = !!selfDeliveryRaw;
   const address = store.addresses.find((a: any) => a.id === addressId);
   if (!address) return sendFail(res, '请选择收货地址');
+  if (!Array.isArray(items) || items.length === 0) return sendFail(res, '请选择商品');
 
   if (selfDelivery) {
     const consumerId = store.user.id;
@@ -181,21 +184,30 @@ router.post('/orders/create', (req, res) => {
   }
 
   let goodsAmount = 0;
-  const orderItems = items.map((it: any) => {
+  const orderItems: any[] = [];
+  for (const it of items) {
     const product = store.products.find((p: any) => p.id === it.productId);
-    const sku = product?.skus?.find((s: any) => s.id === it.skuId);
-    const price = sku?.price || 0;
-    goodsAmount += price * (it.quantity || 1);
-    return {
+    if (!product || product.status === 'off') return sendFail(res, '商品不存在或已下架');
+    const sku = product.skus?.find((s: any) => s.id === it.skuId);
+    if (!sku) return sendFail(res, '商品规格不存在');
+    const qty = Math.max(1, Number(it.quantity) || 1);
+    if (sku.stock < qty) return sendFail(res, `${product.name} 库存不足`);
+    const price = sku.price || 0;
+    goodsAmount += price * qty;
+    orderItems.push({
       productId: it.productId,
       skuId: it.skuId,
-      productName: product?.name,
-      productIcon: product?.productIcon,
-      skuName: sku?.name,
+      productName: product.name,
+      productIcon: product.productIcon,
+      skuName: sku.name,
       price,
-      quantity: it.quantity,
-    };
-  });
+      quantity: qty,
+    });
+  }
+
+  if (goodsAmount < MIN_ORDER_AMOUNT) {
+    return sendFail(res, `未满起送价 ¥${MIN_ORDER_AMOUNT}`, 400);
+  }
 
   const deliveryFee = calcConsumerDeliveryFee(selfDelivery);
   const payAmount = goodsAmount + deliveryFee;
@@ -239,7 +251,7 @@ router.post('/orders/create', (req, res) => {
       { step: 'delivered', text: '商品已送达', time: null, done: false, current: false },
       { step: 'delivering', text: '配送员正在赶来', time: null, done: false, current: false },
       { step: 'picking', text: '仓库正在拣货', time: null, done: false, current: false },
-      { step: 'paid', text: '订单已支付', time: null, done: false, current: true },
+      { step: 'paid', text: '订单已支付', time: null, done: false, current: false },
     ],
   };
   sendOk(res, {
@@ -256,15 +268,10 @@ router.post('/orders/create', (req, res) => {
 router.post('/orders/:id/pay', (req, res) => {
   const order = store.orders.find((o: any) => o.id === req.params.id);
   if (!order) return sendFail(res, '订单不存在', 404);
-  order.status = 'paid';
-  if (store.orderTracks[order.id]) {
-    const track = store.orderTracks[order.id] as any;
-    track.status = 'paid';
-    const tl = track.timeline as any[];
-    tl.forEach((t) => { t.done = t.step === 'paid'; t.current = t.step === 'paid'; });
-    const paidStep = tl.find((t) => t.step === 'paid');
-    if (paidStep) paidStep.time = new Date().toISOString().replace('T', ' ').slice(0, 19);
-  }
+  if (order.status !== 'pending_pay') return sendFail(res, '订单状态不可支付', 400);
+  order.status = 'picking';
+  advanceOrderTrack(order.id, 'paid', { status: 'picking' });
+  advanceOrderTrack(order.id, 'picking', { status: 'picking' });
   // 支付成功后进入分拣队列
   store.pickTasks.unshift({
     id: `PT${Date.now()}`,
@@ -281,6 +288,7 @@ router.post('/orders/:id/pay', (req, res) => {
 router.put('/orders/:id/cancel', (req, res) => {
   const order = store.orders.find((o: any) => o.id === req.params.id);
   if (!order) return sendFail(res, '订单不存在', 404);
+  if (order.status !== 'pending_pay') return sendFail(res, '当前状态不可取消', 400);
   order.status = 'cancelled';
   sendOk(res, { success: true });
 });
@@ -288,6 +296,9 @@ router.put('/orders/:id/cancel', (req, res) => {
 router.put('/orders/:id/receive', (req, res) => {
   const order = store.orders.find((o: any) => o.id === req.params.id);
   if (!order) return sendFail(res, '订单不存在', 404);
+  if (order.status !== 'delivered') {
+    return sendFail(res, '请等待配送完成后再确认收货', 400);
+  }
   order.status = 'completed';
 
   let pointsEarned = 0;

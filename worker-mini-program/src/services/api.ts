@@ -15,27 +15,34 @@ const request = async <T>(url: string, options: any = {}): Promise<T> => {
     return mockRequest(url, options) as T;
   }
 
-  const res = await Taro.request({
-    url: `${API_BASE_URL}${url}`,
-    method: options.method || 'GET',
-    data: options.data,
-    header: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${Taro.getStorageSync('worker_token')}`,
-      'X-Client-Type': 'worker',
-    },
-  });
+  try {
+    const res = await Taro.request({
+      url: `${API_BASE_URL}${url}`,
+      method: options.method || 'GET',
+      data: options.data,
+      header: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Taro.getStorageSync('worker_token')}`,
+        'X-Client-Type': 'worker',
+      },
+    });
 
-  if (res.statusCode === 401) {
-    Taro.removeStorageSync('worker_token');
-    Taro.redirectTo({ url: PAGE_PATH.LOGIN });
-    throw new Error('登录已过期，请重新登录');
-  }
+    if (res.statusCode === 401) {
+      Taro.removeStorageSync('worker_token');
+      Taro.redirectTo({ url: PAGE_PATH.LOGIN });
+      throw new Error('登录已过期，请重新登录');
+    }
 
-  if (res.statusCode === 200 && res.data.code === 0) {
-    return res.data.data as T;
+    if (res.statusCode === 200 && res.data.code === 0) {
+      return res.data.data as T;
+    }
+    throw new Error(res.data.message || '请求失败');
+  } catch (err: any) {
+    if (!err?.message?.includes('登录已过期')) {
+      Taro.showToast({ title: err.message || '网络错误', icon: 'none' });
+    }
+    throw err;
   }
-  throw new Error(res.data.message || '请求失败');
 };
 
 const mockRequest = (url: string, _options: any): Promise<any> => {

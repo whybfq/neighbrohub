@@ -54,6 +54,16 @@ export default class TrackPage extends Component<{}, State> {
     this.loadTrack();
   }
 
+  onShow() {
+    if (this.orderId) {
+      this.loadTrack();
+    }
+  }
+
+  onPullDownRefresh() {
+    this.loadTrack().finally(() => Taro.stopPullDownRefresh());
+  }
+
   loadTrack = async () => {
     this.setState({ loading: true, loadError: false });
     try {

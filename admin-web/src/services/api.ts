@@ -7,16 +7,38 @@ interface ApiResult<T> {
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Client-Type': 'admin',
-      Authorization: `Bearer ${localStorage.getItem('admin_token') || ''}`,
-      ...(options.headers || {}),
-    },
-  });
-  const json: ApiResult<T> = await res.json();
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Client-Type': 'admin',
+        Authorization: `Bearer ${localStorage.getItem('admin_token') || ''}`,
+        ...(options.headers || {}),
+      },
+    });
+  } catch {
+    throw new Error('网络错误，请检查后端服务是否启动');
+  }
+
+  if (res.status === 401) {
+    localStorage.removeItem('admin_token');
+    window.location.href = '/login';
+    throw new Error('登录已过期，请重新登录');
+  }
+
+  if (!res.ok) {
+    throw new Error(`请求失败 (${res.status})`);
+  }
+
+  let json: ApiResult<T>;
+  try {
+    json = await res.json();
+  } catch {
+    throw new Error('响应格式错误');
+  }
+
   if (json.code !== 0) {
     throw new Error(json.message || '请求失败');
   }

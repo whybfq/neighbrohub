@@ -47,6 +47,13 @@ export default class ProfilePage extends Component {
     showToast(`${name}即将上线，敬请期待`);
   };
 
+  goToLogin = () => {
+    const { userInfo } = useUserStore.getState();
+    if (!userInfo) {
+      navigateTo(PAGE_PATH.LOGIN);
+    }
+  };
+
   applyToBeLeader = () => {
     Taro.showModal({
       title: '申请成为楼长',
@@ -66,7 +73,7 @@ export default class ProfilePage extends Component {
       <View className='profile-page'>
         <ScrollView className='profile-body' scrollY>
           {/* 个人信息头部 */}
-          <View className='profile-header'>
+          <View className='profile-header' onClick={this.goToLogin}>
             <View className='user-info'>
               <View className='avatar'>
                 <Text>{userInfo?.avatar || '😊'}</Text>

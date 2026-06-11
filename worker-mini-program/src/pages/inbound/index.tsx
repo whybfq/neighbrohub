@@ -18,9 +18,9 @@ interface State {
 
 export default class InboundPage extends Component<{}, State> {
   state: State = {
-    productName: '农夫山泉 550ml×24瓶',
-    quantity: '10',
-    location: 'A-012',
+    productName: '',
+    quantity: '1',
+    location: '',
     recent: mockInboundRecent,
     submitting: false,
   };

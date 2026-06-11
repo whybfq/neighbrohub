@@ -83,7 +83,7 @@ export default class OrdersPage extends Component<{}, State> {
         showToast('已取消', 'success');
         this.loadOrders();
       } catch (err: any) {
-        showToast('取消失败');
+        showToast(err?.message || '取消失败');
       }
     }
   };
@@ -102,7 +102,7 @@ export default class OrdersPage extends Component<{}, State> {
         }
         this.loadOrders();
       } catch (err: any) {
-        showToast('操作失败');
+        showToast(err?.message || '操作失败');
       }
     }
   };
@@ -140,6 +140,11 @@ export default class OrdersPage extends Component<{}, State> {
         );
       case ORDER_STATUS.DELIVERING:
       case ORDER_STATUS.DISPATCHING:
+        return (
+          <View className='action-btns' onClick={(e: any) => e.stopPropagation()}>
+            <AppButton type='primary' size='sm' onClick={() => this.handleTrack(id)}>查看配送</AppButton>
+          </View>
+        );
       case ORDER_STATUS.DELIVERED:
         return (
           <View className='action-btns' onClick={(e: any) => e.stopPropagation()}>

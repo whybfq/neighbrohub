@@ -9,6 +9,7 @@ import {
   getWorkerConsumerLink,
   linkWorkerToConsumer,
 } from '../utils/auth.js';
+import { advanceOrderTrack } from '../utils/orderTrack.js';
 
 const router = Router();
 
@@ -146,7 +147,10 @@ router.post('/wms/pick/tasks/:id/complete', (req, res) => {
   if (task) {
     store.pickTasks = store.pickTasks.filter((t: any) => t.id !== req.params.id);
     const order = store.orders.find((o: any) => o.orderNo === task.orderNo);
-    if (order) order.status = 'packed';
+    if (order) {
+      order.status = 'packed';
+      advanceOrderTrack(order.id, 'packed', { status: 'packed' });
+    }
     const linkId = getWorkerConsumerLink();
     const isOwnOrder = !!(order && linkId && order.customerId === linkId);
     store.deliveryPool.unshift({
@@ -220,6 +224,10 @@ router.post('/delivery/tasks/:id/grab', (req, res) => {
       phone: store.workerUser.phone,
       selfDelivery: isOwnOrder,
     } as any;
+    advanceOrderTrack(order.id, 'delivering', {
+      status: 'delivering',
+      courier: order.courier,
+    });
     if (store.orderTracks[order.id]) {
       (store.orderTracks[order.id] as any).courier = order.courier;
     }
@@ -233,11 +241,16 @@ router.post('/delivery/tasks/:id/grab', (req, res) => {
 
 router.post('/delivery/tasks/:id/deliver', (req, res) => {
   const { signCode } = req.body || {};
-  if (store.activeDelivery?.signCode && signCode && signCode !== store.activeDelivery.signCode) {
+  if (!store.activeDelivery) return sendFail(res, '无进行中的配送任务', 400);
+  if (!signCode) return sendFail(res, '请输入签收码');
+  if (store.activeDelivery.signCode !== signCode) {
     return sendFail(res, '签收码错误');
   }
   const order = store.orders.find((o: any) => o.orderNo === store.activeDelivery?.orderNo);
-  if (order) order.status = 'delivered';
+  if (order) {
+    order.status = 'delivered';
+    advanceOrderTrack(order.id, 'delivered', { status: 'delivered' });
+  }
   store.holdingCount = Math.max(0, store.holdingCount - 1);
   store.activeDelivery = null;
   sendOk(res, { success: true });

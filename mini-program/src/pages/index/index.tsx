@@ -80,10 +80,18 @@ export default class IndexPage extends Component<{}, State> {
   loadData = async (keyword?: string) => {
     this.setState({ loading: true });
     try {
-      const [products, categories] = await Promise.all([
+      const requests: Promise<any>[] = [
         productApi.getProducts({ page: 1, pageSize: 10 }),
         productApi.getCategories(),
-      ]);
+      ];
+      if (MVP_FEATURES.FLASH_SALE) {
+        requests.push(productApi.getFlashSale());
+      }
+      const results = await Promise.all(requests);
+      const products = results[0];
+      const categories = results[1];
+      const flashSales = MVP_FEATURES.FLASH_SALE ? (results[2] || []) : [];
+
       let filtered = products;
       if (keyword) {
         const kw = keyword.toLowerCase();
@@ -91,7 +99,7 @@ export default class IndexPage extends Component<{}, State> {
           p.name?.toLowerCase().includes(kw) || p.tags?.some((t: string) => t.includes(keyword))
         );
       }
-      this.setState({ products: filtered, categories });
+      this.setState({ products: filtered, categories, flashSales });
     } catch (err) {
       console.error('加载数据失败:', err);
       showToast('加载失败，请确认后端已启动');

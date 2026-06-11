@@ -1,10 +1,31 @@
 import { Component, PropsWithChildren } from 'react';
+import Taro from '@tarojs/taro';
+import { useUserStore } from './store';
+import { userApi } from './services/api';
 import './app.scss';
 
 class App extends Component<PropsWithChildren> {
   componentDidMount() {
-    console.log('邻选社区 - 小程序启动');
+    this.restoreSession();
   }
+
+  /** 有 token 时恢复用户信息，避免重启后显示「点击登录」 */
+  restoreSession = async () => {
+    const token = Taro.getStorageSync('token');
+    if (!token) return;
+
+    const store = useUserStore.getState();
+    store.checkLogin();
+
+    try {
+      const info: any = await userApi.getUserInfo();
+      store.setUserInfo(info);
+      if (info?.community) store.setCommunity(info.community);
+      if (info?.building) store.setBuilding(info.building);
+    } catch {
+      store.logout();
+    }
+  };
 
   componentDidShow() {}
 
