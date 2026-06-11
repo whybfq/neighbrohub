@@ -1,5 +1,6 @@
+/** 前置仓基础信息：单仓 MVP，东/西区服务范围 */
 import { useEffect, useState } from 'react';
-import { Card, Descriptions, Typography, Spin, Tag } from 'antd';
+import { Card, Descriptions, Typography, Spin, Tag, message } from 'antd';
 import { adminApi } from '../../services/api';
 
 export default function WarehousePage() {
@@ -7,10 +8,20 @@ export default function WarehousePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    adminApi.getWarehouse().then(setData).finally(() => setLoading(false));
+    adminApi.getWarehouse()
+      .then(setData)
+      .catch((e: Error) => message.error(e.message || '加载仓库信息失败'))
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
+  if (!data) {
+    return (
+      <Typography.Text type="danger" style={{ display: 'block', marginTop: 48, textAlign: 'center' }}>
+        仓库信息加载失败，请确认后端 API 已启动
+      </Typography.Text>
+    );
+  }
 
   return (
     <div>

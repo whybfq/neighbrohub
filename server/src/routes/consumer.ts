@@ -1,3 +1,13 @@
+/**
+ * 消费者端 API（邻选·购 · mini-program）
+ *
+ * 覆盖：社区/用户/地址、商品/购物车、订单全链路、积分商城、骑手自配资格。
+ * Header: X-Client-Type: consumer, Authorization: Bearer consumer_*
+ *
+ * 订单状态机（简化）：
+ * pending_pay → picking（支付）→ packed（分拣完成）→ delivering（抢单）
+ * → delivered（签收）→ completed（确认收货）
+ */
 import { Router } from 'express';
 import { sendFail, sendOk } from '../common/response.js';
 import { calcConsumerDeliveryFee, DELIVERY_BUSINESS } from '../config/delivery.js';
@@ -145,7 +155,7 @@ router.post('/cart/add', (req, res) => {
   sendOk(res, { success: true });
 });
 
-// ---------- 订单 ----------
+// ---------- 订单（含状态机校验与配送费） ----------
 router.get('/orders/list', (req, res) => {
   let list = [...store.orders];
   if (req.query.status) {
@@ -166,6 +176,7 @@ router.get('/orders/track/:id', (req, res) => {
   sendOk(res, track);
 });
 
+/** 创建订单：校验库存/起送价；selfDelivery 需骑手已注册且与消费者同账号 */
 router.post('/orders/create', (req, res) => {
   const { items = [], addressId, remark, selfDelivery: selfDeliveryRaw } = req.body || {};
   const selfDelivery = !!selfDeliveryRaw;
@@ -265,6 +276,7 @@ router.post('/orders/create', (req, res) => {
   });
 });
 
+/** 模拟支付：仅 pending_pay 可支付；成功后进入 pickTasks 并推进追踪轴 */
 router.post('/orders/:id/pay', (req, res) => {
   const order = store.orders.find((o: any) => o.id === req.params.id);
   if (!order) return sendFail(res, '订单不存在', 404);
@@ -293,6 +305,7 @@ router.put('/orders/:id/cancel', (req, res) => {
   sendOk(res, { success: true });
 });
 
+/** 确认收货：仅 delivered 可完成；按 payAmount 发放积分 */
 router.put('/orders/:id/receive', (req, res) => {
   const order = store.orders.find((o: any) => o.id === req.params.id);
   if (!order) return sendFail(res, '订单不存在', 404);

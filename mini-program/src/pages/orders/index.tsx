@@ -1,3 +1,11 @@
+/**
+ * 订单列表（TabBar）
+ *
+ * 按 ORDER_LIST_TABS 筛选；操作按钮与后端状态机一致：
+ * - 仅 pending_pay 可取消/支付
+ * - 配送中仅「查看配送」
+ * - 仅 delivered 可「确认收货」领积分
+ */
 import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';

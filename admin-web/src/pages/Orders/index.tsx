@@ -1,5 +1,6 @@
+/** 订单中心：按状态筛选，展示拣货员/配送员 */
 import { useEffect, useState } from 'react';
-import { Table, Tag, Typography, Select, Space } from 'antd';
+import { Table, Tag, Typography, Select, Space, message } from 'antd';
 import { adminApi } from '../../services/api';
 import { ORDER_STATUS_COLOR, ORDER_STATUS_TEXT } from '../../config/constants';
 
@@ -10,7 +11,10 @@ export default function OrdersPage() {
 
   const load = (s = status) => {
     setLoading(true);
-    adminApi.getOrders(s).then(setData).finally(() => setLoading(false));
+    adminApi.getOrders(s)
+      .then(setData)
+      .catch((e: Error) => message.error(e.message || '加载订单失败'))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {

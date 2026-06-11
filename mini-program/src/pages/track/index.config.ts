@@ -1,0 +1,4 @@
+export default definePageConfig({
+  navigationBarTitleText: '配送追踪',
+  enablePullDownRefresh: true,
+});

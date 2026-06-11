@@ -1,3 +1,12 @@
+/**
+ * 消费者端 API 封装（邻选·购）
+ *
+ * - USE_MOCK_API=true 时走 mockData，不请求后端
+ * - 默认连 server :8090，Header: X-Client-Type: consumer
+ * - 401 自动清 token 并跳转登录页
+ *
+ * 模块：userApi / productApi / cartApi / orderApi / pointsApi / distributionApi
+ */
 import Taro from '@tarojs/taro';
 import { API_BASE_URL, USE_MOCK_API, PAGE_PATH } from '../config/constants';
 import {
@@ -15,7 +24,7 @@ import {
   setDefaultAddress,
 } from './addressStorage';
 
-// 请求封装
+// 统一 HTTP 请求：code===0 为成功，否则 Toast 并 throw
 const request = async <T>(url: string, options: any = {}): Promise<T> => {
   if (USE_MOCK_API) {
     return mockRequest(url, options) as T;

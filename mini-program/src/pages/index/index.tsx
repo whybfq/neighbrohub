@@ -1,3 +1,6 @@
+/**
+ * 首页：分类入口、秒杀（/products/flash-sale）、商品列表、东/西区切换
+ */
 import { Component } from 'react';
 import { View, Text, Image, Input, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';

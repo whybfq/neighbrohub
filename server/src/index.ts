@@ -1,3 +1,14 @@
+/**
+ * NeighbroHub 统一 API 入口
+ *
+ * 三端共用 `/api/v1`，通过 Header `X-Client-Type` 区分客户端：
+ * - consumer → 邻选·购（消费者小程序）
+ * - worker   → 邻选·作业（仓配小程序）
+ * - admin    → 邻选·管理（Web 后台）
+ *
+ * MVP 使用内存 store（server/src/store），重启后数据重置。
+ * 生产环境需替换为 MySQL + JWT，见 docs/LAUNCH-TODO.md
+ */
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';

@@ -1,3 +1,10 @@
+/**
+ * 抢单大厅（TabBar·配送）
+ *
+ * 上线/离线 → GET/PUT /worker/online
+ * 抢单池 → /delivery/pool（含 isOwnOrder 自配单标识）
+ * 抢单 → POST /delivery/tasks/:id/grab
+ */
 import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';

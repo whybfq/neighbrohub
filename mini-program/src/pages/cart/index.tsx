@@ -1,3 +1,7 @@
+/**
+ * 购物车（TabBar）
+ * MVP：数据主要在 useCartStore 本地；结算时写入 temp_order 跳转 order 页
+ */
 import { Component } from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';

@@ -1,3 +1,4 @@
+/** 商品详情：GET /products/detail/:id，加购写入 cartStore（可扩展 cartApi） */
 import { Component } from 'react';
 import { View, Text, Image, ScrollView, Button } from '@tarojs/components';
 import Taro from '@tarojs/taro';

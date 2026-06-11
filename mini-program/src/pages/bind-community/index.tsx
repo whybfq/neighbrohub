@@ -1,3 +1,7 @@
+/**
+ * 绑定社区/楼栋（东21栋、西17栋，每栋3单元）
+ * POST /user/bind-community 同步服务端地址列表
+ */
 import { Component } from 'react';
 import { View, Text, Input, Picker, Button, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';

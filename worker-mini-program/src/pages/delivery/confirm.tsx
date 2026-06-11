@@ -1,3 +1,4 @@
+/** 送达确认：输入消费者订单 6 位签收码，POST /delivery/tasks/:id/deliver */
 import { Component } from 'react';
 import { View, Text, Input } from '@tarojs/components';
 import Taro, { getCurrentInstance } from '@tarojs/taro';

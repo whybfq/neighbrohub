@@ -1,3 +1,4 @@
+/** 登录页：POST /admin/login，DEV 环境预填 admin/admin123 */
 import { useState } from 'react';
 import { Form, Input, Button, Typography, message } from 'antd';
 import { adminApi } from '../../services/api';

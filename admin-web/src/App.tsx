@@ -1,3 +1,9 @@
+/**
+ * 邻选·管理 — 根组件与路由
+ *
+ * token 存 localStorage；未登录渲染 LoginPage，已登录走 AdminLayout 子路由。
+ * 各业务页见 src/pages/*，数据来自 adminApi → server /admin/*
+ */
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ConfigProvider } from 'antd';

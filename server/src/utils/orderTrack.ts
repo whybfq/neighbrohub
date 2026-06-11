@@ -1,3 +1,12 @@
+/**
+ * 订单配送追踪时间轴同步
+ *
+ * 消费者 pages/track 展示 timeline，需在履约各节点调用 advanceOrderTrack：
+ * paid → picking → packed → delivering → delivered
+ *
+ * timeline 数组自上而下为：delivered → delivering → picking/packed → paid
+ * rank 越大表示履约进度越靠后。
+ */
 import { store } from '../store/index.js';
 
 function nowStr() {
@@ -28,6 +37,7 @@ export function advanceOrderTrack(
   const tl = track.timeline as any[];
   if (!tl?.length) return;
 
+  /** 旧订单只有 picking 无 packed 时，packed 事件映射到 picking 节点 */
   const resolveTargetStep = (s: string) => {
     if (s === 'packed' && !tl.some((t) => t.step === 'packed')) return 'picking';
     return s;

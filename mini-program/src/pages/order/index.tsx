@@ -1,3 +1,10 @@
+/**
+ * 确认订单页
+ *
+ * 流程：购物车 temp_order → 选地址 → 可选自配送（/courier/status）
+ * → createOrder → Modal 模拟支付 → 跳转 track。
+ * 实付 = 商品总额 - 优惠券 + 配送费（自配时配送费为 0）。
+ */
 import { Component } from 'react';
 import { View, Text, Input, ScrollView, Switch } from '@tarojs/components';
 import Taro from '@tarojs/taro';

@@ -1,3 +1,9 @@
+/**
+ * 邻选·购 — 小程序根组件
+ *
+ * 启动时 restoreSession：若本地有 token 则拉 /user/info，
+ * 避免冷启动后个人中心仍显示「点击登录」。
+ */
 import { Component, PropsWithChildren } from 'react';
 import Taro from '@tarojs/taro';
 import { useUserStore } from './store';

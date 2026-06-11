@@ -1,3 +1,7 @@
+/**
+ * 管理后台布局：左侧菜单对应 App.tsx 中 Route
+ * menuItems.key 与 pages 目录一一对应
+ */
 import { useState } from 'react';
 import { Layout, Menu, theme, Typography, Dropdown, Space } from 'antd';
 import {

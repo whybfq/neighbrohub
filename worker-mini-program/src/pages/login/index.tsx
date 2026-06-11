@@ -1,3 +1,9 @@
+/**
+ * 作业端登录 / 骑手开放注册
+ *
+ * MVP 演示：login/register 可传 consumerUserId 关联消费者账号以支持自配。
+ * 生产需改为真实微信 code → openid。
+ */
 import { Component } from 'react';
 import { View, Text, Button } from '@tarojs/components';
 import Taro from '@tarojs/taro';

@@ -1,3 +1,4 @@
+/** 配送员审核：通过 / 暂停，对应 couriers 表 */
 import { useEffect, useState } from 'react';
 import { Table, Tag, Button, Typography, message, Space } from 'antd';
 import { adminApi } from '../../services/api';
@@ -14,7 +15,10 @@ export default function CouriersPage() {
 
   const load = () => {
     setLoading(true);
-    adminApi.getCouriers().then(setData).finally(() => setLoading(false));
+    adminApi.getCouriers()
+      .then(setData)
+      .catch((e: Error) => message.error(e.message || '加载配送员失败'))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {

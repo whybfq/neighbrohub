@@ -1,3 +1,6 @@
+/**
+ * 分拣任务列表：支付成功后订单进入 pickTasks，按东/西区筛选
+ */
 import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';

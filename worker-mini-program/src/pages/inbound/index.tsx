@@ -1,3 +1,4 @@
+/** 扫码/手工入库：POST /wms/inbound，记录展示于 /wms/inbound/recent */
 import { Component } from 'react';
 import { View, Text, Input, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';

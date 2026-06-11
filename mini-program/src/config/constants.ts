@@ -1,3 +1,10 @@
+/**
+ * 邻选·购 — 全局常量与功能开关
+ *
+ * MVP_FEATURES：false 的入口在 UI 层隐藏，勿在文档中写「已上线」。
+ * BUSINESS_RULES：起送价、配送费等，应与 server/src/config/delivery.ts 一致。
+ * PAGE_PATH：与 app.config.ts 页面路径保持同步。
+ */
 // API 基础地址（开发见 config/dev.js，生产见 config/prod.js 的 TARO_APP_API）
 export const API_BASE_URL = process.env.TARO_APP_API || 'http://localhost:8090/api/v1';
 

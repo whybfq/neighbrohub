@@ -1,5 +1,6 @@
+/** 履约监控看板：按订单状态汇总待分拣/配送中等 */
 import { useEffect, useState } from 'react';
-import { Table, Tag, Typography, Spin } from 'antd';
+import { Table, Tag, Typography, Spin, message } from 'antd';
 import { adminApi } from '../../services/api';
 import { ORDER_STATUS_COLOR, ORDER_STATUS_TEXT } from '../../config/constants';
 
@@ -14,10 +15,18 @@ export default function FulfillmentPage() {
         setDashboard(d);
         setOrders(o.filter((x) => !['completed', 'cancelled', 'pending_pay'].includes(x.status)));
       })
+      .catch((e: Error) => message.error(e.message || '加载履约数据失败'))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
+  if (!dashboard) {
+    return (
+      <Typography.Text type="danger" style={{ display: 'block', marginTop: 48, textAlign: 'center' }}>
+        履约数据加载失败，请确认后端 API 已启动
+      </Typography.Text>
+    );
+  }
 
   const columns = [
     { title: '订单号', dataIndex: 'orderNo', width: 140 },

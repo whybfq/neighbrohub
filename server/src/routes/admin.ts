@@ -1,3 +1,11 @@
+/**
+ * 管理后台 API（邻选·管理 · admin-web）
+ *
+ * 路由前缀均为 /admin/*，客户端 Header: X-Client-Type: admin
+ * 登录：环境变量 ADMIN_USERNAME / ADMIN_PASSWORD（默认 admin/admin123，仅开发）
+ *
+ * 模块：仪表盘、商品上下架、库存、订单、配送员审核、仓库信息
+ */
 import { Router } from 'express';
 import { sendFail, sendOk } from '../common/response.js';
 import { community } from '../data/seed.js';
@@ -28,6 +36,7 @@ router.put('/admin/products/:id/status', (req, res) => {
   const p = store.adminProducts.find((x: any) => x.id === req.params.id);
   if (!p) return sendFail(res, '商品不存在', 404);
   p.status = p.status === 'on' ? 'off' : 'on';
+  // 同步更新消费者端商品状态，避免后台下架后小程序仍可下单
   const consumer = store.products.find((x: any) => x.id === req.params.id);
   if (consumer) {
     consumer.status = p.status;

@@ -1,5 +1,6 @@
+/** 仪表盘：GET /admin/dashboard — 今日 GMV、订单数、待分拣/配送等 */
 import { useEffect, useState } from 'react';
-import { Card, Col, Row, Statistic, Typography, Spin } from 'antd';
+import { Card, Col, Row, Statistic, Typography, Spin, message } from 'antd';
 import {
   DollarOutlined,
   ShoppingCartOutlined,
@@ -15,10 +16,20 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    adminApi.getDashboard().then(setData).finally(() => setLoading(false));
+    adminApi.getDashboard()
+      .then(setData)
+      .catch((e: Error) => message.error(e.message || '加载仪表盘失败'))
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
+  if (!data) {
+    return (
+      <Typography.Text type="danger" style={{ display: 'block', marginTop: 48, textAlign: 'center' }}>
+        数据加载失败，请确认后端 API 已启动（:8090）
+      </Typography.Text>
+    );
+  }
 
   return (
     <div>

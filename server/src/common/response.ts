@@ -1,3 +1,9 @@
+/**
+ * 统一 JSON 响应格式，与三端 request 封装约定一致。
+ *
+ * 成功: { code: 0, message: 'ok', data: T }
+ * 失败: { code: 1, message: '...', data: null } + HTTP 4xx/5xx
+ */
 import type { Response } from 'express';
 
 export interface ApiResult<T = unknown> {

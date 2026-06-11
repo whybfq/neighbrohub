@@ -1,3 +1,13 @@
+/**
+ * 内存数据仓库（MVP）
+ *
+ * 启动时从 seed.ts 深拷贝种子数据；所有路由读写此单例。
+ * 字段说明：
+ * - orders / orderTracks：消费者订单与配送追踪时间轴
+ * - pickTasks / deliveryPool / activeDelivery：作业端分拣与抢单池
+ * - workerUser / couriers：骑手账号与审核列表
+ * - adminProducts / products：后台与消费者端商品（上下架需同步）
+ */
 import {
   addresses as seedAddresses,
   adminProducts as seedAdminProducts,
@@ -48,12 +58,14 @@ export const store = {
   holdingCount: 1,
 };
 
+/** 生成订单号：YYYYMMDD + 3 位随机数，如 20260608123 */
 export function nextOrderNo() {
   const d = new Date();
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}${String(Math.floor(Math.random() * 900) + 100)}`;
 }
 
+/** 支付成功后生成 6 位签收码，配送员送达时需输入校验 */
 export function genSignCode() {
   return String(Math.floor(100000 + Math.random() * 900000));
 }

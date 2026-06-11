@@ -1,3 +1,4 @@
+/** 商品管理：列表 + 上下架（同步消费者端 products.status） */
 import { useEffect, useState } from 'react';
 import { Table, Tag, Button, Typography, message, Space } from 'antd';
 import { adminApi } from '../../services/api';
@@ -8,7 +9,10 @@ export default function ProductsPage() {
 
   const load = () => {
     setLoading(true);
-    adminApi.getProducts().then(setData).finally(() => setLoading(false));
+    adminApi.getProducts()
+      .then(setData)
+      .catch((e: Error) => message.error(e.message || '加载商品失败'))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -16,9 +20,13 @@ export default function ProductsPage() {
   }, []);
 
   const handleToggle = async (id: string) => {
-    await adminApi.toggleProductStatus(id);
-    message.success('状态已更新');
-    load();
+    try {
+      await adminApi.toggleProductStatus(id);
+      message.success('状态已更新');
+      load();
+    } catch (e: any) {
+      message.error(e.message || '更新失败');
+    }
   };
 
   const columns = [

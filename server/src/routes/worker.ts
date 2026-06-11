@@ -1,3 +1,10 @@
+/**
+ * 作业端 API（邻选·作业 · worker-mini-program）
+ *
+ * 模块：骑手登录/注册、入库 WMS、分拣、抢单配送。
+ * 自配规则：order.customerId === workerUser.consumerUserId 且 order.selfDelivery
+ *           → 抢单 fee=0，消费者端已免配送费。
+ */
 import { Router } from 'express';
 import { sendFail, sendOk } from '../common/response.js';
 import { DELIVERY_BUSINESS, calcCourierFee } from '../config/delivery.js';
@@ -13,6 +20,7 @@ import { advanceOrderTrack } from '../utils/orderTrack.js';
 
 const router = Router();
 
+/** 为抢单池条目附加 isOwnOrder、展示用 fee 与提示文案 */
 function enrichPoolItem(task: any) {
   const order = store.orders.find((o: any) => o.orderNo === task.orderNo);
   const linkId = getWorkerConsumerLink();
@@ -43,7 +51,7 @@ router.post('/worker/login', (req, res) => {
   });
 });
 
-/** 开放注册：任何人可成为骑手（MVP 即时生效） */
+/** 开放注册：MVP 即时激活 courierStatus，写入 couriers 列表 */
 router.post('/worker/register', (req, res) => {
   const { nickname, phone, consumerUserId } = req.body || {};
   if (nickname) store.workerUser.nickname = nickname;
@@ -189,6 +197,7 @@ router.get('/delivery/active', (_req, res) => {
   });
 });
 
+/** 抢单：自配单须下单时勾选 selfDelivery；更新订单与追踪时间轴 */
 router.post('/delivery/tasks/:id/grab', (req, res) => {
   if (store.workerUser.courierStatus !== 'active') {
     return sendFail(res, '请先注册成为骑手', 403);
@@ -239,6 +248,7 @@ router.post('/delivery/tasks/:id/grab', (req, res) => {
   });
 });
 
+/** 送达：必须输入正确 6 位签收码（与订单 signCode 一致） */
 router.post('/delivery/tasks/:id/deliver', (req, res) => {
   const { signCode } = req.body || {};
   if (!store.activeDelivery) return sendFail(res, '无进行中的配送任务', 400);

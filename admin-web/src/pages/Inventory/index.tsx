@@ -1,5 +1,6 @@
+/** 库存查询 + 入库记录 Tab */
 import { useEffect, useState } from 'react';
-import { Table, Typography, Tabs, Tag } from 'antd';
+import { Table, Typography, Tabs, Tag, message } from 'antd';
 import { adminApi } from '../../services/api';
 
 export default function InventoryPage() {
@@ -13,6 +14,7 @@ export default function InventoryPage() {
         setInventory(inv);
         setInbound(ib);
       })
+      .catch((e: Error) => message.error(e.message || '加载库存失败'))
       .finally(() => setLoading(false));
   }, []);
 

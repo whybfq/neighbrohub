@@ -1,3 +1,4 @@
+/** 我的：骑手角色标签、今日配送收入规则说明 */
 import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';

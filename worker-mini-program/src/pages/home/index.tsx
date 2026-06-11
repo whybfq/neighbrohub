@@ -1,3 +1,6 @@
+/**
+ * 工作台首页：今日入库/分拣/配送统计，快捷入口跳转各 Tab
+ */
 import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';

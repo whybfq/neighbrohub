@@ -1,3 +1,9 @@
+/**
+ * 作业端 API 封装（邻选·作业）
+ *
+ * Header: X-Client-Type: worker, Authorization: Bearer worker_*
+ * 覆盖：登录/注册、入库、分拣、抢单池、送达确认
+ */
 import Taro from '@tarojs/taro';
 import { API_BASE_URL, USE_MOCK_API, PAGE_PATH } from '../config/constants';
 import {

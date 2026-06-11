@@ -1,3 +1,11 @@
+/**
+ * 全局状态（Zustand）
+ *
+ * - useUserStore：登录 token、用户信息、社区/楼栋（与 bind-community 同步）
+ * - useCartStore：购物车（MVP 主要本地，未全量同步 server /cart）
+ * - useOrderStore：订单 Tab 等轻量 UI 状态
+ * - usePointsStore：积分余额与兑换记录缓存
+ */
 import { create } from 'zustand';
 import Taro from '@tarojs/taro';
 

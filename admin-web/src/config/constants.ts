@@ -1,3 +1,4 @@
+/** 管理后台常量：社区信息、订单状态中文与颜色 */
 export const MVP_COMMUNITY = {
   id: 'C001',
   name: '山屿西山著',

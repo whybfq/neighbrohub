@@ -1,3 +1,4 @@
+/** 分拣详情：拣货清单 + completePick 完成后订单进入抢单池 */
 import { Component } from 'react';
 import { View, Text, ScrollView, Input } from '@tarojs/components';
 import Taro, { getCurrentInstance } from '@tarojs/taro';

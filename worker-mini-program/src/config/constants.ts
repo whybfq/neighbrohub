@@ -1,3 +1,7 @@
+/**
+ * 邻选·作业 — 全局常量
+ * deliveryFeePerOrder：接他人单收入；consumerDeliveryFee 与消费者端配送费对齐
+ */
 export const API_BASE_URL = process.env.TARO_APP_API || 'http://localhost:8090/api/v1';
 export const USE_MOCK_API = false;
 

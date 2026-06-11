@@ -1,10 +1,11 @@
+/** 个人中心（TabBar）：积分入口、订单快捷入口；未登录点击头部跳登录 */
 import { Component } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useUserStore, usePointsStore } from '../../store';
 import { navigateTo, PAGE_PATH, showToast } from '../../utils';
 import { USER_ROLE, MVP_FEATURES } from '../../config/constants';
-import { pointsApi } from '../../services/api';
+import { pointsApi, userApi } from '../../services/api';
 import AppIcon from '../../components/app-icon';
 import './index.scss';
 
@@ -14,8 +15,23 @@ export default class ProfilePage extends Component {
   }
 
   onShow() {
+    this.ensureUserInfo();
     this.loadPointsInfo();
   }
+
+  /** Tab 切回时补拉用户信息（与 app.tsx restoreSession 互补） */
+  ensureUserInfo = async () => {
+    const store = useUserStore.getState();
+    if (store.userInfo || !Taro.getStorageSync('token')) return;
+    try {
+      const info: any = await userApi.getUserInfo();
+      store.setUserInfo(info);
+      if (info?.community) store.setCommunity(info.community);
+      if (info?.building) store.setBuilding(info.building);
+    } catch {
+      store.logout();
+    }
+  };
 
   loadPointsInfo = () => {
     if (!MVP_FEATURES.POINTS) return;

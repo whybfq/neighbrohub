@@ -1,3 +1,9 @@
+/**
+ * 配送费与骑手收入规则（权威来源，小程序 constants 应对齐）
+ *
+ * - 消费者默认付 consumerDeliveryFee（自配时 0）
+ * - 骑手接他人单得 courierRewardPerOrder；接自己的单得 selfDeliveryCourierReward
+ */
 /** 配送业务规则（与服务端、小程序 constants 对齐） */
 export const DELIVERY_BUSINESS = {
   /** 消费者下单配送费（元） */

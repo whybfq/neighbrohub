@@ -1,3 +1,10 @@
+/**
+ * 管理后台 API 客户端
+ *
+ * Base: VITE_API_BASE 或 localhost:8090/api/v1
+ * Header: X-Client-Type: admin
+ * 401 清 token 并跳转 /login
+ */
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8090/api/v1';
 
 interface ApiResult<T> {
